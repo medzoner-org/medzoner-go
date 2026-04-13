@@ -1,6 +1,7 @@
 package database
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"github.com/Medzoner/gomedz/pkg/connector"
@@ -39,12 +40,12 @@ func (d *DbMigration) Migrate(action string) error {
 	}
 	if err = d.runAction(db, action); err != nil {
 		if errors.Is(err, migrate.ErrNoChange) {
-			logger.Info(nil, fmt.Sprintf("database migration %s: no change", action))
+			logger.Info(context.TODO(), fmt.Sprintf("database migration %s: no change", action))
 			return nil
 		}
 		return err
 	}
-	logger.Info(nil, fmt.Sprintf("database migrated ok: %s", action))
+	logger.Info(context.TODO(), fmt.Sprintf("database migrated ok: %s", action))
 	return nil
 }
 func (d *DbMigration) runAction(db *migrate.Migrate, action string) error {

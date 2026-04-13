@@ -1,6 +1,7 @@
 package http_utils
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/Medzoner/gomedz/pkg/logger"
@@ -14,6 +15,6 @@ func ResponseError(w http.ResponseWriter, err error, code int, span otelTrace.Sp
 	w.Header().Set("X-Content-Type-Options", "nosniff")
 	w.WriteHeader(code)
 	if _, werr := w.Write([]byte(err.Error())); werr != nil {
-		logger.Error(nil, "failed to write error response", werr)
+		logger.Error(context.TODO(), "failed to write error response", werr)
 	}
 }

@@ -62,7 +62,7 @@ func TestFeatures(t *testing.T) {
 	for i := 0; i < 50; i++ {
 		resp, err := http.Get(baseURL + "/healthz/live")
 		if err == nil {
-			resp.Body.Close()
+			_ = resp.Body.Close()
 			ready = true
 			break
 		}

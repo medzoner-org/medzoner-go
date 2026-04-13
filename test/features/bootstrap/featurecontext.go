@@ -158,7 +158,7 @@ func (a *APIFeature) theResponseBodyShouldContain(expected string) error {
 	if err != nil {
 		return fmt.Errorf("error reading response body: %w", err)
 	}
-	a.Response.Body.Close()
+	_ = a.Response.Body.Close()
 	if !strings.Contains(string(body), expected) {
 		return fmt.Errorf("expected response body to contain %q, but got: %s", expected, string(body))
 	}

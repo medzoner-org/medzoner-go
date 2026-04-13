@@ -52,7 +52,7 @@ func TestMysqlContactRepository_Save(t *testing.T) {
 	t.Run("Unit: test Save success", func(t *testing.T) {
 		db, mock, err := sqlmock.New()
 		assert.NilError(t, err)
-		defer db.Close()
+		defer func() { _ = db.Close() }()
 
 		mock.ExpectBegin()
 		mock.ExpectPrepare(`INSERT INTO Contact`).
@@ -74,7 +74,7 @@ func TestMysqlContactRepository_Save(t *testing.T) {
 	t.Run("Unit: test Save error begin transaction", func(t *testing.T) {
 		db, mock, err := sqlmock.New()
 		assert.NilError(t, err)
-		defer db.Close()
+		defer func() { _ = db.Close() }()
 
 		mock.ExpectBegin().WillReturnError(sqlmock.ErrCancelled)
 
@@ -91,7 +91,7 @@ func TestMysqlContactRepository_Save(t *testing.T) {
 	t.Run("Unit: test Save error prepare statement", func(t *testing.T) {
 		db, mock, err := sqlmock.New()
 		assert.NilError(t, err)
-		defer db.Close()
+		defer func() { _ = db.Close() }()
 
 		mock.ExpectBegin()
 		mock.ExpectPrepare(`INSERT INTO Contact`).WillReturnError(sqlmock.ErrCancelled)
@@ -109,7 +109,7 @@ func TestMysqlContactRepository_Save(t *testing.T) {
 	t.Run("Unit: test Save error exec statement", func(t *testing.T) {
 		db, mock, err := sqlmock.New()
 		assert.NilError(t, err)
-		defer db.Close()
+		defer func() { _ = db.Close() }()
 
 		mock.ExpectBegin()
 		mock.ExpectPrepare(`INSERT INTO Contact`).
@@ -130,7 +130,7 @@ func TestMysqlContactRepository_Save(t *testing.T) {
 	t.Run("Unit: test Save error commit transaction", func(t *testing.T) {
 		db, mock, err := sqlmock.New()
 		assert.NilError(t, err)
-		defer db.Close()
+		defer func() { _ = db.Close() }()
 
 		mock.ExpectBegin()
 		mock.ExpectPrepare(`INSERT INTO Contact`).
