@@ -11,7 +11,7 @@ RUN go install github.com/go-delve/delve/cmd/dlv@master
 #############################################
 ### Run the Go Binary
 #############################################
-FROM golang:1.26.1 AS run
+FROM golang:1.26.2 AS run
 
 COPY --from=base /etc/passwd /etc/passwd
 COPY --from=base /go/bin/dlv /
