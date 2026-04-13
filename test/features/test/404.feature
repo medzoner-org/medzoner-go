@@ -9,3 +9,8 @@ Feature: Global behavior "Medzoner"
     Scenario: [Medzoner - GET - success] "404 page"
         When    I send a GET request to "/not-found"
         Then    the response status code should be 404
+
+    Scenario: [Medzoner - GET - success] "Another 404 page"
+        When    I send a GET request to "/does-not-exist"
+        Then    the response status code should be 404
+

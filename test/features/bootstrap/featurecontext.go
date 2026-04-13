@@ -55,6 +55,8 @@ func (a *APIFeature) InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Step(`^I send a GET request to "([^"]*)"$`, a.iSendAGETRequestTo)
 	ctx.Step(`^I send a POST request to "([^"]*)" with body:$`, a.iSendAPOSTRequestToWithBody)
 	ctx.Step(`^the response status code should be (\d+)$`, a.theResponseStatusCodeShouldBe)
+	ctx.Step(`^the response body should contain "([^"]*)"$`, a.theResponseBodyShouldContain)
+	ctx.Step(`^the response header "([^"]*)" should contain "([^"]*)"$`, a.theResponseHeaderShouldContain)
 }
 
 func (a *APIFeature) resetResponse() {
@@ -147,3 +149,30 @@ func (a *APIFeature) theResponseStatusCodeShouldBe(code int) error {
 	}
 	return nil
 }
+
+func (a *APIFeature) theResponseBodyShouldContain(expected string) error {
+	if a.Response == nil {
+		return fmt.Errorf("no response received")
+	}
+	body, err := io.ReadAll(a.Response.Body)
+	if err != nil {
+		return fmt.Errorf("error reading response body: %w", err)
+	}
+	a.Response.Body.Close()
+	if !strings.Contains(string(body), expected) {
+		return fmt.Errorf("expected response body to contain %q, but got: %s", expected, string(body))
+	}
+	return nil
+}
+
+func (a *APIFeature) theResponseHeaderShouldContain(header, expected string) error {
+	if a.Response == nil {
+		return fmt.Errorf("no response received")
+	}
+	actual := a.Response.Header.Get(header)
+	if !strings.Contains(actual, expected) {
+		return fmt.Errorf("expected header %q to contain %q, but got %q", header, expected, actual)
+	}
+	return nil
+}
+
