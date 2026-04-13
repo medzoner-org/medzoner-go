@@ -11,6 +11,9 @@ type Mocks struct {
 	ContactRepository *mocks.MockContactRepository
 	TechnoRepository  *mocks.MockTechnoRepository
 	Mailer            *mocks.MockMailer
+	Templater         *mocks.MockTemplater
+	Captcher          *mocks.MockCaptcher
+	Validater         *mocks.MockValidater
 }
 
 func New(reporter gomock.TestReporter) *Mocks {
@@ -20,5 +23,8 @@ func New(reporter gomock.TestReporter) *Mocks {
 		ContactRepository: mocks.NewMockContactRepository(controller),
 		Mailer:            mocks.NewMockMailer(controller),
 		TechnoRepository:  mocks.NewMockTechnoRepository(controller),
+		Templater:         mocks.NewMockTemplater(controller),
+		Captcher:          mocks.NewMockCaptcher(controller),
+		Validater:         mocks.NewMockValidater(controller),
 	}
 }
