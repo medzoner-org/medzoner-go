@@ -72,6 +72,23 @@ func TestContactCreatedEventHandler(t *testing.T) {
 		err := handler.Publish(context.Background(), contactCreatedEvent)
 		assert.Error(t, err, "error during send mail: error")
 	})
+	t.Run("Unit: test ContactCreatedEventHandler failed with empty UUID", func(t *testing.T) {
+		mocked := mocks.New(t)
+		mailer := mocked.Mailer
+
+		handler := event2.NewContactCreatedEventHandler(mailer)
+		contactCreatedEvent := event2.ContactCreatedEvent{
+			Contact: entity.Contact{
+				Name:    "test",
+				Email:   customtype.NullString{String: "test@test.com", Valid: true},
+				Message: "msg",
+				DateAdd: time.Time{},
+				UUID:    "",
+			},
+		}
+		err := handler.Publish(context.Background(), contactCreatedEvent)
+		assert.ErrorContains(t, err, "contact UUID is empty")
+	})
 }
 
 type BadEvent struct{}

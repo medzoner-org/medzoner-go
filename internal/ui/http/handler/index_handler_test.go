@@ -231,3 +231,71 @@ func TestIndexHandler_Index_POST_CommandHandlerError(t *testing.T) {
 	})
 }
 
+func TestIndexHandler_Prefix(t *testing.T) {
+	t.Run("Unit: test IndexHandler Prefix returns /", func(t *testing.T) {
+		h := handler.NewIndexHandler(nil, query2.ListTechnoQueryHandler{}, command2.CreateContactCommandHandler{}, nil, nil)
+		assert.Equal(t, h.Prefix(), "/")
+	})
+}
+
+func TestIndexHandler_Index_POST_CaptchaConfirmFailed(t *testing.T) {
+	t.Run("Unit: test IndexHandler POST captcha confirm returns false", func(t *testing.T) {
+		mocked := mocks.New(t)
+		mocked.TechnoRepository.EXPECT().FetchStack(gomock.Any()).Return(map[string]any{}, nil).Times(1)
+		mocked.Captcher.EXPECT().GetSiteKey().Return("test-site-key").Times(1)
+		mocked.Captcher.EXPECT().Confirm(gomock.Any(), gomock.Any()).Return(false, nil).Times(1)
+
+		h := handler.NewIndexHandler(
+			mocked.Templater,
+			query2.NewListTechnoQueryHandler(mocked.TechnoRepository),
+			command2.NewCreateContactCommandHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
+			mocked.Validater,
+			mocked.Captcher,
+		)
+
+		form := url.Values{}
+		form.Set("name", "test")
+		form.Set("email", "test@example.com")
+		form.Set("message", "hello")
+		form.Set("g-captcha-response", "bad-token")
+		req := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(form.Encode()))
+		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+		w := httptest.NewRecorder()
+		ctx := gohttp.NewContext(w, req)
+
+		err := h.Index(ctx)
+
+		assert.NilError(t, err)
+		assert.Equal(t, w.Code, http.StatusSeeOther)
+	})
+}
+
+func TestIndexHandler_Index_POST_WithSubmit(t *testing.T) {
+	t.Run("Unit: test IndexHandler POST with submit skips processing", func(t *testing.T) {
+		mocked := mocks.New(t)
+		mocked.TechnoRepository.EXPECT().FetchStack(gomock.Any()).Return(map[string]any{}, nil).Times(1)
+		mocked.Captcher.EXPECT().GetSiteKey().Return("test-site-key").Times(1)
+		mocked.Templater.EXPECT().Render("index", gomock.Any(), gomock.Any()).Return(nil).Times(1)
+
+		h := handler.NewIndexHandler(
+			mocked.Templater,
+			query2.NewListTechnoQueryHandler(mocked.TechnoRepository),
+			command2.NewCreateContactCommandHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
+			mocked.Validater,
+			mocked.Captcher,
+		)
+
+		form := url.Values{}
+		form.Set("name", "test")
+		form.Set("submit", "Send")
+		req := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(form.Encode()))
+		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+		w := httptest.NewRecorder()
+		ctx := gohttp.NewContext(w, req)
+
+		err := h.Index(ctx)
+
+		assert.NilError(t, err)
+		assert.Equal(t, w.Code, http.StatusOK)
+	})
+}

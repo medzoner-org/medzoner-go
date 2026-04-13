@@ -79,4 +79,17 @@ func TestRender(t *testing.T) {
 
 		assert.Error(t, err, "error parsing templates: error getting template ../../..tmpl/: error walking the path ../../..tmpl/: lstat ../../..tmpl/: no such file or directory")
 	})
+	t.Run("Unit: test Render failed execute template with unknown name", func(t *testing.T) {
+		cfg := config.Config{
+			RootPath: config.RootPath(rootPath),
+		}
+		tpl := templater.NewTemplateHTML(cfg)
+		err := tpl.Render(
+			"nonexistent_template",
+			nil,
+			httptest.NewRecorder(),
+		)
+
+		assert.ErrorContains(t, err, "error executing template")
+	})
 }
