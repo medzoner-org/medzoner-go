@@ -299,3 +299,36 @@ func TestIndexHandler_Index_POST_WithSubmit(t *testing.T) {
 		assert.Equal(t, w.Code, http.StatusOK)
 	})
 }
+
+func TestIndexHandler_Register(t *testing.T) {
+	t.Run("Unit: test IndexHandler Register registers routes", func(t *testing.T) {
+		h := handler.NewIndexHandler(nil, query2.ListTechnoQueryHandler{}, command2.CreateContactCommandHandler{}, nil, nil)
+		r := &fakeRouter{}
+
+		h.Register(r)
+
+		assert.Equal(t, r.getCalled, true)
+		assert.Equal(t, r.postCalled, true)
+		assert.Equal(t, r.staticFSCalled, true)
+	})
+}
+
+// fakeRouter implements gohttp.Router for testing Register
+type fakeRouter struct {
+	getCalled      bool
+	postCalled     bool
+	staticFSCalled bool
+}
+
+func (f *fakeRouter) Use(_ ...gohttp.Middleware)                                   {}
+func (f *fakeRouter) Static(_, _ string)                                           {}
+func (f *fakeRouter) StaticFS(_ string, _ http.FileSystem, _ gohttp.Options)       { f.staticFSCalled = true }
+func (f *fakeRouter) Get(_ string, _ gohttp.HandlerFunc, _ gohttp.Options)         { f.getCalled = true }
+func (f *fakeRouter) Post(_ string, _ gohttp.HandlerFunc, _ gohttp.Options)        { f.postCalled = true }
+func (f *fakeRouter) Put(_ string, _ gohttp.HandlerFunc, _ gohttp.Options)         {}
+func (f *fakeRouter) Delete(_ string, _ gohttp.HandlerFunc, _ gohttp.Options)      {}
+func (f *fakeRouter) Patch(_ string, _ gohttp.HandlerFunc, _ gohttp.Options)       {}
+func (f *fakeRouter) Any(_ string, _ gohttp.HandlerFunc, _ gohttp.Options)         {}
+func (f *fakeRouter) Options(_ string, _ gohttp.HandlerFunc, _ gohttp.Options)     {}
+func (f *fakeRouter) Group(_ string, _ ...gohttp.Middleware) gohttp.Router         { return f }
+

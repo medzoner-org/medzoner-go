@@ -56,5 +56,27 @@ func TestResponseError(t *testing.T) {
 		assert.Equal(t, w.Code, http.StatusNotFound)
 		assert.Equal(t, w.Body.String(), "not found")
 	})
+
+	t.Run("Unit: test ResponseError with failing writer", func(t *testing.T) {
+		fw := &failingWriter{header: make(http.Header)}
+		_, span := observability.StartSpan(context.Background(), "test")
+		defer span.End()
+
+		http_utils.ResponseError(fw, errors.New("fail"), http.StatusInternalServerError, span)
+
+		assert.Equal(t, fw.code, http.StatusInternalServerError)
+	})
+}
+
+// failingWriter simulates a ResponseWriter that fails on Write
+type failingWriter struct {
+	header http.Header
+	code   int
+}
+
+func (f *failingWriter) Header() http.Header         { return f.header }
+func (f *failingWriter) WriteHeader(statusCode int)   { f.code = statusCode }
+func (f *failingWriter) Write(_ []byte) (int, error)  {
+	return 0, errors.New("write error")
 }
 

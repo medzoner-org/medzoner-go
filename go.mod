@@ -3,6 +3,7 @@ module github.com/Medzoner/medzoner-go
 go 1.25.6
 
 require (
+	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/Medzoner/gomedz v0.13.1
 	github.com/caarlos0/env/v11 v11.4.0
 	github.com/cucumber/godog v0.15.1
@@ -11,6 +12,7 @@ require (
 	github.com/golang-migrate/migrate/v4 v4.19.1
 	github.com/golang/mock v1.6.0
 	github.com/google/wire v0.7.0
+	github.com/jmoiron/sqlx v1.4.0
 	go.opentelemetry.io/otel v1.43.0
 	go.opentelemetry.io/otel/trace v1.43.0
 	go.uber.org/mock v0.6.0
@@ -19,7 +21,6 @@ require (
 
 require (
 	filippo.io/edwards25519 v1.2.0 // indirect
-	github.com/DATA-DOG/go-sqlmock v1.5.2 // indirect
 	github.com/aws/aws-sdk-go-v2 v1.41.5 // indirect
 	github.com/aws/aws-sdk-go-v2/config v1.32.14 // indirect
 	github.com/aws/aws-sdk-go-v2/credentials v1.19.14 // indirect
@@ -74,7 +75,6 @@ require (
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
-	github.com/jmoiron/sqlx v1.4.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/cpuid/v2 v2.3.0 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect

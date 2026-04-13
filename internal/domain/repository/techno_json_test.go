@@ -57,5 +57,23 @@ func TestTechnoJSONRepository_FetchStack(t *testing.T) {
 
 		assert.ErrorContains(t, err, "error during unmarshal json")
 	})
+
+	t.Run("Unit: test FetchStack with empty JSON file", func(t *testing.T) {
+		tmpDir := t.TempDir()
+		jsonDir := filepath.Join(tmpDir, "internal", "resources", "data", "jobs")
+		err := os.MkdirAll(jsonDir, 0o755)
+		assert.NilError(t, err)
+
+		err = os.WriteFile(filepath.Join(jsonDir, "stacks.json"), []byte(""), 0o644)
+		assert.NilError(t, err)
+
+		repo := repository.NewTechnoJSONRepository(config.Config{
+			RootPath: config.RootPath(tmpDir + "/"),
+		})
+
+		_, err = repo.FetchStack(context.Background())
+
+		assert.ErrorContains(t, err, "error during unmarshal json")
+	})
 }
 
