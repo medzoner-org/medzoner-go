@@ -1,5 +1,5 @@
 #!/bin/bash
 set -ev
 
-gofmt -w pkg
-test -z "$(gofmt -w -d -s ./pkg | tee /dev/stderr)"
+gofmt -w ./internal/ ./cmd/
+test -z "$(gofmt -d -s ./internal/ ./cmd/ | tee /dev/stderr)"

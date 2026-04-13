@@ -3,7 +3,7 @@ description: "Installs Go, enables caching, configures private module access, an
 
 inputs:
   go-version:
-    description: "Go version (e.g. 1.25.x)"
+    description: "Go version (e.g. 1.26.x)"
     required: true
   gh-token:
     description: "GitHub token with read access to private repos"

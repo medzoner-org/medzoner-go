@@ -181,6 +181,16 @@ make help
 
 ## CI / Qualité
 
+### GitHub Actions (`.github/workflows/ci.yml`)
+- **Déclenchement** : push sur `master`, `main`, `develop`, `feat/**`, `fix/**`, `refactor/**`, `release/**` + PRs
+- **Jobs** :
+  - `lint` — golangci-lint avec config `.golangci/.golangci.yml`
+  - `test` — tests unitaires avec couverture (MariaDB en service container)
+  - `build` — compilation des binaires (après lint + test)
+  - `security` — audit gosec
+- **Concurrency** : annule les runs précédents sur la même branche
+
+### Local
 - Pre-commit hooks : `gofmt` + `go vet` + `go test` (via `.githooks/pre-commit`)
 - Commit-msg hook : validation Conventional Commits (via `.githooks/commit-msg`)
 - Activation : `make githooks` ou `make setup`
