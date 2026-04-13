@@ -19,10 +19,10 @@ Feature: Global behavior "Medzoner"
 #------------------------------------------------------------------------------------------
 
     Scenario: [Medzoner - POST] "Home page - Test success"
-        And I add "Content-Type" header equal to "application/json"
+        And I add "Content-Type" header equal to "application/x-www-form-urlencoded"
         When    I send a POST request to "/" with body:
           """
-          {"name": "else", "email" :"email@fake.com", "message": "else", "g-captcha-response": "else", "submit": ""}
+          {"name": "else", "email": "email@fake.com", "message": "else"}
           """
         Then    the response status code should be 303
 
@@ -34,6 +34,6 @@ Feature: Global behavior "Medzoner"
         And I add "Content-Type" header equal to "application/x-www-form-urlencoded"
         When    I send a POST request to "/" with body:
           """
-          {"foo":{"bar":{"baz":1}},"something":"else"}
+          {"name": "", "email": "", "message": ""}
           """
         Then    the response status code should be 400

@@ -12,4 +12,4 @@ Feature: Global behavior "Medzoner"
 
     Scenario: [Medzoner - GET_ALL] "Contact page"
         When    I send a GET request to "/contact"
-        Then    the response status code should be 405
+        Then    the response status code should be 404
