@@ -127,7 +127,8 @@ func (h IndexHandler) Index(c *http2.Context) error {
 		}
 		statusCode = http.StatusBadRequest
 	}
-	if view.FormMessage != "" {
+
+	if statusCode != http.StatusOK {
 		w.WriteHeader(statusCode)
 	}
 
