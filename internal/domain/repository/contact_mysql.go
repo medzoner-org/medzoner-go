@@ -33,7 +33,6 @@ func (m *MysqlContactRepository) Save(ctx context.Context, contact entity.Contac
 	if err != nil {
 		return errorResponse("error during begin transaction", iSpan, err)
 	}
-	contact.EmailString = contact.Email.String
 
 	stmt, err := conn.Prepare(`INSERT INTO Contact (name, message, email, date_add, uuid) VALUES (?,?,?,?,?)`)
 	defer func(stmt *sql.Stmt) {
@@ -49,7 +48,7 @@ func (m *MysqlContactRepository) Save(ctx context.Context, contact entity.Contac
 		return errorResponse("error during prepare transaction", iSpan, err)
 	}
 
-	_, err = stmt.Exec(contact.Name, contact.Message, contact.EmailString, contact.DateAdd, contact.UUID)
+	_, err = stmt.Exec(contact.Name, contact.Message, contact.EmailValue(), contact.DateAdd, contact.UUID)
 	if err != nil {
 		return errorResponse("error during exec statement", iSpan, err)
 	}

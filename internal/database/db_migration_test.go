@@ -101,14 +101,13 @@ func TestDbMigration_Migrate(t *testing.T) {
 		assert.ErrorContains(t, err, "database instantiate failed")
 	})
 
-	t.Run("Unit: test NewDbMigration sets fields correctly", func(t *testing.T) {
-		conf := connector.Config{RootPath: "/app/migrations/"}
+	t.Run("Unit: test NewDbMigration sets MigrationDir correctly", func(t *testing.T) {
+		conf := connector.Config{RootPath: "/app/"}
 		dbMigration := database.NewDbMigration(
 			&failingDbInstantiator{},
 			conf,
 		)
 
-		assert.Equal(t, dbMigration.RootPath, "/app/migrations/")
 		assert.Equal(t, dbMigration.MigrationDir, "/app/migrations/")
 	})
 
@@ -117,7 +116,6 @@ func TestDbMigration_Migrate(t *testing.T) {
 
 		dbMigration := database.DbMigration{
 			DbInstance:   &failingDbInstantiator{driver: &fakeDriver{version: -1}},
-			RootPath:     migDir,
 			MigrationDir: migDir,
 		}
 
@@ -131,7 +129,6 @@ func TestDbMigration_Migrate(t *testing.T) {
 
 		dbMigration := database.DbMigration{
 			DbInstance:   &failingDbInstantiator{driver: &fakeDriver{version: 1}},
-			RootPath:     migDir,
 			MigrationDir: migDir,
 		}
 
@@ -145,27 +142,26 @@ func TestDbMigration_Migrate(t *testing.T) {
 
 		dbMigration := database.DbMigration{
 			DbInstance:   &failingDbInstantiator{driver: &fakeDriver{version: -1}},
-			RootPath:     migDir,
 			MigrationDir: migDir,
 		}
 
 		err := dbMigration.Migrate("invalid")
 
 		assert.ErrorContains(t, err, "database migration action failed")
+		assert.ErrorContains(t, err, "unsupported action")
 	})
 
-	t.Run("Unit: test Migrate up no change error", func(t *testing.T) {
+	t.Run("Unit: test Migrate up no change is not an error", func(t *testing.T) {
 		migDir := createMigrationFiles(t)
 
 		dbMigration := database.DbMigration{
 			DbInstance:   &failingDbInstantiator{driver: &fakeDriver{version: 1}},
-			RootPath:     migDir,
 			MigrationDir: migDir,
 		}
 
 		err := dbMigration.Migrate(database.Up)
 
-		assert.ErrorContains(t, err, "database migration up failed")
+		assert.NilError(t, err)
 	})
 }
 
