@@ -63,6 +63,12 @@ public/                    → assets statiques (CSS, images)
 ## Commandes
 
 ```bash
+# Setup initial (outils, hooks, env)
+make setup
+
+# Vérifier les outils installés
+make check-tools
+
 # Démarrer le serveur
 make start
 
@@ -75,6 +81,9 @@ go run ./cmd/migrate/migrate.go down
 
 # Tests unitaires avec couverture
 make test_all
+
+# Tests + rapport HTML de couverture
+make coverage
 
 # Tests BDD (Godog) — nécessite le serveur
 GODOG_INTEGRATION=1 go test -v ./...
@@ -94,11 +103,18 @@ make run-qa
 # Wire (régénérer l'injection)
 make wire
 
+# Régénérer les mocks
+make generate
+
 # Docker local
-docker compose -f infra/docker/local/docker-compose.yml up -d
+make docker-up
+make docker-down
 
 # Skaffold (K8s)
 make skaffold-run
+
+# Aide (liste toutes les commandes)
+make help
 ```
 
 ## Conventions de code
@@ -165,7 +181,9 @@ make skaffold-run
 
 ## CI / Qualité
 
-- Pre-commit hooks : `make test_all` (via `.githooks`)
+- Pre-commit hooks : `gofmt` + `go vet` + `go test` (via `.githooks/pre-commit`)
+- Commit-msg hook : validation Conventional Commits (via `.githooks/commit-msg`)
+- Activation : `make githooks` ou `make setup`
 - Linters actifs : errcheck, gosimple, govet, staticcheck, gosec, cyclop, wrapcheck, spancheck, etc.
 - Les fichiers `_test.go` sont exemptés de : cyclop, gosec, dupl, funlen, govet, prealloc, gocritic
 - Couverture : `go test -cover -coverpkg=./... -covermode=count`

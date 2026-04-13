@@ -5,11 +5,11 @@ import (
 	"database/sql"
 	"fmt"
 
+	"github.com/Medzoner/gomedz/pkg/connector"
 	"github.com/Medzoner/gomedz/pkg/logger"
 	"github.com/Medzoner/gomedz/pkg/observability"
 	"github.com/Medzoner/medzoner-go/internal/entity"
 	otelTrace "go.opentelemetry.io/otel/trace"
-	"github.com/Medzoner/gomedz/pkg/connector"
 )
 
 // MysqlContactRepository MysqlContactRepository

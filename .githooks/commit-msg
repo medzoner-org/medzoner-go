@@ -1,0 +1,36 @@
+#!/bin/sh
+# Commit-msg hook — Conventional Commits validation
+# Format: <type>(<scope>): <description>
+# Types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert
+
+COMMIT_MSG_FILE=$1
+COMMIT_MSG=$(head -1 "$COMMIT_MSG_FILE")
+
+# Skip merge commits
+if echo "$COMMIT_MSG" | grep -qE "^Merge "; then
+  exit 0
+fi
+
+PATTERN="^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\(.+\))?(!)?: .{1,100}$"
+
+if ! echo "$COMMIT_MSG" | grep -qE "$PATTERN"; then
+  echo "❌ commit-msg: format Conventional Commits invalide"
+  echo ""
+  echo "  Format attendu : <type>(<scope>): <description>"
+  echo ""
+  echo "  Types valides :"
+  echo "    feat, fix, docs, style, refactor, perf,"
+  echo "    test, build, ci, chore, revert"
+  echo ""
+  echo "  Exemples :"
+  echo "    feat(handler): add contact form validation"
+  echo "    fix: resolve migration file driver import"
+  echo "    docs: update CLAUDE.md"
+  echo "    test(repository): add edge case for empty JSON"
+  echo ""
+  echo "  Votre message : '$COMMIT_MSG'"
+  exit 1
+fi
+
+echo "✅ commit-msg: format OK"
+

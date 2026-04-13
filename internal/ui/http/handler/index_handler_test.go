@@ -10,13 +10,13 @@ import (
 	"testing"
 
 	gohttp "github.com/Medzoner/gomedz/pkg/http"
+	"github.com/Medzoner/gomedz/pkg/logger"
+	"github.com/Medzoner/gomedz/pkg/observability"
 	command2 "github.com/Medzoner/medzoner-go/internal/application/command"
 	"github.com/Medzoner/medzoner-go/internal/application/event"
 	query2 "github.com/Medzoner/medzoner-go/internal/application/query"
 	"github.com/Medzoner/medzoner-go/internal/ui/http/handler"
 	mocks "github.com/Medzoner/medzoner-go/test"
-	"github.com/Medzoner/gomedz/pkg/logger"
-	"github.com/Medzoner/gomedz/pkg/observability"
 	"go.uber.org/mock/gomock"
 	"gotest.tools/assert"
 )
@@ -320,15 +320,14 @@ type fakeRouter struct {
 	staticFSCalled bool
 }
 
-func (f *fakeRouter) Use(_ ...gohttp.Middleware)                                   {}
-func (f *fakeRouter) Static(_, _ string)                                           {}
-func (f *fakeRouter) StaticFS(_ string, _ http.FileSystem, _ gohttp.Options)       { f.staticFSCalled = true }
-func (f *fakeRouter) Get(_ string, _ gohttp.HandlerFunc, _ gohttp.Options)         { f.getCalled = true }
-func (f *fakeRouter) Post(_ string, _ gohttp.HandlerFunc, _ gohttp.Options)        { f.postCalled = true }
-func (f *fakeRouter) Put(_ string, _ gohttp.HandlerFunc, _ gohttp.Options)         {}
-func (f *fakeRouter) Delete(_ string, _ gohttp.HandlerFunc, _ gohttp.Options)      {}
-func (f *fakeRouter) Patch(_ string, _ gohttp.HandlerFunc, _ gohttp.Options)       {}
-func (f *fakeRouter) Any(_ string, _ gohttp.HandlerFunc, _ gohttp.Options)         {}
-func (f *fakeRouter) Options(_ string, _ gohttp.HandlerFunc, _ gohttp.Options)     {}
-func (f *fakeRouter) Group(_ string, _ ...gohttp.Middleware) gohttp.Router         { return f }
-
+func (f *fakeRouter) Use(_ ...gohttp.Middleware)                               {}
+func (f *fakeRouter) Static(_, _ string)                                       {}
+func (f *fakeRouter) StaticFS(_ string, _ http.FileSystem, _ gohttp.Options)   { f.staticFSCalled = true }
+func (f *fakeRouter) Get(_ string, _ gohttp.HandlerFunc, _ gohttp.Options)     { f.getCalled = true }
+func (f *fakeRouter) Post(_ string, _ gohttp.HandlerFunc, _ gohttp.Options)    { f.postCalled = true }
+func (f *fakeRouter) Put(_ string, _ gohttp.HandlerFunc, _ gohttp.Options)     {}
+func (f *fakeRouter) Delete(_ string, _ gohttp.HandlerFunc, _ gohttp.Options)  {}
+func (f *fakeRouter) Patch(_ string, _ gohttp.HandlerFunc, _ gohttp.Options)   {}
+func (f *fakeRouter) Any(_ string, _ gohttp.HandlerFunc, _ gohttp.Options)     {}
+func (f *fakeRouter) Options(_ string, _ gohttp.HandlerFunc, _ gohttp.Options) {}
+func (f *fakeRouter) Group(_ string, _ ...gohttp.Middleware) gohttp.Router     { return f }

@@ -119,4 +119,3 @@ func TestNullString_UnmarshalJSON(t *testing.T) {
 		assert.Assert(t, err != nil)
 	})
 }
-

@@ -6,9 +6,9 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/Medzoner/medzoner-go/internal/config"
 	"github.com/Medzoner/medzoner-go/internal/ui/http/templater"
 	"gotest.tools/assert"
-	"github.com/Medzoner/medzoner-go/internal/config"
 )
 
 func TestRender(t *testing.T) {

@@ -6,9 +6,9 @@ import (
 
 	"github.com/Medzoner/medzoner-go/internal/domain/repository"
 
+	"github.com/Medzoner/gomedz/pkg/observability"
 	"go.opentelemetry.io/otel/attribute"
 	otelTrace "go.opentelemetry.io/otel/trace"
-	"github.com/Medzoner/gomedz/pkg/observability"
 )
 
 // ListTechnoQueryHandler ListTechnoQueryHandler

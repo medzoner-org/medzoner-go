@@ -1,2 +1,25 @@
 #!/bin/sh
-./scripts/.hook-precommit.sh
+# Pre-commit hook — fast checks only (< 5s)
+# Full QA: make run-qa
+
+set -e
+
+echo "🔍 pre-commit: gofmt..."
+GOFMT_OUTPUT=$(gofmt -l ./internal/ ./cmd/ 2>&1 || true)
+if [ -n "$GOFMT_OUTPUT" ]; then
+  echo "❌ gofmt: fichiers non formatés :"
+  echo "$GOFMT_OUTPUT"
+  echo "💡 Corrigez avec : gofmt -w ./internal/ ./cmd/"
+  exit 1
+fi
+
+echo "🔍 pre-commit: go vet..."
+go vet ./...
+
+echo "🔍 pre-commit: tests..."
+go test -count=1 -covermode=count -coverprofile=cov.out ./...
+go tool cover -func=cov.out
+find ./internal ./cmd -type f -name '*.go' -exec sed '/^\s*$/d' {} + | wc -l
+echo ' ↳ total (non-blank) lines of code'
+
+echo "✅ pre-commit: OK"

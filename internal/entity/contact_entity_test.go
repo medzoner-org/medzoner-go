@@ -32,4 +32,3 @@ func TestContact_Get(t *testing.T) {
 		assert.Equal(t, result, "")
 	})
 }
-

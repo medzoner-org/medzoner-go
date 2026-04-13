@@ -30,4 +30,3 @@ func TestNewConfig(t *testing.T) {
 		assert.Equal(t, cfg.Database.Name, "testdb")
 	})
 }
-

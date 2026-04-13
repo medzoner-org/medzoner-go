@@ -29,10 +29,10 @@ type fakeDbInstantiator struct {
 	db *sqlx.DB
 }
 
-func (f *fakeDbInstantiator) GetConnection() *sqlx.DB          { return f.db }
-func (f *fakeDbInstantiator) CreateDatabase(_ string)           {}
-func (f *fakeDbInstantiator) DropDatabase(_ string)             {}
-func (f *fakeDbInstantiator) GetDatabaseName() string           { return "test" }
+func (f *fakeDbInstantiator) GetConnection() *sqlx.DB { return f.db }
+func (f *fakeDbInstantiator) CreateDatabase(_ string) {}
+func (f *fakeDbInstantiator) DropDatabase(_ string)   {}
+func (f *fakeDbInstantiator) GetDatabaseName() string { return "test" }
 func (f *fakeDbInstantiator) GetDatabaseDriver() (database.Driver, error) {
 	return nil, nil
 }
@@ -149,4 +149,3 @@ func TestMysqlContactRepository_Save(t *testing.T) {
 		assert.NilError(t, mock.ExpectationsWereMet())
 	})
 }
-

@@ -56,4 +56,3 @@ func TestNotFoundHandler_Handle(t *testing.T) {
 		assert.Equal(t, w.Code, http.StatusNotFound)
 	})
 }
-

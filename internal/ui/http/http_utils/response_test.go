@@ -74,9 +74,8 @@ type failingWriter struct {
 	code   int
 }
 
-func (f *failingWriter) Header() http.Header         { return f.header }
-func (f *failingWriter) WriteHeader(statusCode int)   { f.code = statusCode }
-func (f *failingWriter) Write(_ []byte) (int, error)  {
+func (f *failingWriter) Header() http.Header        { return f.header }
+func (f *failingWriter) WriteHeader(statusCode int) { f.code = statusCode }
+func (f *failingWriter) Write(_ []byte) (int, error) {
 	return 0, errors.New("write error")
 }
-

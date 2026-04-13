@@ -6,14 +6,14 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/Medzoner/gomedz/pkg/captcha"
 	http2 "github.com/Medzoner/gomedz/pkg/http"
+	"github.com/Medzoner/gomedz/pkg/observability"
+	"github.com/Medzoner/gomedz/pkg/validation"
 	command2 "github.com/Medzoner/medzoner-go/internal/application/command"
 	query2 "github.com/Medzoner/medzoner-go/internal/application/query"
 	"github.com/Medzoner/medzoner-go/internal/ui/http/http_utils"
 	"github.com/Medzoner/medzoner-go/internal/ui/http/templater"
-	"github.com/Medzoner/gomedz/pkg/observability"
-	"github.com/Medzoner/gomedz/pkg/captcha"
-	"github.com/Medzoner/gomedz/pkg/validation"
 )
 
 // IndexView IndexView

@@ -76,4 +76,3 @@ func TestTechnoJSONRepository_FetchStack(t *testing.T) {
 		assert.ErrorContains(t, err, "error during unmarshal json")
 	})
 }
-

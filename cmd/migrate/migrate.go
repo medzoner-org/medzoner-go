@@ -4,8 +4,8 @@ import (
 	"log"
 	"os"
 
-	wiring "github.com/Medzoner/medzoner-go/internal/wire"
 	"github.com/Medzoner/medzoner-go/internal/database"
+	wiring "github.com/Medzoner/medzoner-go/internal/wire"
 )
 
 var migrateAction = database.Up
