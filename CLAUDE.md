@@ -10,6 +10,7 @@ Site web personnel (portfolio/contact) en Go, architecture hexagonale (DDD), ave
 - **Framework HTTP** : `github.com/Medzoner/gomedz` (wrapper Gin)
 - **DI** : Google Wire (`internal/wire/`)
 - **DB** : MySQL/MariaDB via `jmoiron/sqlx` + `go-sql-driver/mysql`
+- **Query builder** : `github.com/Masterminds/squirrel` (construction SQL typée)
 - **Migrations** : `golang-migrate/migrate/v4` (source `file://`, driver `mysql`)
 - **Observabilité** : OpenTelemetry (traces, métriques, logs)
 - **Mail** : SMTP via `gomedz/pkg/notifier`
@@ -144,6 +145,7 @@ make help
 - **CQRS** : Commands (`Handle(ctx, Command) error`) et Queries (`Handle(ctx, Query) (result, error)`)
 - **Events** : `Event` interface → `Publish(ctx, Event) error`
 - **Repository** : interfaces dans `domain/repository/`, implémentations dans le même package
+- **SQL** : utiliser Squirrel (`sq.Insert`, `sq.Select`, `sq.Update`, `sq.Delete`) — pas de SQL brut
 - **Wire** : constructeurs sans logique, tous les wirings dans `internal/wire/wire.go`
 - **Observabilité** : `observability.StartSpan(ctx, "name")` dans chaque méthode publique, `defer span.End()`
 - **Erreurs** : `fmt.Errorf("description: %w", err)` — toujours wrapper avec contexte

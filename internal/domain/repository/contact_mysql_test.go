@@ -102,7 +102,7 @@ func TestMysqlContactRepository_Save(t *testing.T) {
 
 		err = repo.Save(context.Background(), newTestContact())
 
-		assert.ErrorContains(t, err, "error during prepare transaction")
+		assert.ErrorContains(t, err, "error during prepare statement")
 		assert.NilError(t, mock.ExpectationsWereMet())
 	})
 
