@@ -9,9 +9,9 @@ import (
 	"github.com/Medzoner/medzoner-go/internal/domain/customtype"
 	"github.com/Medzoner/medzoner-go/internal/domain/repository"
 
-	"github.com/docker/distribution/uuid"
 	"github.com/Medzoner/gomedz/pkg/observability"
 	"github.com/Medzoner/medzoner-go/internal/entity"
+	"github.com/docker/distribution/uuid"
 )
 
 // CreateContactCommandHandler is a struct that implements CommandHandler interface and handle CreateContactCommand

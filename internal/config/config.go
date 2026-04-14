@@ -8,13 +8,13 @@ import (
 	ginadapter "github.com/Medzoner/gomedz/pkg/http/adapter/gin"
 
 	"github.com/Medzoner/gomedz/pkg/auth"
-	"github.com/Medzoner/gomedz/pkg/config"
-	"github.com/Medzoner/gomedz/pkg/logger"
-	"github.com/Medzoner/gomedz/pkg/http/server"
-	"github.com/Medzoner/gomedz/pkg/observability"
 	"github.com/Medzoner/gomedz/pkg/captcha"
+	"github.com/Medzoner/gomedz/pkg/config"
 	"github.com/Medzoner/gomedz/pkg/connector"
+	"github.com/Medzoner/gomedz/pkg/http/server"
+	"github.com/Medzoner/gomedz/pkg/logger"
 	"github.com/Medzoner/gomedz/pkg/notifier"
+	"github.com/Medzoner/gomedz/pkg/observability"
 )
 
 type (

@@ -1,7 +1,7 @@
 #############################################
 ### Build the Go Binary
 #############################################
-FROM golang:1.26 as build
+FROM golang:1.26.2 as build
 
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
 

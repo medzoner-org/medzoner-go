@@ -43,3 +43,7 @@ skaffold
 skaffold.env
 /github-actions
 /github-actions.pub
+/cov.out
+*.prof
+*.pprof
+*.test

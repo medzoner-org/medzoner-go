@@ -1,74 +1,118 @@
-.PHONY: githooks test_all build start migrate skaffold-run test trace wire lint staticcheck gosec
+.DEFAULT_GOAL := help
+.PHONY: help setup check-tools githooks test_all build start migrate wire generate \
+        lint lint-fix govet gofmt staticcheck gosec gocyclo ineffassign run-qa \
+        docker-up docker-down skaffold-run coverage trace trivy k6
 
 ifneq (,$(wildcard ./.env))
     include .env
     export
 endif
 
-githooks:
-	git config core.hooksPath .githooks
+# ─── Help ────────────────────────────────────────────────────────────────────
+help: ## Affiche cette aide
+	@echo ""
+	@echo "  medzoner-go — Commandes disponibles"
+	@echo "  ════════════════════════════════════"
+	@echo ""
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
+		sed 's/Makefile://' | sort | \
+		awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-18s\033[0m %s\n", $$1, $$2}'
+	@echo ""
 
-test_all:
-	export DEBUG=true
-	go test -v -cover -coverpkg=./... -covermode=count -coverprofile=coverage.out ./...
-	go tool cover -func=coverage.out
-	go tool cover -html=coverage.out -o coverage.html
+# ─── Setup ───────────────────────────────────────────────────────────────────
+setup: check-tools githooks ## Setup complet du projet (outils, hooks, env)
+	@if [ ! -f .env ]; then \
+		cp .env.example .env; \
+		echo "📄 .env créé depuis .env.example — pensez à le configurer"; \
+	else \
+		echo "📄 .env existe déjà"; \
+	fi
+	@go mod download
+	@echo "✅ Setup terminé"
 
-build:
+check-tools: ## Vérifie les outils de dev requis
+	@chmod +x scripts/check-tools.sh
+	@./scripts/check-tools.sh
+
+githooks: ## Configure les hooks Git
+	@git config core.hooksPath .githooks
+	@chmod +x .githooks/*
+	@echo "🪝 Git hooks activés (.githooks/)"
+
+# ─── Build & Run ─────────────────────────────────────────────────────────────
+build: ## Build des binaires (app + migrate)
 	CGO_ENABLED=0 go build -o ./bin/app ./cmd/app/main.go
 	CGO_ENABLED=0 go build -o ./bin/migrate ./cmd/migrate/migrate.go
 
-start:
+start: ## Démarre le serveur HTTP
 	go run ./cmd/app/main.go
 
-migrate:
+migrate: ## Lance les migrations DB (up)
 	go run ./cmd/migrate/migrate.go
 
-skaffold-run:
-	skaffold dev --port-forward --platform=linux/arm64,linux/amd64 --insecure-registry=registry.medzoner.lan:5000
+# ─── Code Generation ─────────────────────────────────────────────────────────
+wire: ## Régénère l'injection de dépendances (Wire)
+	wire gen ./internal/wire/
 
-trace:
-	go tool trace trace.out
+generate: ## Régénère les mocks (mockgen)
+	go generate ./...
 
-wire:
-	wire gen ./pkg/infra/dependency/.
+# ─── Tests ───────────────────────────────────────────────────────────────────
+test_all: ## Tests unitaires avec couverture
+	go test -v -count=1 -cover -coverpkg=./... -covermode=count -coverprofile=cov.out ./...
+	go tool cover -func=cov.out
 
-lint:
-	#curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.59.0
-	#golangci-lint --version
-	golangci-lint -v --config .golangci/.golangci.yml --issues-exit-code 1 run $(go list -e -f '{{.Dir}}' ./... | grep -v '/var/')
+coverage: test_all ## Tests + ouvre le rapport HTML de couverture
+	go tool cover -html=cov.out -o coverage.html
+	@echo "📊 Rapport: coverage.html"
 
-lint-fix:
-	#fieldalignment -fix -test=false ./...
-	golangci-lint -v --config .golangci/.golangci.yml --issues-exit-code=1 run --fix $(go list -e -f '{{.Dir}}' ./... | grep -v '/var/')
+# ─── Qualité de code ─────────────────────────────────────────────────────────
+lint: ## Lint via golangci-lint
+	golangci-lint -v --config .golangci/.golangci.yml --issues-exit-code 1 run ./...
 
-govet:
-	go vet $(go list -e -f '{{.Dir}}' ./... | grep -v '/var/')
+lint-fix: ## Lint avec auto-fix
+	golangci-lint -v --config .golangci/.golangci.yml --issues-exit-code=1 run --fix ./...
 
-gofmt:
-	.github/gofmt.sh
+govet: ## Go vet
+	go vet ./...
 
-staticcheck:
+gofmt: ## Vérifie le formatage Go
+	@gofmt -w ./internal/ ./cmd/
+	@test -z "$$(gofmt -d -s ./internal/ ./cmd/ | tee /dev/stderr)"
+
+staticcheck: ## Analyse statique (staticcheck)
 	staticcheck --debug.version
-	staticcheck $(go list -e -f '{{.Dir}}' ./... | grep -v '/var/')
+	staticcheck ./...
 
-gosec:
-	gosec $(go list -e -f '{{.Dir}}' ./... | grep -v '/var/')
+gosec: ## Audit de sécurité (gosec)
+	gosec ./...
 
-ineffassign:
-	ineffassign $(go list -e -f '{{.Dir}}' ./... | grep -v '/var/')
-
-gocyclo:
+gocyclo: ## Complexité cyclomatique
 	gocyclo -ignore "_test|Godeps|var|vendor/" .
 
-run-qa: govet gofmt lint staticcheck gocyclo
-	echo "QA passed"
+ineffassign: ## Détecte les assignations inutiles
+	ineffassign ./...
 
-#go install github.com/go-critic/go-critic/cmd/gocritic@latest
-#gocritic check ./...
+run-qa: govet gofmt lint staticcheck gosec gocyclo ## QA complète (tous les checks)
+	@echo "✅ QA passed"
 
-trivy:
+# ─── Docker ──────────────────────────────────────────────────────────────────
+docker-up: ## Démarre les services Docker (MariaDB, Mailhog)
+	docker compose -f infra/docker/local/docker-compose.yml up -d
+
+docker-down: ## Arrête les services Docker
+	docker compose -f infra/docker/local/docker-compose.yml down
+
+# ─── Infra ───────────────────────────────────────────────────────────────────
+skaffold-run: ## Déploie sur K8s via Skaffold
+	skaffold dev --port-forward --platform=linux/arm64,linux/amd64 --insecure-registry=registry.medzoner.lan:5000
+
+# ─── Divers ──────────────────────────────────────────────────────────────────
+trace: ## Ouvre une trace Go
+	go tool trace trace.out
+
+trivy: ## Scan de sécurité container (Trivy)
 	trivy image
 
-k6:
-	docker run --rm -i grafana/k6 run  --vus 10 --duration 30s  - <k6/test.js
+k6: ## Test de charge K6
+	docker run --rm -i grafana/k6 run --vus 10 --duration 30s - <test/k6/test.js
