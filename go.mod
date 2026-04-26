@@ -5,7 +5,7 @@ go 1.26.2
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/Masterminds/squirrel v1.5.4
-	github.com/Medzoner/gomedz v0.13.1
+	github.com/Medzoner/gomedz v0.13.2
 	github.com/caarlos0/env/v11 v11.4.0
 	github.com/cucumber/godog v0.15.1
 	github.com/docker/distribution v2.8.3+incompatible

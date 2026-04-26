@@ -21,6 +21,10 @@ func (c *Contact) Get() string {
 	return c.Message
 }
 
+func (c *Contact) Template() string {
+	return "/tmpl/contact/contactEmail.html"
+}
+
 // EmailValue returns the email string value for use in queries.
 func (c *Contact) EmailValue() string {
 	return c.Email.String
