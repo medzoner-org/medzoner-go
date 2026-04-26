@@ -9,6 +9,8 @@ github.com/Masterminds/squirrel v1.5.4 h1:uUcX/aBc8O7Fg9kaISIUsHXdKuqehiXAMQTYX8
 github.com/Masterminds/squirrel v1.5.4/go.mod h1:NNaOrjSoIDfDA40n7sr2tPNZRfjzjA400rg+riTZj10=
 github.com/Medzoner/gomedz v0.13.1 h1:iF1upGqcnnMObBuivjijiIJ9w94VX7kzzfTMn6WkUl4=
 github.com/Medzoner/gomedz v0.13.1/go.mod h1:0SJQLdv99bBjIjSxRmdRyrf4fDveV66lo4O8k2aIovg=
+github.com/Medzoner/gomedz v0.13.2 h1:T400vA0MfPM/XnW/Ackfoq4DQchtcBMTFaTGdKGxahc=
+github.com/Medzoner/gomedz v0.13.2/go.mod h1:nj9JVrejYjbdr/SmXbYWLVZ088s/8HL+mmKicOg9zrM=
 github.com/Microsoft/go-winio v0.6.2 h1:F2VQgta7ecxGYO8k3ZZz3RS8fVIXVxONVUPlNERoyfY=
 github.com/Microsoft/go-winio v0.6.2/go.mod h1:yd8OoFMLzJbo9gZq8j5qaps8bJ9aShtEA8Ipt1oGCvU=
 github.com/aws/aws-sdk-go-v2 v1.41.5 h1:dj5kopbwUsVUVFgO4Fi5BIT3t4WyqIDjGKCangnV/yY=
