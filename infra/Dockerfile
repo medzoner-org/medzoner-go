@@ -1,7 +1,7 @@
 #############################################
 ### Base build
 #############################################
-FROM golang:1.26.1 AS base
+FROM golang:1.26.2 AS base
 
 RUN groupadd -g 1000 app && \
     useradd -g 1000 -u 1000 app
