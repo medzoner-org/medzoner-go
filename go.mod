@@ -6,7 +6,7 @@ require (
 	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/Masterminds/squirrel v1.5.4
 	github.com/Medzoner/gomedz v0.13.2
-	github.com/caarlos0/env/v11 v11.4.0
+	github.com/caarlos0/env/v11 v11.4.1
 	github.com/cucumber/godog v0.15.1
 	github.com/docker/distribution v2.8.3+incompatible
 	github.com/go-sql-driver/mysql v1.9.3
