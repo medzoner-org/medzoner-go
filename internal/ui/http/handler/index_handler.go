@@ -11,51 +11,34 @@ import (
 	"github.com/Medzoner/gomedz/pkg/observability"
 	"github.com/Medzoner/gomedz/pkg/validation"
 	command2 "github.com/Medzoner/medzoner-go/internal/application/command"
-	query2 "github.com/Medzoner/medzoner-go/internal/application/query"
 	"github.com/Medzoner/medzoner-go/internal/ui/http/http_utils"
 )
 
 // IndexView IndexView
 type IndexView struct {
-	Locale    string
-	PageTitle string
-	TorHost   string
-	TechnoView
+	Locale           string
+	PageTitle        string
+	TorHost          string
 	Errors           any
 	RecaptchaSiteKey string
 	PageDescription  string
 	FormMessage      string
 }
 
-// TechnoView TechnoView
-type TechnoView struct {
-	Locale      string
-	PageTitle   string
-	Stacks      any
-	Experiences any
-	Formations  any
-	Langs       any
-	Others      any
-	TorHost     string
-}
-
 // IndexHandler IndexHandler
 type IndexHandler struct {
 	CreateContactCommandHandler command2.CreateContactCommandHandler
-	ListTechnoQueryHandler      query2.ListTechnoQueryHandler
 	Validation                  validation.Validater
 	Recaptcha                   captcha.Captcher
 }
 
 // NewIndexHandler NewIndexHandler
 func NewIndexHandler(
-	listTechnoQueryHandler query2.ListTechnoQueryHandler,
 	createContactCommandHandler command2.CreateContactCommandHandler,
 	validation validation.Validater,
 	recaptcha captcha.Captcher,
 ) IndexHandler {
 	return IndexHandler{
-		ListTechnoQueryHandler:      listTechnoQueryHandler,
 		CreateContactCommandHandler: createContactCommandHandler,
 		Validation:                  validation,
 		Recaptcha:                   recaptcha,
@@ -132,18 +115,10 @@ func (h IndexHandler) Index(c *http2.Context, _ struct{}) error {
 }
 
 func (h IndexHandler) initView(ctx context.Context, request *http.Request) (IndexView, error) {
-	stacks, err := h.ListTechnoQueryHandler.Handle(ctx, query2.ListTechnoQuery{Type: "stack"})
-	if err != nil {
-		return IndexView{}, fmt.Errorf("error during fetch stack: %w", err)
-	}
-
 	return IndexView{
-		Locale:    "fr",
-		PageTitle: "MedZoner.com",
-		TorHost:   request.Header.Get("TOR-HOST"),
-		TechnoView: TechnoView{
-			Stacks: stacks,
-		},
+		Locale:           "fr",
+		PageTitle:        "MedZoner.com",
+		TorHost:          request.Header.Get("TOR-HOST"),
 		RecaptchaSiteKey: h.Recaptcha.GetSiteKey(),
 		PageDescription:  "Mehdi YOUB - Développeur Web Full Stack - NestJS Symfony Golang VueJS",
 		FormMessage:      "",

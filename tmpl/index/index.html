@@ -17,132 +17,20 @@
                     <div class="col-md-6 ml-auto mr-auto">
                         <div class="profile">
                             <div class="avatar">
-                                <img src="/public/images/profile.jpg" alt="Mehdi Youb" class="img-raised rounded-circle img-fluid">
+                                <img src="/public/images/profile.jpg" alt="Mehdi Youb" class="img-raised rounded-circle img-fluid" loading="lazy">
                             </div>
                             <div class="name">
                                 <h3 class="title">Mehdi Y...</h3>
-                                <h6>Developer / Devops.</h6>
-                                <a href="https://github.com/Medzoner" class="btn btn-just-icon btn-link btn-github"><i class="fa fa-github"></i></a>
-                                <a href="https://hub.docker.com/r/medzoner" class="btn btn-just-icon btn-link btn-dockerhub"><i class="tf-docker tf-32"></i></a>
-                                <a href="https://www.linkedin.com/in/mehdi-youb-53905210" class="btn btn-just-icon btn-link btn-linkedin"><i class="fa fa-linkedin"></i></a>
+                                <h6>Developer / Devops</h6>
+                                <div style="display: flex; justify-content: center; gap: 0.25rem; margin-top: 0.75rem;">
+                                    <a href="https://github.com/Medzoner" class="btn btn-just-icon btn-link btn-github" target="_blank" rel="noopener" aria-label="Github"><i class="fa fa-github"></i></a>
+                                    <a href="https://hub.docker.com/r/medzoner" class="btn btn-just-icon btn-link btn-dockerhub" target="_blank" rel="noopener" aria-label="Docker Hub"><i class="tf-docker tf-32"></i></a>
+                                    <a href="https://www.linkedin.com/in/mehdi-youb-53905210" class="btn btn-just-icon btn-link btn-linkedin" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="fa fa-linkedin"></i></a>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-<!--                <div class="description text-center">-->
-<!--                    <p>A la base formé sur des technologies industrielles, avec un premier parcours professionnel, le goût de l'automasition des process via des scripts c'est réveillé en moi!</p>-->
-<!--                    <p>Ainsi depuis 2008, je m'investi dans différents langages de programmation qui répondent aux besoins de mes projets.</p>-->
-<!--                    <p>Mais pas que. Je me consacre également à la mise en ligne de ces projets avec les dernières méthodes</p>-->
-<!--                </div>-->
-<!--                <div id="technos" class="row">-->
-<!--                    <div class="col-md-6 ml-auto mr-auto">-->
-<!--                        <div class="profile-tabs">-->
-<!--                            <ul class="nav nav-pills nav-pills-icons justify-content-center" role="tablist">-->
-<!--                                <li class="nav-item">-->
-<!--                                    <a class="nav-link active" href="#code" role="tab" data-toggle="tab">-->
-<!--                                        <i class="material-icons">code</i> Languages-->
-<!--                                    </a>-->
-<!--                                </li>-->
-<!--                                <li class="nav-item">-->
-<!--                                    <a class="nav-link" href="#data" role="tab" data-toggle="tab">-->
-<!--                                        <i class="material-icons">storage</i> Data-->
-<!--                                    </a>-->
-<!--                                </li>-->
-<!--                                <li class="nav-item">-->
-<!--                                    <a class="nav-link" href="#infrastructure" role="tab" data-toggle="tab" style="background-color: #2f2e2f !important;;">-->
-<!--                                        <i class="material-icons">cloud</i> Infrastructure-->
-<!--                                    </a>-->
-<!--                                </li>-->
-<!--                            </ul>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--                <div class="tab-content tab-space">-->
-<!--                    <div class="tab-pane active text-center gallery" id="code">-->
-<!--                        <div class="row">-->
-<!--                            <div>-->
-<!--                                {{range $i, $stack := .Stacks}}-->
-<!--                                    {{ if eq $i "Application" }}-->
-<!--                                        {{ range $item := $stack }}-->
-<!--                                            {{ if $item.title }}-->
-<!--                                                <img class="noprint" style="width: 100px; margin: 15px;"-->
-<!--                                                     src="/public/images/technos/{{ $item.img }}"-->
-<!--                                                     alt="{{ $item.title }}"-->
-<!--                                                     title="{{ $item.title }}" />-->
-<!--                                            {{end}}-->
-<!--                                            {{ if not $item.title }}-->
-<!--                                                {{range $k, $substack := $item}}-->
-<!--                                                    {{ range $subitem := $substack }}-->
-<!--                                                        <img class="noprint" style="width: 100px; margin: 15px;"-->
-<!--                                                             src="/public/images/technos/{{ $subitem.img }}"-->
-<!--                                                             alt="{{ $subitem.title }}"-->
-<!--                                                             title="{{ $subitem.title }}" />-->
-<!--                                                    {{end}}-->
-<!--                                                {{end}}-->
-<!--                                            {{end}}-->
-<!--                                        {{end}}-->
-<!--                                    {{end}}-->
-<!--                                {{end}}-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                    <div class="tab-pane text-center gallery" id="data">-->
-<!--                        <div class="row">-->
-<!--                            <div>-->
-<!--                                {{range $i, $stack := .Stacks}}-->
-<!--                                    {{ if eq $i "Data, Message Broker" }}-->
-<!--                                        {{ range $item := $stack }}-->
-<!--                                            {{ if $item.title }}-->
-<!--                                                <img class="noprint" style="width: 150px; margin: 15px;"-->
-<!--                                                     src="/public/images/technos/{{ $item.img }}"-->
-<!--                                                     alt="{{ $item.title }}"-->
-<!--                                                     title="{{ $item.title }}" />-->
-<!--                                            {{end}}-->
-<!--                                            {{ if not $item.title }}-->
-<!--                                                {{range $k, $substack := $item}}-->
-<!--                                                    {{ range $subitem := $substack }}-->
-<!--                                                        <img class="noprint" style="width: 150px; margin: 15px;"-->
-<!--                                                             src="/public/images/technos/{{ $subitem.img }}"-->
-<!--                                                             alt="{{ $subitem.title }}"-->
-<!--                                                             title="{{ $subitem.title }}" />-->
-<!--                                                    {{end}}-->
-<!--                                                {{end}}-->
-<!--                                            {{end}}-->
-<!--                                        {{end}}-->
-<!--                                    {{end}}-->
-<!--                                {{end}}-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                    <div class="tab-pane text-center gallery" id="infrastructure">-->
-<!--                        <div class="row">-->
-<!--                            <div>-->
-<!--                                {{range $i, $stack := .Stacks}}-->
-<!--                                    {{ if or (eq "Déploiement" $i) (eq "Intégration continue" $i) (eq "Webserver" $i) (eq "Orchestration" $i) (eq "Containers" $i) (eq "Virtualization" $i) (eq "OS" $i) (eq "Infrastructure" $i) }}-->
-<!--                                        {{ range $item := $stack }}-->
-<!--                                            {{ if $item.title }}-->
-<!--                                                <img class="noprint" style="width: 100px; margin: 15px;"-->
-<!--                                                     src="/public/images/technos/{{ $item.img }}"-->
-<!--                                                     alt="{{ $item.title }}"-->
-<!--                                                     title="{{ $item.title }}" />-->
-<!--                                            {{end}}-->
-<!--                                            {{ if not $item.title }}-->
-<!--                                                {{range $k, $substack := $item}}-->
-<!--                                                    {{ range $subitem := $substack }}-->
-<!--                                                        <img class="noprint" style="width: 100px; margin: 15px;"-->
-<!--                                                             src="/public/images/technos/{{ $subitem.img }}"-->
-<!--                                                             alt="{{ $subitem.title }}"-->
-<!--                                                             title="{{ $subitem.title }}" />-->
-<!--                                                    {{end}}-->
-<!--                                                {{end}}-->
-<!--                                            {{end}}-->
-<!--                                        {{end}}-->
-<!--                                    {{end}}-->
-<!--                                {{end}}-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
             </div>
         </div>
         <section class="section-image" id="contact" data-parallax="true" style="background-image: url('/public/images/background.jpg'); background-size: cover;">
@@ -152,7 +40,7 @@
                         <div class="card card-login">
                             <div class="row hestia-about-content"></div>
                             <form class="form" method="post" action="/">
-                                <p class="description text-center">Contact me</p>
+                                <p class="description text-center" style="padding-top: 1.5rem; font-size: 1.125rem; font-weight: 600; color: #111827;">Contact me</p>
                                 {{ if .FormMessage }}
                                 <p class="form-message text-center">
                                     {{ .FormMessage }}
@@ -179,6 +67,7 @@
                                                required="required"
                                                class="form-control"
                                                placeholder="First Name..."
+                                               autocomplete="name"
                                         >
                                     </div>
                                     <div class="input-group">
@@ -192,7 +81,9 @@
                                                      name="email"
                                                      required="required"
                                                class="form-control"
-                                               placeholder="Email...">
+                                               placeholder="Email..."
+                                               autocomplete="email"
+                                        >
                                     </div>
                                     <div class="input-group">
                                         <div class="input-group-prepend">
@@ -200,17 +91,20 @@
                                                 <i class="material-icons">edit</i>
                                             </span>
                                         </div>
-                                        <textarea placeholder="Messsage..." id="registration_message"
+                                        <textarea placeholder="Message..." id="registration_message"
                                                   class="form-control"
                                                   name="message"
-                                                  required="required"></textarea>
+                                                  required="required"
+                                                  rows="3"></textarea>
                                     </div>
                                     <div class="input-group">
                                         <div id="google-recaptcha-js" class="g-recaptcha" data-sitekey="{{ .RecaptchaSiteKey }}"></div>
                                     </div>
                                 </div>
-                                <div class="footer text-center">
-                                    <button class="btn btn-primary btn-link btn-wd btn-lg" type="submit" id="registration_Envoyer" name="submit">Send</button>
+                                <div class="footer text-center" style="padding: 0.75rem 0 1.5rem;">
+                                    <button class="btn btn-primary btn-lg" type="submit" id="registration_Envoyer" name="submit">
+                                        <i class="material-icons" style="font-size: 1.125rem;">send</i> Send
+                                    </button>
                                 </div>
                             </form>
                         </div>
@@ -221,9 +115,7 @@
         <section class="section-end" id="end">
             <div class="container">
                 <div class="row">
-                    <br />
                     <br />&nbsp;
-                    <br />
                 </div>
             </div>
         </section>

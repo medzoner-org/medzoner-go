@@ -5,7 +5,6 @@ package wire
 import (
 	"github.com/Medzoner/medzoner-go/internal/application/command"
 	event2 "github.com/Medzoner/medzoner-go/internal/application/event"
-	"github.com/Medzoner/medzoner-go/internal/application/query"
 	"github.com/Medzoner/medzoner-go/internal/application/service/mailer"
 	repository2 "github.com/Medzoner/medzoner-go/internal/domain/repository"
 	handler2 "github.com/Medzoner/medzoner-go/internal/ui/http/handler"
@@ -125,7 +124,6 @@ var (
 	UsecaseWiring = wire.NewSet(
 		event2.NewContactCreatedEventHandler,
 		command.NewCreateContactCommandHandler,
-		query.NewListTechnoQueryHandler,
 
 		wire.Bind(new(event2.IEventHandler), new(*event2.ContactCreatedEventHandler)),
 	)
@@ -156,18 +154,11 @@ var (
 		wire.Bind(new(mailer.Mailer), new(*mocks.MockMailer)),
 	)
 	RepositoryWiring = wire.NewSet(
-		repository2.NewTechnoJSONRepository,
 		repository2.NewMysqlContactRepository,
 
-		wire.Bind(new(repository2.TechnoRepository), new(*repository2.TechnoJSONRepository)),
 		wire.Bind(new(repository2.ContactRepository), new(*repository2.MysqlContactRepository)),
 	)
 	RepositoryMockWiring = wire.NewSet(
-		wire.FieldsOf(
-			new(*mockBase.Mocks),
-			"TechnoRepository",
-		),
-		wire.Bind(new(repository2.TechnoRepository), new(*mocks.MockTechnoRepository)),
 		wire.FieldsOf(
 			new(*mockBase.Mocks),
 			"ContactRepository",
@@ -177,7 +168,6 @@ var (
 	AppWiring = wire.NewSet(
 		event2.NewContactCreatedEventHandler,
 		command.NewCreateContactCommandHandler,
-		query.NewListTechnoQueryHandler,
 
 		wire.Bind(new(event2.IEventHandler), new(*event2.ContactCreatedEventHandler)),
 	)

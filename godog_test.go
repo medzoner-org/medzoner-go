@@ -34,7 +34,6 @@ func TestFeatures(t *testing.T) {
 	mocked := mocks.New(t)
 	mocked.ContactRepository.EXPECT().Save(gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
 	mocked.Mailer.EXPECT().Send(gomock.Any(), gomock.Any()).Return(true, nil).AnyTimes()
-	mocked.TechnoRepository.EXPECT().FetchStack(gomock.Any()).Return(map[string]interface{}{}, nil).AnyTimes()
 
 	t.Setenv("APP_ENV", "test")
 	t.Setenv("DEBUG", "true")

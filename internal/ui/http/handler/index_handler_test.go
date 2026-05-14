@@ -15,7 +15,6 @@ import (
 	"github.com/Medzoner/gomedz/pkg/observability"
 	command2 "github.com/Medzoner/medzoner-go/internal/application/command"
 	"github.com/Medzoner/medzoner-go/internal/application/event"
-	query2 "github.com/Medzoner/medzoner-go/internal/application/query"
 	"github.com/Medzoner/medzoner-go/internal/ui/http/handler"
 	mocks "github.com/Medzoner/medzoner-go/test"
 	"go.uber.org/mock/gomock"
@@ -48,11 +47,9 @@ func newTestContext(w *httptest.ResponseRecorder, req *http.Request, renderer go
 func TestIndexHandler_Index_GET(t *testing.T) {
 	t.Run("Unit: test IndexHandler GET success", func(t *testing.T) {
 		mocked := mocks.New(t)
-		mocked.TechnoRepository.EXPECT().FetchStack(gomock.Any()).Return(map[string]any{"Go": "ok"}, nil).Times(1)
 		mocked.Captcher.EXPECT().GetSiteKey().Return("test-site-key").Times(1)
 
 		h := handler.NewIndexHandler(
-			query2.NewListTechnoQueryHandler(mocked.TechnoRepository),
 			command2.NewCreateContactCommandHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
 			mocked.Validater,
 			mocked.Captcher,
@@ -69,37 +66,12 @@ func TestIndexHandler_Index_GET(t *testing.T) {
 	})
 }
 
-func TestIndexHandler_Index_GET_FetchStackError(t *testing.T) {
-	t.Run("Unit: test IndexHandler GET error fetch stack", func(t *testing.T) {
-		mocked := mocks.New(t)
-		mocked.TechnoRepository.EXPECT().FetchStack(gomock.Any()).Return(nil, errors.New("db error")).Times(1)
-
-		h := handler.NewIndexHandler(
-			query2.NewListTechnoQueryHandler(mocked.TechnoRepository),
-			command2.NewCreateContactCommandHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
-			mocked.Validater,
-			mocked.Captcher,
-		)
-
-		req := httptest.NewRequest(http.MethodGet, "/", nil)
-		w := httptest.NewRecorder()
-		ctx := newTestContext(w, req, &fakeRenderer{})
-
-		err := h.Index(ctx, struct{}{})
-
-		assert.NilError(t, err)
-		assert.Equal(t, w.Code, http.StatusInternalServerError)
-	})
-}
-
 func TestIndexHandler_Index_GET_RenderError(t *testing.T) {
 	t.Run("Unit: test IndexHandler GET error render template", func(t *testing.T) {
 		mocked := mocks.New(t)
-		mocked.TechnoRepository.EXPECT().FetchStack(gomock.Any()).Return(map[string]any{}, nil).Times(1)
 		mocked.Captcher.EXPECT().GetSiteKey().Return("test-site-key").Times(1)
 
 		h := handler.NewIndexHandler(
-			query2.NewListTechnoQueryHandler(mocked.TechnoRepository),
 			command2.NewCreateContactCommandHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
 			mocked.Validater,
 			mocked.Captcher,
@@ -118,12 +90,10 @@ func TestIndexHandler_Index_GET_RenderError(t *testing.T) {
 func TestIndexHandler_Index_POST_ValidationError(t *testing.T) {
 	t.Run("Unit: test IndexHandler POST with validation error", func(t *testing.T) {
 		mocked := mocks.New(t)
-		mocked.TechnoRepository.EXPECT().FetchStack(gomock.Any()).Return(map[string]any{}, nil).Times(1)
 		mocked.Captcher.EXPECT().GetSiteKey().Return("test-site-key").Times(1)
 		mocked.Validater.EXPECT().Struct(gomock.Any()).Return(errors.New("validation error")).Times(1)
 
 		h := handler.NewIndexHandler(
-			query2.NewListTechnoQueryHandler(mocked.TechnoRepository),
 			command2.NewCreateContactCommandHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
 			mocked.Validater,
 			mocked.Captcher,
@@ -147,14 +117,12 @@ func TestIndexHandler_Index_POST_ValidationError(t *testing.T) {
 func TestIndexHandler_Index_POST_Success(t *testing.T) {
 	t.Run("Unit: test IndexHandler POST success", func(t *testing.T) {
 		mocked := mocks.New(t)
-		mocked.TechnoRepository.EXPECT().FetchStack(gomock.Any()).Return(map[string]any{}, nil).Times(1)
 		mocked.Captcher.EXPECT().GetSiteKey().Return("test-site-key").Times(1)
 		mocked.Validater.EXPECT().Struct(gomock.Any()).Return(nil).Times(1)
 		mocked.ContactRepository.EXPECT().Save(gomock.Any(), gomock.Any()).Return(nil).Times(1)
 		mocked.Mailer.EXPECT().Send(gomock.Any(), gomock.Any()).Return(true, nil).Times(1)
 
 		h := handler.NewIndexHandler(
-			query2.NewListTechnoQueryHandler(mocked.TechnoRepository),
 			command2.NewCreateContactCommandHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
 			mocked.Validater,
 			mocked.Captcher,
@@ -179,12 +147,10 @@ func TestIndexHandler_Index_POST_Success(t *testing.T) {
 func TestIndexHandler_Index_POST_CaptchaError(t *testing.T) {
 	t.Run("Unit: test IndexHandler POST captcha error", func(t *testing.T) {
 		mocked := mocks.New(t)
-		mocked.TechnoRepository.EXPECT().FetchStack(gomock.Any()).Return(map[string]any{}, nil).Times(1)
 		mocked.Captcher.EXPECT().GetSiteKey().Return("test-site-key").Times(1)
 		mocked.Captcher.EXPECT().Confirm(gomock.Any(), gomock.Any()).Return(false, errors.New("captcha error")).Times(1)
 
 		h := handler.NewIndexHandler(
-			query2.NewListTechnoQueryHandler(mocked.TechnoRepository),
 			command2.NewCreateContactCommandHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
 			mocked.Validater,
 			mocked.Captcher,
@@ -210,13 +176,11 @@ func TestIndexHandler_Index_POST_CaptchaError(t *testing.T) {
 func TestIndexHandler_Index_POST_CommandHandlerError(t *testing.T) {
 	t.Run("Unit: test IndexHandler POST command handler error", func(t *testing.T) {
 		mocked := mocks.New(t)
-		mocked.TechnoRepository.EXPECT().FetchStack(gomock.Any()).Return(map[string]any{}, nil).Times(1)
 		mocked.Captcher.EXPECT().GetSiteKey().Return("test-site-key").Times(1)
 		mocked.Validater.EXPECT().Struct(gomock.Any()).Return(nil).Times(1)
 		mocked.ContactRepository.EXPECT().Save(gomock.Any(), gomock.Any()).Return(errors.New("save error")).Times(1)
 
 		h := handler.NewIndexHandler(
-			query2.NewListTechnoQueryHandler(mocked.TechnoRepository),
 			command2.NewCreateContactCommandHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
 			mocked.Validater,
 			mocked.Captcher,
@@ -239,7 +203,7 @@ func TestIndexHandler_Index_POST_CommandHandlerError(t *testing.T) {
 
 func TestIndexHandler_Prefix(t *testing.T) {
 	t.Run("Unit: test IndexHandler Prefix returns /", func(t *testing.T) {
-		h := handler.NewIndexHandler(query2.ListTechnoQueryHandler{}, command2.CreateContactCommandHandler{}, nil, nil)
+		h := handler.NewIndexHandler(command2.CreateContactCommandHandler{}, nil, nil)
 		assert.Equal(t, h.Prefix(), "/")
 	})
 }
@@ -247,12 +211,10 @@ func TestIndexHandler_Prefix(t *testing.T) {
 func TestIndexHandler_Index_POST_CaptchaConfirmFailed(t *testing.T) {
 	t.Run("Unit: test IndexHandler POST captcha confirm returns false", func(t *testing.T) {
 		mocked := mocks.New(t)
-		mocked.TechnoRepository.EXPECT().FetchStack(gomock.Any()).Return(map[string]any{}, nil).Times(1)
 		mocked.Captcher.EXPECT().GetSiteKey().Return("test-site-key").Times(1)
 		mocked.Captcher.EXPECT().Confirm(gomock.Any(), gomock.Any()).Return(false, nil).Times(1)
 
 		h := handler.NewIndexHandler(
-			query2.NewListTechnoQueryHandler(mocked.TechnoRepository),
 			command2.NewCreateContactCommandHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
 			mocked.Validater,
 			mocked.Captcher,
@@ -278,11 +240,9 @@ func TestIndexHandler_Index_POST_CaptchaConfirmFailed(t *testing.T) {
 func TestIndexHandler_Index_POST_WithSubmit(t *testing.T) {
 	t.Run("Unit: test IndexHandler POST with submit skips processing", func(t *testing.T) {
 		mocked := mocks.New(t)
-		mocked.TechnoRepository.EXPECT().FetchStack(gomock.Any()).Return(map[string]any{}, nil).Times(1)
 		mocked.Captcher.EXPECT().GetSiteKey().Return("test-site-key").Times(1)
 
 		h := handler.NewIndexHandler(
-			query2.NewListTechnoQueryHandler(mocked.TechnoRepository),
 			command2.NewCreateContactCommandHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
 			mocked.Validater,
 			mocked.Captcher,
@@ -305,7 +265,7 @@ func TestIndexHandler_Index_POST_WithSubmit(t *testing.T) {
 
 func TestIndexHandler_Register(t *testing.T) {
 	t.Run("Unit: test IndexHandler Register registers routes", func(t *testing.T) {
-		h := handler.NewIndexHandler(query2.ListTechnoQueryHandler{}, command2.CreateContactCommandHandler{}, nil, nil)
+		h := handler.NewIndexHandler(command2.CreateContactCommandHandler{}, nil, nil)
 		r := &fakeRouter{}
 
 		h.Register(r)

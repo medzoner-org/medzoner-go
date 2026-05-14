@@ -4,19 +4,19 @@
             <nav class="float-left">
                 <ul>
                     <li>
-                        <a href="https://github.com/Medzoner">
+                        <a href="https://github.com/Medzoner" target="_blank" rel="noopener">
                             <i class="fa fa-github"></i>
                             Github
                         </a>
                     </li>
                     <li>
-                        <a href="https://hub.docker.com/r/medzoner">
+                        <a href="https://hub.docker.com/r/medzoner" target="_blank" rel="noopener">
                             <i class="tf-docker tf-32"></i>
                             Dockerhub
                         </a>
                     </li>
                     <li>
-                        <a href="https://www.linkedin.com/in/mehdi-youb-53905210">
+                        <a href="https://www.linkedin.com/in/mehdi-youb-53905210" target="_blank" rel="noopener">
                             <i class="fa fa-linkedin" aria-hidden="true"></i>
                             Linkedin
                         </a>
@@ -36,11 +36,28 @@
                 <script>
                     document.write(new Date().getFullYear())
                 </script>, made with <i class="material-icon"><img src="/public/images/skateboard.png" style="height: 20px;" alt="skateboard"/></i> by
-                <a href="https://github.com/Medzoner/" target="_blank">Medzoner</a>.
+                <a href="https://github.com/Medzoner/" target="_blank" rel="noopener">Medzoner</a>.
             </div>
         </div>
     </footer>
     <script>
+        // Navbar scroll effect
+        (function() {
+            var navbar = document.getElementById('sectionsNav');
+            if (!navbar) return;
+            var scrollThreshold = 80;
+            function onScroll() {
+                if (window.scrollY > scrollThreshold) {
+                    navbar.classList.add('navbar-scrolled');
+                } else {
+                    navbar.classList.remove('navbar-scrolled');
+                }
+            }
+            window.addEventListener('scroll', onScroll, {passive: true});
+            onScroll();
+        })();
+
+        // Recaptcha lazy-load
         function initRecaptcha(){
             var recaptchaScript = document.createElement('script');
             recaptchaScript.type = 'text/javascript';
@@ -52,6 +69,7 @@
             initRecaptcha();
         }, {once:true});
 
+        // Dropdown toggle
         function scrollToDownload() {
             let itemBtn = document.querySelector('.dropdown.nav-item.contact');
             let menuBtn = itemBtn.querySelector('.dropdown-menu.dropdown-with-icons');

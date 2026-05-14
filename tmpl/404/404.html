@@ -9,7 +9,10 @@
         <title>MedZoner.com - Page introuvable</title>
         <meta name="description" content="MedZoner.com - Page introuvable" />
         <meta content='width=device-width, initial-scale=1.0, shrink-to-fit=no' name='viewport' />
-        <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:400,700|Material+Icons" />
+        <meta name="theme-color" content="#7c3aed" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto+Slab:wght@400;700&family=Material+Icons&display=swap" />
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css">
         <link rel="stylesheet" href="/public/css/app.css"/>
     </head>
@@ -17,7 +20,7 @@
     <nav class="navbar navbar-transparent navbar-color-on-scroll fixed-top navbar-expand-lg" color-on-scroll="100" id="sectionsNav">
         <div class="container">
             <div class="navbar-translate">
-                <a href="/"><img style="height: 45px;" src="/public/images/logo.png" alt="WWW.MEDZONER.COM"/></a>
+                <a href="/"><img style="height: 40px;" src="/public/images/logo.png" alt="WWW.MEDZONER.COM"/></a>
             </div>
         </div>
     </nav>
@@ -28,10 +31,20 @@
             <div class="copyright float-right">
                 &copy;
                 <script>document.write(new Date().getFullYear())</script>, made with <i class="material-icon"><img src="/public/images/skateboard.png" style="height: 20px;" alt="skateboard"/></i> by
-                <a href="https://github.com/Medzoner/" target="_blank">Medzoner</a>.
+                <a href="https://github.com/Medzoner/" target="_blank" rel="noopener">Medzoner</a>.
             </div>
         </div>
     </footer>
+    <script>
+        (function() {
+            var navbar = document.getElementById('sectionsNav');
+            if (!navbar) return;
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 80) { navbar.classList.add('navbar-scrolled'); }
+                else { navbar.classList.remove('navbar-scrolled'); }
+            }, {passive: true});
+        })();
+    </script>
     </body>
     </html>
 {{end}}
@@ -40,14 +53,17 @@
         <div class="profile-content">
             <div class="container">
                 <div class="row" style="min-height: 60vh; align-items: center; justify-content: center;">
-                    <div class="col-md-8 ml-auto mr-auto text-center">
-                        <h1 class="title" style="font-size: 120px; margin-bottom: 0; color: #999;">404</h1>
-                        <h2 class="title" style="margin-top: 0;">Page introuvable</h2>
-                        <p style="font-size: 18px; color: #999; margin-bottom: 30px;">
+                    <div class="col-md-8 ml-auto mr-auto text-center" style="padding: 4rem 2rem;">
+                        <div style="display: inline-flex; align-items: center; justify-content: center; width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, rgba(124,58,237,0.1) 0%, rgba(6,182,212,0.1) 100%); margin-bottom: 2rem;">
+                            <span class="material-icons" style="font-size: 3.5rem; color: #7c3aed;">explore_off</span>
+                        </div>
+                        <h1 style="font-size: clamp(4rem, 10vw, 7rem); font-weight: 800; background: linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 0.5rem; line-height: 1;">404</h1>
+                        <h2 class="title" style="margin-top: 0; font-size: 1.5rem; color: #111827;">Page introuvable</h2>
+                        <p style="font-size: 1.0625rem; color: #6b7280; margin-bottom: 2.5rem; max-width: 28rem; margin-left: auto; margin-right: auto;">
                             Désolé, la page que vous recherchez n'existe pas ou a été déplacée.
                         </p>
                         <a href="/" class="btn btn-primary btn-lg">
-                            <i class="material-icons">home</i> Retour à l'accueil
+                            <i class="material-icons" style="font-size: 1.125rem;">home</i> Retour à l'accueil
                         </a>
                     </div>
                 </div>

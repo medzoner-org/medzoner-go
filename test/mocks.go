@@ -9,7 +9,6 @@ import (
 
 type Mocks struct {
 	ContactRepository *mocks.MockContactRepository
-	TechnoRepository  *mocks.MockTechnoRepository
 	Mailer            *mocks.MockMailer
 	Captcher          *mocks.MockCaptcher
 	Validater         *mocks.MockValidater
@@ -21,7 +20,6 @@ func New(reporter gomock.TestReporter) *Mocks {
 	return &Mocks{
 		ContactRepository: mocks.NewMockContactRepository(controller),
 		Mailer:            mocks.NewMockMailer(controller),
-		TechnoRepository:  mocks.NewMockTechnoRepository(controller),
 		Captcher:          mocks.NewMockCaptcher(controller),
 		Validater:         mocks.NewMockValidater(controller),
 	}
