@@ -9,16 +9,16 @@ import (
 	"github.com/Medzoner/medzoner-go/internal/application/service/mailer"
 	repository2 "github.com/Medzoner/medzoner-go/internal/domain/repository"
 	handler2 "github.com/Medzoner/medzoner-go/internal/ui/http/handler"
-	"github.com/Medzoner/medzoner-go/internal/ui/http/templater"
 	mockBase "github.com/Medzoner/medzoner-go/test"
 
 	"github.com/Medzoner/gomedz/pkg/http"
-	ginadpt "github.com/Medzoner/gomedz/pkg/http/adapter/gin"
 	srv "github.com/Medzoner/gomedz/pkg/http/server"
 
 	"context"
+	"github.com/Medzoner/gomedz/pkg/auth"
 	"github.com/Medzoner/gomedz/pkg/captcha"
 	"github.com/Medzoner/gomedz/pkg/connector"
+	"github.com/Medzoner/gomedz/pkg/http/adapter/fiber"
 	"github.com/Medzoner/gomedz/pkg/http/probes"
 	"github.com/Medzoner/gomedz/pkg/logger"
 	"github.com/Medzoner/gomedz/pkg/notifier"
@@ -47,6 +47,29 @@ func pingers() probes.Pingers {
 	return []probes.Probes{}
 }
 
+func middlewaresStructEmpty() []http.Middleware[struct{}] {
+	return []http.Middleware[struct{}]{}
+}
+
+func middlewaresAny() []http.Middleware[any] {
+	return []http.Middleware[any]{}
+}
+
+func newEngineWithRenderer(ctx context.Context, cfg srv.Config, l logger.Interface, authCfg auth.Config, mdrs []http.Middleware[struct{}], renderer *http.ReloadingHTMLRenderer) *fiber.Engine[any] {
+	engine := fiber.New(ctx, cfg, l, authCfg, mdrs)
+	engine.SetRenderer(renderer)
+	return engine
+}
+
+func newHTMLRenderer(rootPath config.RootPath) (*http.ReloadingHTMLRenderer, error) {
+	base := string(rootPath) + "tmpl"
+	renderer := http.NewReloadingHTMLRenderer(base) // récursif, .html + .tmpl
+	//if err != nil {
+	//	return nil, fmt.Errorf("error creating HTML renderer: %w", err)
+	//}
+	return renderer, nil
+}
+
 var (
 	CommonWiring = wire.NewSet(
 		config.NewConfig,
@@ -60,16 +83,21 @@ var (
 			"Mailer",
 			"Database",
 			"Recaptcha",
+			"RootPath",
 		),
 
 		pingers,
 		probes.New,
 	)
 	ServerWiring = wire.NewSet(
-		ginadpt.New,
-		wire.Bind(new(srv.Enginer), new(*ginadpt.Engine)),
+		newHTMLRenderer,
+		wire.Bind(new(http.Renderer), new(*http.ReloadingHTMLRenderer)),
+		newEngineWithRenderer,
+		wire.Bind(new(srv.Enginer), new(*fiber.Engine[any])),
 		controllers,
 		closers,
+		middlewaresStructEmpty,
+		middlewaresAny,
 
 		srv.NewServer,
 	)
@@ -90,10 +118,8 @@ var (
 	)
 
 	InfraWiring = wire.NewSet(
-		templater.NewTemplateHTML,
 		validation.New,
 		captcha.NewRecaptchaAdapter,
-		wire.Bind(new(templater.Templater), new(*templater.TemplateHTML)),
 		wire.Bind(new(validation.Validater), new(*validation.ValidatorAdapter)),
 		wire.Bind(new(captcha.Captcher), new(*captcha.RecaptchaAdapter)),
 	)

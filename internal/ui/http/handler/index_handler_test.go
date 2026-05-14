@@ -3,6 +3,7 @@ package handler_test
 import (
 	"context"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -29,15 +30,28 @@ func init() {
 	_, _ = observability.NewTelemetry(context.Background(), observability.Config{}, l)
 }
 
+// fakeRenderer implements gohttp.Renderer for tests
+type fakeRenderer struct {
+	err error
+}
+
+func (f *fakeRenderer) Render(_ io.Writer, _ string, _ any, _ context.Context) error {
+	return f.err
+}
+
+func newTestContext(w *httptest.ResponseRecorder, req *http.Request, renderer gohttp.Renderer) *gohttp.Context {
+	ctx := gohttp.NewContext(w, req)
+	ctx.SetRenderer(renderer)
+	return ctx
+}
+
 func TestIndexHandler_Index_GET(t *testing.T) {
 	t.Run("Unit: test IndexHandler GET success", func(t *testing.T) {
 		mocked := mocks.New(t)
 		mocked.TechnoRepository.EXPECT().FetchStack(gomock.Any()).Return(map[string]any{"Go": "ok"}, nil).Times(1)
-		mocked.Templater.EXPECT().Render("index", gomock.Any(), gomock.Any()).Return(nil).Times(1)
 		mocked.Captcher.EXPECT().GetSiteKey().Return("test-site-key").Times(1)
 
 		h := handler.NewIndexHandler(
-			mocked.Templater,
 			query2.NewListTechnoQueryHandler(mocked.TechnoRepository),
 			command2.NewCreateContactCommandHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
 			mocked.Validater,
@@ -46,9 +60,9 @@ func TestIndexHandler_Index_GET(t *testing.T) {
 
 		req := httptest.NewRequest(http.MethodGet, "/", nil)
 		w := httptest.NewRecorder()
-		ctx := gohttp.NewContext(w, req)
+		ctx := newTestContext(w, req, &fakeRenderer{})
 
-		err := h.Index(ctx)
+		err := h.Index(ctx, struct{}{})
 
 		assert.NilError(t, err)
 		assert.Equal(t, w.Code, http.StatusOK)
@@ -61,7 +75,6 @@ func TestIndexHandler_Index_GET_FetchStackError(t *testing.T) {
 		mocked.TechnoRepository.EXPECT().FetchStack(gomock.Any()).Return(nil, errors.New("db error")).Times(1)
 
 		h := handler.NewIndexHandler(
-			mocked.Templater,
 			query2.NewListTechnoQueryHandler(mocked.TechnoRepository),
 			command2.NewCreateContactCommandHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
 			mocked.Validater,
@@ -70,9 +83,9 @@ func TestIndexHandler_Index_GET_FetchStackError(t *testing.T) {
 
 		req := httptest.NewRequest(http.MethodGet, "/", nil)
 		w := httptest.NewRecorder()
-		ctx := gohttp.NewContext(w, req)
+		ctx := newTestContext(w, req, &fakeRenderer{})
 
-		err := h.Index(ctx)
+		err := h.Index(ctx, struct{}{})
 
 		assert.NilError(t, err)
 		assert.Equal(t, w.Code, http.StatusInternalServerError)
@@ -83,11 +96,9 @@ func TestIndexHandler_Index_GET_RenderError(t *testing.T) {
 	t.Run("Unit: test IndexHandler GET error render template", func(t *testing.T) {
 		mocked := mocks.New(t)
 		mocked.TechnoRepository.EXPECT().FetchStack(gomock.Any()).Return(map[string]any{}, nil).Times(1)
-		mocked.Templater.EXPECT().Render("index", gomock.Any(), gomock.Any()).Return(errors.New("render error")).Times(1)
 		mocked.Captcher.EXPECT().GetSiteKey().Return("test-site-key").Times(1)
 
 		h := handler.NewIndexHandler(
-			mocked.Templater,
 			query2.NewListTechnoQueryHandler(mocked.TechnoRepository),
 			command2.NewCreateContactCommandHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
 			mocked.Validater,
@@ -96,9 +107,9 @@ func TestIndexHandler_Index_GET_RenderError(t *testing.T) {
 
 		req := httptest.NewRequest(http.MethodGet, "/", nil)
 		w := httptest.NewRecorder()
-		ctx := gohttp.NewContext(w, req)
+		ctx := newTestContext(w, req, &fakeRenderer{err: errors.New("render error")})
 
-		err := h.Index(ctx)
+		err := h.Index(ctx, struct{}{})
 
 		assert.ErrorContains(t, err, "error during render template")
 	})
@@ -110,10 +121,8 @@ func TestIndexHandler_Index_POST_ValidationError(t *testing.T) {
 		mocked.TechnoRepository.EXPECT().FetchStack(gomock.Any()).Return(map[string]any{}, nil).Times(1)
 		mocked.Captcher.EXPECT().GetSiteKey().Return("test-site-key").Times(1)
 		mocked.Validater.EXPECT().Struct(gomock.Any()).Return(errors.New("validation error")).Times(1)
-		mocked.Templater.EXPECT().Render("index", gomock.Any(), gomock.Any()).Return(nil).Times(1)
 
 		h := handler.NewIndexHandler(
-			mocked.Templater,
 			query2.NewListTechnoQueryHandler(mocked.TechnoRepository),
 			command2.NewCreateContactCommandHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
 			mocked.Validater,
@@ -127,9 +136,9 @@ func TestIndexHandler_Index_POST_ValidationError(t *testing.T) {
 		req := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(form.Encode()))
 		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 		w := httptest.NewRecorder()
-		ctx := gohttp.NewContext(w, req)
+		ctx := newTestContext(w, req, &fakeRenderer{})
 
-		err := h.Index(ctx)
+		err := h.Index(ctx, struct{}{})
 
 		assert.NilError(t, err)
 	})
@@ -145,7 +154,6 @@ func TestIndexHandler_Index_POST_Success(t *testing.T) {
 		mocked.Mailer.EXPECT().Send(gomock.Any(), gomock.Any()).Return(true, nil).Times(1)
 
 		h := handler.NewIndexHandler(
-			mocked.Templater,
 			query2.NewListTechnoQueryHandler(mocked.TechnoRepository),
 			command2.NewCreateContactCommandHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
 			mocked.Validater,
@@ -159,9 +167,9 @@ func TestIndexHandler_Index_POST_Success(t *testing.T) {
 		req := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(form.Encode()))
 		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 		w := httptest.NewRecorder()
-		ctx := gohttp.NewContext(w, req)
+		ctx := newTestContext(w, req, &fakeRenderer{})
 
-		err := h.Index(ctx)
+		err := h.Index(ctx, struct{}{})
 
 		assert.NilError(t, err)
 		assert.Equal(t, w.Code, http.StatusSeeOther)
@@ -176,7 +184,6 @@ func TestIndexHandler_Index_POST_CaptchaError(t *testing.T) {
 		mocked.Captcher.EXPECT().Confirm(gomock.Any(), gomock.Any()).Return(false, errors.New("captcha error")).Times(1)
 
 		h := handler.NewIndexHandler(
-			mocked.Templater,
 			query2.NewListTechnoQueryHandler(mocked.TechnoRepository),
 			command2.NewCreateContactCommandHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
 			mocked.Validater,
@@ -191,9 +198,9 @@ func TestIndexHandler_Index_POST_CaptchaError(t *testing.T) {
 		req := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(form.Encode()))
 		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 		w := httptest.NewRecorder()
-		ctx := gohttp.NewContext(w, req)
+		ctx := newTestContext(w, req, &fakeRenderer{})
 
-		err := h.Index(ctx)
+		err := h.Index(ctx, struct{}{})
 
 		assert.NilError(t, err)
 		assert.Equal(t, w.Code, http.StatusSeeOther)
@@ -209,7 +216,6 @@ func TestIndexHandler_Index_POST_CommandHandlerError(t *testing.T) {
 		mocked.ContactRepository.EXPECT().Save(gomock.Any(), gomock.Any()).Return(errors.New("save error")).Times(1)
 
 		h := handler.NewIndexHandler(
-			mocked.Templater,
 			query2.NewListTechnoQueryHandler(mocked.TechnoRepository),
 			command2.NewCreateContactCommandHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
 			mocked.Validater,
@@ -223,9 +229,9 @@ func TestIndexHandler_Index_POST_CommandHandlerError(t *testing.T) {
 		req := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(form.Encode()))
 		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 		w := httptest.NewRecorder()
-		ctx := gohttp.NewContext(w, req)
+		ctx := newTestContext(w, req, &fakeRenderer{})
 
-		err := h.Index(ctx)
+		err := h.Index(ctx, struct{}{})
 
 		assert.ErrorContains(t, err, "error during create contact command handling")
 	})
@@ -233,7 +239,7 @@ func TestIndexHandler_Index_POST_CommandHandlerError(t *testing.T) {
 
 func TestIndexHandler_Prefix(t *testing.T) {
 	t.Run("Unit: test IndexHandler Prefix returns /", func(t *testing.T) {
-		h := handler.NewIndexHandler(nil, query2.ListTechnoQueryHandler{}, command2.CreateContactCommandHandler{}, nil, nil)
+		h := handler.NewIndexHandler(query2.ListTechnoQueryHandler{}, command2.CreateContactCommandHandler{}, nil, nil)
 		assert.Equal(t, h.Prefix(), "/")
 	})
 }
@@ -246,7 +252,6 @@ func TestIndexHandler_Index_POST_CaptchaConfirmFailed(t *testing.T) {
 		mocked.Captcher.EXPECT().Confirm(gomock.Any(), gomock.Any()).Return(false, nil).Times(1)
 
 		h := handler.NewIndexHandler(
-			mocked.Templater,
 			query2.NewListTechnoQueryHandler(mocked.TechnoRepository),
 			command2.NewCreateContactCommandHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
 			mocked.Validater,
@@ -261,9 +266,9 @@ func TestIndexHandler_Index_POST_CaptchaConfirmFailed(t *testing.T) {
 		req := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(form.Encode()))
 		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 		w := httptest.NewRecorder()
-		ctx := gohttp.NewContext(w, req)
+		ctx := newTestContext(w, req, &fakeRenderer{})
 
-		err := h.Index(ctx)
+		err := h.Index(ctx, struct{}{})
 
 		assert.NilError(t, err)
 		assert.Equal(t, w.Code, http.StatusSeeOther)
@@ -275,10 +280,8 @@ func TestIndexHandler_Index_POST_WithSubmit(t *testing.T) {
 		mocked := mocks.New(t)
 		mocked.TechnoRepository.EXPECT().FetchStack(gomock.Any()).Return(map[string]any{}, nil).Times(1)
 		mocked.Captcher.EXPECT().GetSiteKey().Return("test-site-key").Times(1)
-		mocked.Templater.EXPECT().Render("index", gomock.Any(), gomock.Any()).Return(nil).Times(1)
 
 		h := handler.NewIndexHandler(
-			mocked.Templater,
 			query2.NewListTechnoQueryHandler(mocked.TechnoRepository),
 			command2.NewCreateContactCommandHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
 			mocked.Validater,
@@ -291,9 +294,9 @@ func TestIndexHandler_Index_POST_WithSubmit(t *testing.T) {
 		req := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(form.Encode()))
 		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 		w := httptest.NewRecorder()
-		ctx := gohttp.NewContext(w, req)
+		ctx := newTestContext(w, req, &fakeRenderer{})
 
-		err := h.Index(ctx)
+		err := h.Index(ctx, struct{}{})
 
 		assert.NilError(t, err)
 		assert.Equal(t, w.Code, http.StatusOK)
@@ -302,7 +305,7 @@ func TestIndexHandler_Index_POST_WithSubmit(t *testing.T) {
 
 func TestIndexHandler_Register(t *testing.T) {
 	t.Run("Unit: test IndexHandler Register registers routes", func(t *testing.T) {
-		h := handler.NewIndexHandler(nil, query2.ListTechnoQueryHandler{}, command2.CreateContactCommandHandler{}, nil, nil)
+		h := handler.NewIndexHandler(query2.ListTechnoQueryHandler{}, command2.CreateContactCommandHandler{}, nil, nil)
 		r := &fakeRouter{}
 
 		h.Register(r)
@@ -313,21 +316,27 @@ func TestIndexHandler_Register(t *testing.T) {
 	})
 }
 
-// fakeRouter implements gohttp.Router for testing Register
+// fakeRouter implements gohttp.Router[any] for testing Register
 type fakeRouter struct {
 	getCalled      bool
 	postCalled     bool
 	staticFSCalled bool
 }
 
-func (f *fakeRouter) Use(_ ...gohttp.Middleware)                               {}
-func (f *fakeRouter) Static(_, _ string)                                       {}
-func (f *fakeRouter) StaticFS(_ string, _ http.FileSystem, _ gohttp.Options)   { f.staticFSCalled = true }
-func (f *fakeRouter) Get(_ string, _ gohttp.HandlerFunc, _ gohttp.Options)     { f.getCalled = true }
-func (f *fakeRouter) Post(_ string, _ gohttp.HandlerFunc, _ gohttp.Options)    { f.postCalled = true }
-func (f *fakeRouter) Put(_ string, _ gohttp.HandlerFunc, _ gohttp.Options)     {}
-func (f *fakeRouter) Delete(_ string, _ gohttp.HandlerFunc, _ gohttp.Options)  {}
-func (f *fakeRouter) Patch(_ string, _ gohttp.HandlerFunc, _ gohttp.Options)   {}
-func (f *fakeRouter) Any(_ string, _ gohttp.HandlerFunc, _ gohttp.Options)     {}
-func (f *fakeRouter) Options(_ string, _ gohttp.HandlerFunc, _ gohttp.Options) {}
-func (f *fakeRouter) Group(_ string, _ ...gohttp.Middleware) gohttp.Router     { return f }
+func (f *fakeRouter) Use(_ ...gohttp.Middleware[struct{}])                   {}
+func (f *fakeRouter) UseBody(_ ...gohttp.Middleware[any])                    {}
+func (f *fakeRouter) BodyMiddlewares() []gohttp.Middleware[any]              { return nil }
+func (f *fakeRouter) Static(_, _ string)                                     {}
+func (f *fakeRouter) StaticFS(_ string, _ http.FileSystem, _ gohttp.Options) { f.staticFSCalled = true }
+func (f *fakeRouter) Get(_ string, _ gohttp.HandlerFunc[struct{}], _ gohttp.Options) {
+	f.getCalled = true
+}
+func (f *fakeRouter) Post(_ string, _ gohttp.HandlerFunc[struct{}], _ gohttp.Options) {
+	f.postCalled = true
+}
+func (f *fakeRouter) Put(_ string, _ gohttp.HandlerFunc[struct{}], _ gohttp.Options)      {}
+func (f *fakeRouter) Delete(_ string, _ gohttp.HandlerFunc[struct{}], _ gohttp.Options)   {}
+func (f *fakeRouter) Patch(_ string, _ gohttp.HandlerFunc[struct{}], _ gohttp.Options)    {}
+func (f *fakeRouter) Any(_ string, _ gohttp.HandlerFunc[struct{}], _ gohttp.Options)      {}
+func (f *fakeRouter) Options(_ string, _ gohttp.HandlerFunc[struct{}], _ gohttp.Options)  {}
+func (f *fakeRouter) Group(_ string, _ ...gohttp.Middleware[struct{}]) gohttp.Router[any] { return f }

@@ -3,6 +3,7 @@
 package mocks
 
 import (
+	"context"
 	"reflect"
 
 	"go.uber.org/mock/gomock"
@@ -43,5 +44,19 @@ func (m *MockValidater) Struct(obj any) error {
 func (mr *MockValidaterMockRecorder) Struct(obj any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Struct", reflect.TypeOf((*MockValidater)(nil).Struct), obj)
+}
+
+// StructCtx mocks base method.
+func (m *MockValidater) StructCtx(ctx context.Context, s interface{}) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "StructCtx", ctx, s)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// StructCtx indicates an expected call of StructCtx.
+func (mr *MockValidaterMockRecorder) StructCtx(ctx, s any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "StructCtx", reflect.TypeOf((*MockValidater)(nil).StructCtx), ctx, s)
 }
 

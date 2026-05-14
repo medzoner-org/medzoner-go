@@ -13,7 +13,6 @@ import (
 	command2 "github.com/Medzoner/medzoner-go/internal/application/command"
 	query2 "github.com/Medzoner/medzoner-go/internal/application/query"
 	"github.com/Medzoner/medzoner-go/internal/ui/http/http_utils"
-	"github.com/Medzoner/medzoner-go/internal/ui/http/templater"
 )
 
 // IndexView IndexView
@@ -44,21 +43,18 @@ type TechnoView struct {
 type IndexHandler struct {
 	CreateContactCommandHandler command2.CreateContactCommandHandler
 	ListTechnoQueryHandler      query2.ListTechnoQueryHandler
-	Template                    templater.Templater
 	Validation                  validation.Validater
 	Recaptcha                   captcha.Captcher
 }
 
 // NewIndexHandler NewIndexHandler
 func NewIndexHandler(
-	template templater.Templater,
 	listTechnoQueryHandler query2.ListTechnoQueryHandler,
 	createContactCommandHandler command2.CreateContactCommandHandler,
 	validation validation.Validater,
 	recaptcha captcha.Captcher,
 ) IndexHandler {
 	return IndexHandler{
-		Template:                    template,
 		ListTechnoQueryHandler:      listTechnoQueryHandler,
 		CreateContactCommandHandler: createContactCommandHandler,
 		Validation:                  validation,
@@ -70,7 +66,7 @@ func (h IndexHandler) Prefix() string {
 	return "/"
 }
 
-func (h IndexHandler) Register(r http2.Router) {
+func (h IndexHandler) Register(r http2.Router[any]) {
 	r.Get("/", h.Index, http2.Options{})
 	r.Post("/", h.Index, http2.Options{})
 
@@ -92,7 +88,7 @@ func (h IndexHandler) processRequest(request *http.Request) (err error) {
 }
 
 // Index Index
-func (h IndexHandler) Index(c *http2.Context) error {
+func (h IndexHandler) Index(c *http2.Context, _ struct{}) error {
 	w := c.Writer()
 	r := c.Request()
 
@@ -128,11 +124,7 @@ func (h IndexHandler) Index(c *http2.Context) error {
 		statusCode = http.StatusBadRequest
 	}
 
-	if statusCode != http.StatusOK {
-		w.WriteHeader(statusCode)
-	}
-
-	if err = h.Template.Render("index", view, w); err != nil {
+	if err = c.HTML(statusCode, "index", view); err != nil {
 		return fmt.Errorf("error during render template: %w", err)
 	}
 

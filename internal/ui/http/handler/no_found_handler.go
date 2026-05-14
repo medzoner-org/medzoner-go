@@ -1,11 +1,11 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 
+	gohttp "github.com/Medzoner/gomedz/pkg/http"
 	"github.com/Medzoner/gomedz/pkg/observability"
-	"github.com/Medzoner/medzoner-go/internal/ui/http/http_utils"
-	"github.com/Medzoner/medzoner-go/internal/ui/http/templater"
 )
 
 // NotFoundView NotFoundView
@@ -18,13 +18,13 @@ type NotFoundView struct {
 
 // NotFoundHandler NotFoundHandler
 type NotFoundHandler struct {
-	Template templater.Templater
+	Renderer gohttp.Renderer
 }
 
 // NewNotFoundHandler NewNotFoundHandler
-func NewNotFoundHandler(template templater.Templater) *NotFoundHandler {
+func NewNotFoundHandler(renderer gohttp.Renderer) *NotFoundHandler {
 	return &NotFoundHandler{
-		Template: template,
+		Renderer: renderer,
 	}
 }
 
@@ -40,10 +40,12 @@ func (h *NotFoundHandler) Handle(w http.ResponseWriter, r *http.Request) {
 		PageDescription: "MedZoner.com - Not Found",
 	}
 
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusNotFound)
 
-	if err := h.Template.Render("404", view, w); err != nil {
-		http_utils.ResponseError(w, err, http.StatusInternalServerError, span)
+	if err := h.Renderer.Render(w, "404", view, r.Context()); err != nil {
+		span.RecordError(fmt.Errorf("error rendering 404 template: %w", err))
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 }
