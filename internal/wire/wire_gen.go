@@ -84,7 +84,7 @@ func InitServerTest(ctx context.Context, m *mocks.Mocks) (server.Server, error) 
 	recaptchaAdapter := captcha.NewRecaptchaAdapter(captchaConfig)
 	indexHandler := handler.NewIndexHandler(listTechnoQueryHandler, createContactCommandHandler, validatorAdapter, recaptchaAdapter)
 	v4 := controllers(probesHandler, indexHandler)
-	serverServer := server.NewServer(ctx, loggerInterface, telemetry, serverConfig, engine, v2, v3, v4...)
+	serverServer := newServer(ctx, loggerInterface, telemetry, serverConfig, engine, v2, v3, v4)
 	return serverServer, nil
 }
 
@@ -130,7 +130,7 @@ func InitServer(ctx context.Context) (server.Server, error) {
 	recaptchaAdapter := captcha.NewRecaptchaAdapter(captchaConfig)
 	indexHandler := handler.NewIndexHandler(listTechnoQueryHandler, createContactCommandHandler, validatorAdapter, recaptchaAdapter)
 	v4 := controllers(probesHandler, indexHandler)
-	serverServer := server.NewServer(ctx, loggerInterface, telemetry, serverConfig, engine, v2, v3, v4...)
+	serverServer := newServer(ctx, loggerInterface, telemetry, serverConfig, engine, v2, v3, v4)
 	return serverServer, nil
 }
 
@@ -167,6 +167,21 @@ func newEngineWithRenderer(ctx context.Context, cfg server.Config, l logger.Inte
 	return engine
 }
 
+func newServer(
+	ctx context.Context,
+	log logger.Interface,
+	tel observability.Telemetry,
+	cfg server.Config,
+	engine server.Enginer, closers2 []server.Closer,
+	mdwrs []http.Middleware[any], controllers2 []http.Controller,
+) server.Server {
+	s := server.NewServer(ctx, log, tel, cfg, engine, closers2, mdwrs, controllers2...)
+
+	engine.SetNotFoundHandler(http.DefaultNotFoundHandler("404"))
+
+	return s
+}
+
 func newHTMLRenderer(rootPath config.RootPath) (*http.ReloadingHTMLRenderer, error) {
 	base := string(rootPath) + "tmpl"
 	renderer := http.NewReloadingHTMLRenderer(base)
@@ -192,11 +207,13 @@ var (
 		newHTMLRenderer, wire.Bind(new(http.Renderer), new(*http.ReloadingHTMLRenderer)), newEngineWithRenderer, wire.Bind(new(server.Enginer), new(*fiber.Engine[any])), controllers,
 		closers,
 		middlewaresStructEmpty,
-		middlewaresAny, server.NewServer,
+		middlewaresAny,
+
+		newServer,
 	)
 	ObsWiring     = wire.NewSet(logger.NewLogger, observability.NewTelemetry)
 	UsecaseWiring = wire.NewSet(event.NewContactCreatedEventHandler, command.NewCreateContactCommandHandler, query.NewListTechnoQueryHandler, wire.Bind(new(event.IEventHandler), new(*event.ContactCreatedEventHandler)))
-	HandlerWiring = wire.NewSet(handler.NewIndexHandler, handler.NewNotFoundHandler)
+	HandlerWiring = wire.NewSet(handler.NewIndexHandler)
 
 	InfraWiring      = wire.NewSet(validation.New, captcha.NewRecaptchaAdapter, wire.Bind(new(validation.Validater), new(*validation.ValidatorAdapter)), wire.Bind(new(captcha.Captcher), new(*captcha.RecaptchaAdapter)))
 	DbWiring         = wire.NewSet(connector.NewDbSQLInstance, wire.Bind(new(connector.DbInstantiator), new(*connector.DbSQLInstance)))
@@ -216,5 +233,5 @@ var (
 	), wire.Bind(new(repository.ContactRepository), new(*mocks2.MockContactRepository)),
 	)
 	AppWiring = wire.NewSet(event.NewContactCreatedEventHandler, command.NewCreateContactCommandHandler, query.NewListTechnoQueryHandler, wire.Bind(new(event.IEventHandler), new(*event.ContactCreatedEventHandler)))
-	UiWiring  = wire.NewSet(handler.NewIndexHandler, handler.NewNotFoundHandler)
+	UiWiring  = wire.NewSet(handler.NewIndexHandler)
 )

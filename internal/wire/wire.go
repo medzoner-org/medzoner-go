@@ -61,6 +61,23 @@ func newEngineWithRenderer(ctx context.Context, cfg srv.Config, l logger.Interfa
 	return engine
 }
 
+func newServer(
+	ctx context.Context,
+	log logger.Interface,
+	tel observability.Telemetry,
+	cfg srv.Config,
+	engine srv.Enginer,
+	closers []srv.Closer,
+	mdwrs []http.Middleware[any],
+	controllers []http.Controller,
+) srv.Server {
+	s := srv.NewServer(ctx, log, tel, cfg, engine, closers, mdwrs, controllers...)
+
+	engine.SetNotFoundHandler(http.DefaultNotFoundHandler("404"))
+
+	return s
+}
+
 func newHTMLRenderer(rootPath config.RootPath) (*http.ReloadingHTMLRenderer, error) {
 	base := string(rootPath) + "tmpl"
 	renderer := http.NewReloadingHTMLRenderer(base) // récursif, .html + .tmpl
@@ -99,7 +116,7 @@ var (
 		middlewaresStructEmpty,
 		middlewaresAny,
 
-		srv.NewServer,
+		newServer,
 	)
 	ObsWiring = wire.NewSet(
 		logger.NewLogger,
@@ -114,7 +131,6 @@ var (
 	)
 	HandlerWiring = wire.NewSet(
 		handler2.NewIndexHandler,
-		handler2.NewNotFoundHandler,
 	)
 
 	InfraWiring = wire.NewSet(
@@ -167,7 +183,6 @@ var (
 	)
 	UiWiring = wire.NewSet(
 		handler2.NewIndexHandler,
-		handler2.NewNotFoundHandler,
 	)
 )
 
