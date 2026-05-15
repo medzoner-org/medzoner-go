@@ -12,8 +12,8 @@ import (
 	"github.com/Medzoner/medzoner-go/internal/entity"
 	"github.com/golang-migrate/migrate/v4/database"
 	"github.com/jmoiron/sqlx"
-	"gotest.tools/assert"
 	"gopkg.in/guregu/null.v1"
+	"gotest.tools/assert"
 )
 
 func init() {

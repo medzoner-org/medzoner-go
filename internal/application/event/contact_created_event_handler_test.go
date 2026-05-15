@@ -13,8 +13,8 @@ import (
 	"github.com/Medzoner/gomedz/pkg/logger"
 	"github.com/Medzoner/gomedz/pkg/observability"
 	"github.com/Medzoner/medzoner-go/internal/entity"
-	"gotest.tools/assert"
 	"gopkg.in/guregu/null.v1"
+	"gotest.tools/assert"
 )
 
 func init() {

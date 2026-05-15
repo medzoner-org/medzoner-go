@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/Medzoner/medzoner-go/internal/entity"
-	"gotest.tools/assert"
 	"gopkg.in/guregu/null.v1"
+	"gotest.tools/assert"
 )
 
 func TestContact_Get(t *testing.T) {
