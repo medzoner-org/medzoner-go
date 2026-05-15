@@ -3,17 +3,17 @@ package entity
 import (
 	"time"
 
-	"github.com/Medzoner/medzoner-go/internal/domain/customtype"
+	"gopkg.in/guregu/null.v1"
 )
 
 // Contact represents a contact form submission.
 type Contact struct {
-	DateAdd time.Time             `db:"date_add"`
-	UUID    string                `db:"uuid"    json:"uuid"`
-	Name    string                `db:"name"`
-	Message string                `db:"message"`
-	Email   customtype.NullString `db:"email"`
-	ID      int                   `db:"id"      json:"id"`
+	DateAdd time.Time   `db:"date_add"`
+	UUID    string      `db:"uuid"    json:"uuid"`
+	Name    string      `db:"name"`
+	Message string      `db:"message"`
+	Email   null.String `db:"email"`
+	ID      int         `db:"id"      json:"id"`
 }
 
 // Get returns the contact message.

@@ -5,7 +5,7 @@ go 1.26.3
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/Masterminds/squirrel v1.5.4
-	github.com/Medzoner/gomedz v0.14.10
+	github.com/Medzoner/gomedz v0.14.11
 	github.com/caarlos0/env/v11 v11.4.1
 	github.com/cucumber/godog v0.15.1
 	github.com/docker/distribution v2.8.3+incompatible
@@ -14,9 +14,9 @@ require (
 	github.com/golang/mock v1.6.0
 	github.com/google/wire v0.7.0
 	github.com/jmoiron/sqlx v1.4.0
-	go.opentelemetry.io/otel v1.43.0
 	go.opentelemetry.io/otel/trace v1.43.0
 	go.uber.org/mock v0.6.0
+	gopkg.in/guregu/null.v1 v1.0.0-20140901052557-5cd2a757d890
 	gotest.tools v2.2.0+incompatible
 )
 
@@ -105,6 +105,7 @@ require (
 	github.com/valyala/fasthttp v1.71.0 // indirect
 	go.mongodb.org/mongo-driver/v2 v2.6.0 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
+	go.opentelemetry.io/otel v1.43.0 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/otlplog/otlploggrpc v0.19.0 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc v1.43.0 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.43.0 // indirect

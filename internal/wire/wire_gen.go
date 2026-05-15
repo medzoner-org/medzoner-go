@@ -79,7 +79,7 @@ func InitServerTest(ctx context.Context, m *mocks.Mocks) (server.Server, error) 
 	validatorAdapter := validation.New()
 	captchaConfig := configConfig.Recaptcha
 	recaptchaAdapter := captcha.NewRecaptchaAdapter(captchaConfig)
-	indexHandler := handler.NewIndexHandler(createContactCommandHandler, validatorAdapter, recaptchaAdapter)
+	indexHandler := handler.NewIndexHandler(createContactCommandHandler, validatorAdapter, recaptchaAdapter, rootPath)
 	v4 := controllers(probesHandler, indexHandler)
 	serverServer := newServer(ctx, loggerInterface, telemetry, serverConfig, engine, v2, v3, v4)
 	return serverServer, nil
@@ -123,7 +123,7 @@ func InitServer(ctx context.Context) (server.Server, error) {
 	validatorAdapter := validation.New()
 	captchaConfig := configConfig.Recaptcha
 	recaptchaAdapter := captcha.NewRecaptchaAdapter(captchaConfig)
-	indexHandler := handler.NewIndexHandler(createContactCommandHandler, validatorAdapter, recaptchaAdapter)
+	indexHandler := handler.NewIndexHandler(createContactCommandHandler, validatorAdapter, recaptchaAdapter, rootPath)
 	v4 := controllers(probesHandler, indexHandler)
 	serverServer := newServer(ctx, loggerInterface, telemetry, serverConfig, engine, v2, v3, v4)
 	return serverServer, nil

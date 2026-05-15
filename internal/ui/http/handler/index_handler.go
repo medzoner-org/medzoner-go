@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"path/filepath"
 	"time"
 
 	"github.com/Medzoner/gomedz/pkg/captcha"
@@ -11,6 +12,7 @@ import (
 	"github.com/Medzoner/gomedz/pkg/observability"
 	"github.com/Medzoner/gomedz/pkg/validation"
 	command2 "github.com/Medzoner/medzoner-go/internal/application/command"
+	"github.com/Medzoner/medzoner-go/internal/config"
 	"github.com/Medzoner/medzoner-go/internal/ui/http/http_utils"
 )
 
@@ -30,6 +32,7 @@ type IndexHandler struct {
 	CreateContactCommandHandler command2.CreateContactCommandHandler
 	Validation                  validation.Validater
 	Recaptcha                   captcha.Captcher
+	RootPath                    config.RootPath
 }
 
 // NewIndexHandler NewIndexHandler
@@ -37,11 +40,13 @@ func NewIndexHandler(
 	createContactCommandHandler command2.CreateContactCommandHandler,
 	validation validation.Validater,
 	recaptcha captcha.Captcher,
+	rootPath config.RootPath,
 ) IndexHandler {
 	return IndexHandler{
 		CreateContactCommandHandler: createContactCommandHandler,
 		Validation:                  validation,
 		Recaptcha:                   recaptcha,
+		RootPath:                    rootPath,
 	}
 }
 
@@ -53,10 +58,11 @@ func (h IndexHandler) Register(r http2.Router[any]) {
 	r.Get("/", h.Index, http2.Options{})
 	r.Post("/", h.Index, http2.Options{})
 
-	r.Get("/robots.txt", h.serveStaticFile("./public/robots.txt"), http2.Options{})
-	r.Get("/sitemap.xml", h.serveStaticFile("./public/sitemap.xml"), http2.Options{})
+	publicDir := filepath.Join(string(h.RootPath), "public")
+	r.Get("/robots.txt", h.serveStaticFile(filepath.Join(publicDir, "robots.txt")), http2.Options{})
+	r.Get("/sitemap.xml", h.serveStaticFile(filepath.Join(publicDir, "sitemap.xml")), http2.Options{})
 
-	r.StaticFS("/public", http.Dir("./public"), http2.Options{})
+	r.StaticFS("/public", http.Dir(publicDir), http2.Options{})
 }
 
 func (h IndexHandler) serveStaticFile(filePath string) func(c *http2.Context, _ struct{}) error {

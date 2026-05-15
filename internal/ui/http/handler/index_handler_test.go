@@ -15,6 +15,7 @@ import (
 	"github.com/Medzoner/gomedz/pkg/observability"
 	command2 "github.com/Medzoner/medzoner-go/internal/application/command"
 	"github.com/Medzoner/medzoner-go/internal/application/event"
+	"github.com/Medzoner/medzoner-go/internal/config"
 	"github.com/Medzoner/medzoner-go/internal/ui/http/handler"
 	mocks "github.com/Medzoner/medzoner-go/test"
 	"go.uber.org/mock/gomock"
@@ -53,6 +54,7 @@ func TestIndexHandler_Index_GET(t *testing.T) {
 			command2.NewCreateContactCommandHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
 			mocked.Validater,
 			mocked.Captcher,
+			config.RootPath("./"),
 		)
 
 		req := httptest.NewRequest(http.MethodGet, "/", nil)
@@ -75,6 +77,7 @@ func TestIndexHandler_Index_GET_RenderError(t *testing.T) {
 			command2.NewCreateContactCommandHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
 			mocked.Validater,
 			mocked.Captcher,
+			config.RootPath("./"),
 		)
 
 		req := httptest.NewRequest(http.MethodGet, "/", nil)
@@ -97,6 +100,7 @@ func TestIndexHandler_Index_POST_ValidationError(t *testing.T) {
 			command2.NewCreateContactCommandHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
 			mocked.Validater,
 			mocked.Captcher,
+			config.RootPath("./"),
 		)
 
 		form := url.Values{}
@@ -126,6 +130,7 @@ func TestIndexHandler_Index_POST_Success(t *testing.T) {
 			command2.NewCreateContactCommandHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
 			mocked.Validater,
 			mocked.Captcher,
+			config.RootPath("./"),
 		)
 
 		form := url.Values{}
@@ -154,6 +159,7 @@ func TestIndexHandler_Index_POST_CaptchaError(t *testing.T) {
 			command2.NewCreateContactCommandHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
 			mocked.Validater,
 			mocked.Captcher,
+			config.RootPath("./"),
 		)
 
 		form := url.Values{}
@@ -184,6 +190,7 @@ func TestIndexHandler_Index_POST_CommandHandlerError(t *testing.T) {
 			command2.NewCreateContactCommandHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
 			mocked.Validater,
 			mocked.Captcher,
+			config.RootPath("./"),
 		)
 
 		form := url.Values{}
@@ -203,7 +210,7 @@ func TestIndexHandler_Index_POST_CommandHandlerError(t *testing.T) {
 
 func TestIndexHandler_Prefix(t *testing.T) {
 	t.Run("Unit: test IndexHandler Prefix returns /", func(t *testing.T) {
-		h := handler.NewIndexHandler(command2.CreateContactCommandHandler{}, nil, nil)
+		h := handler.NewIndexHandler(command2.CreateContactCommandHandler{}, nil, nil, config.RootPath("./"))
 		assert.Equal(t, h.Prefix(), "/")
 	})
 }
@@ -218,6 +225,7 @@ func TestIndexHandler_Index_POST_CaptchaConfirmFailed(t *testing.T) {
 			command2.NewCreateContactCommandHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
 			mocked.Validater,
 			mocked.Captcher,
+			config.RootPath("./"),
 		)
 
 		form := url.Values{}
@@ -246,6 +254,7 @@ func TestIndexHandler_Index_POST_WithSubmit(t *testing.T) {
 			command2.NewCreateContactCommandHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
 			mocked.Validater,
 			mocked.Captcher,
+			config.RootPath("./"),
 		)
 
 		form := url.Values{}
@@ -265,7 +274,7 @@ func TestIndexHandler_Index_POST_WithSubmit(t *testing.T) {
 
 func TestIndexHandler_Register(t *testing.T) {
 	t.Run("Unit: test IndexHandler Register registers routes", func(t *testing.T) {
-		h := handler.NewIndexHandler(command2.CreateContactCommandHandler{}, nil, nil)
+		h := handler.NewIndexHandler(command2.CreateContactCommandHandler{}, nil, nil, config.RootPath("./"))
 		r := &fakeRouter{}
 
 		h.Register(r)

@@ -4,9 +4,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Medzoner/medzoner-go/internal/domain/customtype"
 	"github.com/Medzoner/medzoner-go/internal/entity"
 	"gotest.tools/assert"
+	"gopkg.in/guregu/null.v1"
 )
 
 func TestContact_Get(t *testing.T) {
@@ -14,7 +14,7 @@ func TestContact_Get(t *testing.T) {
 		contact := &entity.Contact{
 			Name:    "John",
 			Message: "Hello World",
-			Email:   customtype.NullString{String: "john@example.com", Valid: true},
+			Email:   null.StringFrom("john@example.com"),
 			DateAdd: time.Now(),
 			UUID:    "test-uuid",
 		}

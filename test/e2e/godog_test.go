@@ -1,4 +1,4 @@
-package main
+package e2e
 
 import (
 	"context"
@@ -26,10 +26,11 @@ func init() {
 }
 
 func TestFeatures(t *testing.T) {
-	if os.Getenv("GODOG_INTEGRATION") == "" {
-		t.Skip("Skipping godog tests (set GODOG_INTEGRATION=1 to run)")
-		return
-	}
+	ctx := context.Background()
+	//if os.Getenv("GODOG_INTEGRATION") == "" {
+	//	t.Skip("Skipping godog tests (set GODOG_INTEGRATION=1 to run)")
+	//	return
+	//}
 
 	mocked := mocks.New(t)
 	mocked.ContactRepository.EXPECT().Save(gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
@@ -38,15 +39,15 @@ func TestFeatures(t *testing.T) {
 	t.Setenv("APP_ENV", "test")
 	t.Setenv("DEBUG", "true")
 	t.Setenv("SERVER_PORT", "9876")
-	t.Setenv("ROOT_PATH", "./")
+	t.Setenv("ROOT_PATH", "../../")
 
-	srv, err := wire.InitServerTest(context.Background(), mocked)
+	srv, err := wire.InitServerTest(ctx, mocked)
 	if err != nil {
 		t.Fatalf("failed to init server: %v", err)
 	}
 
 	// Start server in background
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
 	go func() {
@@ -75,7 +76,7 @@ func TestFeatures(t *testing.T) {
 	opts := godog.Options{
 		Output:      colors.Colored(os.Stdout),
 		Format:      "pretty",
-		Paths:       []string{"./test/features/test"},
+		Paths:       []string{"./../../test/features/test"},
 		Concurrency: 1,
 	}
 	featureCtx := bootstrap.New(srv, *mocked, baseURL)

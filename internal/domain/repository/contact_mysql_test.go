@@ -8,12 +8,12 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/Medzoner/gomedz/pkg/logger"
 	"github.com/Medzoner/gomedz/pkg/observability"
-	"github.com/Medzoner/medzoner-go/internal/domain/customtype"
 	"github.com/Medzoner/medzoner-go/internal/domain/repository"
 	"github.com/Medzoner/medzoner-go/internal/entity"
 	"github.com/golang-migrate/migrate/v4/database"
 	"github.com/jmoiron/sqlx"
 	"gotest.tools/assert"
+	"gopkg.in/guregu/null.v1"
 )
 
 func init() {
@@ -42,7 +42,7 @@ func newTestContact() entity.Contact {
 	return entity.Contact{
 		Name:    "John",
 		Message: "Hello",
-		Email:   customtype.NullString{String: "john@example.com", Valid: true},
+		Email:   null.StringFrom("john@example.com"),
 		DateAdd: time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
 		UUID:    "test-uuid",
 	}

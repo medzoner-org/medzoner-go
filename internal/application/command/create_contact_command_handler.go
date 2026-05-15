@@ -6,12 +6,12 @@ import (
 	"time"
 
 	event2 "github.com/Medzoner/medzoner-go/internal/application/event"
-	"github.com/Medzoner/medzoner-go/internal/domain/customtype"
 	"github.com/Medzoner/medzoner-go/internal/domain/repository"
 
 	"github.com/Medzoner/gomedz/pkg/observability"
 	"github.com/Medzoner/medzoner-go/internal/entity"
 	"github.com/docker/distribution/uuid"
+	"gopkg.in/guregu/null.v1"
 )
 
 // CreateContactCommandHandler is a struct that implements CommandHandler interface and handle CreateContactCommand
@@ -39,7 +39,7 @@ func (c *CreateContactCommandHandler) Handle(ctx context.Context, command Create
 	contact := entity.Contact{
 		Name:    command.Name,
 		Message: command.Message,
-		Email:   customtype.NullString{String: command.Email, Valid: true},
+		Email:   null.StringFrom(command.Email),
 		DateAdd: time.Now(),
 		UUID:    uuid.UUID{}.String(),
 	}

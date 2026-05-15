@@ -7,7 +7,6 @@ import (
 	"time"
 
 	event2 "github.com/Medzoner/medzoner-go/internal/application/event"
-	"github.com/Medzoner/medzoner-go/internal/domain/customtype"
 	mocks "github.com/Medzoner/medzoner-go/test"
 	"github.com/golang/mock/gomock"
 
@@ -15,6 +14,7 @@ import (
 	"github.com/Medzoner/gomedz/pkg/observability"
 	"github.com/Medzoner/medzoner-go/internal/entity"
 	"gotest.tools/assert"
+	"gopkg.in/guregu/null.v1"
 )
 
 func init() {
@@ -28,7 +28,7 @@ func init() {
 func TestContactCreatedEventHandler(t *testing.T) {
 	contact := entity.Contact{
 		Name:    "a name",
-		Email:   customtype.NullString{String: "an email", Valid: true},
+		Email:   null.StringFrom("an email"),
 		Message: "the message",
 		DateAdd: time.Time{},
 		ID:      1,
@@ -80,7 +80,7 @@ func TestContactCreatedEventHandler(t *testing.T) {
 		contactCreatedEvent := event2.ContactCreatedEvent{
 			Contact: entity.Contact{
 				Name:    "test",
-				Email:   customtype.NullString{String: "test@test.com", Valid: true},
+				Email:   null.StringFrom("test@test.com"),
 				Message: "msg",
 				DateAdd: time.Time{},
 				UUID:    "",
