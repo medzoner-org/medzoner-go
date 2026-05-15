@@ -53,7 +53,17 @@ func (h IndexHandler) Register(r http2.Router[any]) {
 	r.Get("/", h.Index, http2.Options{})
 	r.Post("/", h.Index, http2.Options{})
 
+	r.Get("/robots.txt", h.serveStaticFile("./public/robots.txt"), http2.Options{})
+	r.Get("/sitemap.xml", h.serveStaticFile("./public/sitemap.xml"), http2.Options{})
+
 	r.StaticFS("/public", http.Dir("./public"), http2.Options{})
+}
+
+func (h IndexHandler) serveStaticFile(filePath string) func(c *http2.Context, _ struct{}) error {
+	return func(c *http2.Context, _ struct{}) error {
+		http.ServeFile(c.Writer(), c.Request(), filePath)
+		return nil
+	}
 }
 
 func (h IndexHandler) processRequest(request *http.Request) (err error) {
