@@ -1,7 +1,6 @@
-package handler
+package index
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"path/filepath"
@@ -13,11 +12,10 @@ import (
 	"github.com/Medzoner/gomedz/pkg/validation"
 	command2 "github.com/Medzoner/medzoner-go/internal/application/command"
 	"github.com/Medzoner/medzoner-go/internal/config"
-	"github.com/Medzoner/medzoner-go/internal/ui/http/http_utils"
 )
 
-// IndexView IndexView
-type IndexView struct {
+// View View
+type View struct {
 	Locale           string
 	PageTitle        string
 	TorHost          string
@@ -27,8 +25,8 @@ type IndexView struct {
 	FormMessage      string
 }
 
-// IndexHandler IndexHandler
-type IndexHandler struct {
+// Handler Handler
+type Handler struct {
 	CreateContactCommandHandler command2.CreateContactCommandHandler
 	Validation                  validation.Validater
 	Recaptcha                   captcha.Captcher
@@ -41,8 +39,8 @@ func NewIndexHandler(
 	validation validation.Validater,
 	recaptcha captcha.Captcher,
 	rootPath config.RootPath,
-) IndexHandler {
-	return IndexHandler{
+) Handler {
+	return Handler{
 		CreateContactCommandHandler: createContactCommandHandler,
 		Validation:                  validation,
 		Recaptcha:                   recaptcha,
@@ -50,11 +48,11 @@ func NewIndexHandler(
 	}
 }
 
-func (h IndexHandler) Prefix() string {
+func (h Handler) Prefix() string {
 	return "/"
 }
 
-func (h IndexHandler) Register(r http2.Router[any]) {
+func (h Handler) Register(r http2.Router[any]) {
 	r.Get("/", h.Index, http2.Options{})
 	r.Post("/", h.Index, http2.Options{})
 
@@ -65,14 +63,14 @@ func (h IndexHandler) Register(r http2.Router[any]) {
 	r.StaticFS("/public", http.Dir(publicDir), http2.Options{})
 }
 
-func (h IndexHandler) serveStaticFile(filePath string) func(c *http2.Context, _ struct{}) error {
+func (h Handler) serveStaticFile(filePath string) func(c *http2.Context, _ struct{}) error {
 	return func(c *http2.Context, _ struct{}) error {
 		http.ServeFile(c.Writer(), c.Request(), filePath)
 		return nil
 	}
 }
 
-func (h IndexHandler) processRequest(request *http.Request) (err error) {
+func (h Handler) processRequest(request *http.Request) (err error) {
 	recaptchaResponse, responseFound := request.Form["g-captcha-response"]
 	if responseFound {
 		result, err := h.Recaptcha.Confirm(request.RemoteAddr, recaptchaResponse[0])
@@ -87,21 +85,17 @@ func (h IndexHandler) processRequest(request *http.Request) (err error) {
 }
 
 // Index Index
-func (h IndexHandler) Index(c *http2.Context, _ struct{}) error {
+func (h Handler) Index(c *http2.Context, _ struct{}) error {
 	w := c.Writer()
 	r := c.Request()
 
 	ctx, span := observability.StartSpan(c.Context(), "IndexHandler.IndexHandle")
 	defer span.End()
 
-	view, err := h.initView(ctx, r)
-	if err != nil {
-		http_utils.ResponseError(w, err, http.StatusInternalServerError, span)
-		return nil
-	}
+	view := h.initView(r)
 	statusCode := http.StatusOK
 	if r.Method == "POST" && r.FormValue("submit") == "" {
-		if err = h.processRequest(r); err != nil {
+		if err := h.processRequest(r); err != nil {
 			http.Redirect(w, r, "/#contact?msg=\"Recaptcha was incorrect; try again.\"", http.StatusSeeOther)
 			return nil
 		}
@@ -114,7 +108,7 @@ func (h IndexHandler) Index(c *http2.Context, _ struct{}) error {
 
 		validationError := h.Validation.Struct(createContactCommand)
 		if validationError == nil {
-			if err = h.CreateContactCommandHandler.Handle(ctx, createContactCommand); err != nil {
+			if err := h.CreateContactCommandHandler.Handle(ctx, createContactCommand); err != nil {
 				return fmt.Errorf("error during create contact command handling: %w", err)
 			}
 			http.Redirect(w, r, "/#contact", http.StatusSeeOther)
@@ -123,20 +117,20 @@ func (h IndexHandler) Index(c *http2.Context, _ struct{}) error {
 		statusCode = http.StatusBadRequest
 	}
 
-	if err = c.HTML(statusCode, "index", view); err != nil {
+	if err := c.HTML(statusCode, "index", view); err != nil {
 		return fmt.Errorf("error during render template: %w", err)
 	}
 
 	return nil
 }
 
-func (h IndexHandler) initView(ctx context.Context, request *http.Request) (IndexView, error) {
-	return IndexView{
+func (h Handler) initView(request *http.Request) View {
+	return View{
 		Locale:           "fr",
 		PageTitle:        "MedZoner.com",
 		TorHost:          request.Header.Get("TOR-HOST"),
 		RecaptchaSiteKey: h.Recaptcha.GetSiteKey(),
 		PageDescription:  "Mehdi YOUB - Développeur Web Full Stack - NestJS Symfony Golang VueJS",
 		FormMessage:      "",
-	}, nil
+	}
 }

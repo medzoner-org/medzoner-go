@@ -2,7 +2,7 @@ package event
 
 import "context"
 
-// IEventHandler is an interface that contains method Handle
-type IEventHandler interface {
+// Handler is an interface that contains method Handle
+type Handler interface {
 	Publish(ctx context.Context, event Event) error
 }

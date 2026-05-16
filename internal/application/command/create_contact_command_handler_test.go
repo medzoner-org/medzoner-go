@@ -12,7 +12,7 @@ import (
 
 	"github.com/Medzoner/gomedz/pkg/logger"
 	"github.com/Medzoner/gomedz/pkg/observability"
-	"github.com/Medzoner/medzoner-go/internal/entity"
+	"github.com/Medzoner/medzoner-go/internal/domains"
 	mocks "github.com/Medzoner/medzoner-go/test"
 	"github.com/golang/mock/gomock"
 	"gotest.tools/assert"
@@ -106,7 +106,7 @@ func (l *LoggerTest) Error(msg string) {
 
 type ContactRepositoryTest struct{}
 
-func (r ContactRepositoryTest) Save(ctx context.Context, contact entity.Contact) error {
+func (r ContactRepositoryTest) Save(ctx context.Context, contact domains.Contact) error {
 	_ = ctx
 	fmt.Println(contact)
 	return nil

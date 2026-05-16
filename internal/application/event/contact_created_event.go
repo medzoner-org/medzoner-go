@@ -1,12 +1,12 @@
 package event
 
 import (
-	"github.com/Medzoner/medzoner-go/internal/entity"
+	"github.com/Medzoner/medzoner-go/internal/domains"
 )
 
 // ContactCreatedEvent is a struct that implements Event interface and contains model Contact
 type ContactCreatedEvent struct {
-	Contact entity.Contact
+	Contact domains.Contact
 }
 
 // GetModel returns model Contact

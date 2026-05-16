@@ -5,9 +5,7 @@ package wire
 import (
 	"github.com/Medzoner/medzoner-go/internal/application/command"
 	event2 "github.com/Medzoner/medzoner-go/internal/application/event"
-	"github.com/Medzoner/medzoner-go/internal/application/service/mailer"
-	repository2 "github.com/Medzoner/medzoner-go/internal/domain/repository"
-	handler2 "github.com/Medzoner/medzoner-go/internal/ui/http/handler"
+	handler2 "github.com/Medzoner/medzoner-go/internal/ui/http/index"
 	mockBase "github.com/Medzoner/medzoner-go/test"
 
 	"github.com/Medzoner/gomedz/pkg/http"
@@ -23,8 +21,10 @@ import (
 	"github.com/Medzoner/gomedz/pkg/notifier"
 	"github.com/Medzoner/gomedz/pkg/observability"
 	"github.com/Medzoner/gomedz/pkg/validation"
+	"github.com/Medzoner/medzoner-go/internal/adapters/contact"
 	"github.com/Medzoner/medzoner-go/internal/config"
-	database2 "github.com/Medzoner/medzoner-go/internal/database"
+	repository2 "github.com/Medzoner/medzoner-go/internal/ports/contact"
+	database2 "github.com/Medzoner/medzoner-go/pkg/database"
 	"github.com/Medzoner/medzoner-go/test/mocks"
 	"github.com/google/wire"
 )
@@ -125,7 +125,7 @@ var (
 		event2.NewContactCreatedEventHandler,
 		command.NewCreateContactCommandHandler,
 
-		wire.Bind(new(event2.IEventHandler), new(*event2.ContactCreatedEventHandler)),
+		wire.Bind(new(event2.Handler), new(*event2.ContactCreatedEventHandler)),
 	)
 	HandlerWiring = wire.NewSet(
 		handler2.NewIndexHandler,
@@ -144,32 +144,32 @@ var (
 	)
 	MailerWiring = wire.NewSet(
 		notifier.NewMailerSMTP,
-		wire.Bind(new(mailer.Mailer), new(*notifier.MailerSMTP)),
+		wire.Bind(new(event2.Mailer), new(*notifier.MailerSMTP)),
 	)
 	MailerMockWiring = wire.NewSet(
 		wire.FieldsOf(
 			new(*mockBase.Mocks),
 			"Mailer",
 		),
-		wire.Bind(new(mailer.Mailer), new(*mocks.MockMailer)),
+		wire.Bind(new(event2.Mailer), new(*mocks.MockMailer)),
 	)
 	RepositoryWiring = wire.NewSet(
-		repository2.NewMysqlContactRepository,
+		contact.NewRepository,
 
-		wire.Bind(new(repository2.ContactRepository), new(*repository2.MysqlContactRepository)),
+		wire.Bind(new(repository2.Repository), new(*contact.Repository)),
 	)
 	RepositoryMockWiring = wire.NewSet(
 		wire.FieldsOf(
 			new(*mockBase.Mocks),
 			"ContactRepository",
 		),
-		wire.Bind(new(repository2.ContactRepository), new(*mocks.MockContactRepository)),
+		wire.Bind(new(repository2.Repository), new(*mocks.MockRepository)),
 	)
 	AppWiring = wire.NewSet(
 		event2.NewContactCreatedEventHandler,
 		command.NewCreateContactCommandHandler,
 
-		wire.Bind(new(event2.IEventHandler), new(*event2.ContactCreatedEventHandler)),
+		wire.Bind(new(event2.Handler), new(*event2.ContactCreatedEventHandler)),
 	)
 	UiWiring = wire.NewSet(
 		handler2.NewIndexHandler,

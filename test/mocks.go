@@ -8,7 +8,7 @@ import (
 )
 
 type Mocks struct {
-	ContactRepository *mocks.MockContactRepository
+	ContactRepository *mocks.MockRepository
 	Mailer            *mocks.MockMailer
 	Captcher          *mocks.MockCaptcher
 	Validater         *mocks.MockValidater
@@ -18,7 +18,7 @@ func New(reporter gomock.TestReporter) *Mocks {
 	controller := gomock.NewController(reporter)
 	fmt.Println(controller)
 	return &Mocks{
-		ContactRepository: mocks.NewMockContactRepository(controller),
+		ContactRepository: mocks.NewMockRepository(controller),
 		Mailer:            mocks.NewMockMailer(controller),
 		Captcher:          mocks.NewMockCaptcher(controller),
 		Validater:         mocks.NewMockValidater(controller),

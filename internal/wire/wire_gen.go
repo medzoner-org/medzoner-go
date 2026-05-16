@@ -19,13 +19,13 @@ import (
 	"github.com/Medzoner/gomedz/pkg/notifier"
 	"github.com/Medzoner/gomedz/pkg/observability"
 	"github.com/Medzoner/gomedz/pkg/validation"
+	"github.com/Medzoner/medzoner-go/internal/adapters/contact"
 	"github.com/Medzoner/medzoner-go/internal/application/command"
 	"github.com/Medzoner/medzoner-go/internal/application/event"
-	"github.com/Medzoner/medzoner-go/internal/application/service/mailer"
 	"github.com/Medzoner/medzoner-go/internal/config"
-	"github.com/Medzoner/medzoner-go/internal/database"
-	"github.com/Medzoner/medzoner-go/internal/domain/repository"
-	"github.com/Medzoner/medzoner-go/internal/ui/http/handler"
+	contact2 "github.com/Medzoner/medzoner-go/internal/ports/contact"
+	"github.com/Medzoner/medzoner-go/internal/ui/http/index"
+	"github.com/Medzoner/medzoner-go/pkg/database"
 	"github.com/Medzoner/medzoner-go/test"
 	mocks2 "github.com/Medzoner/medzoner-go/test/mocks"
 	"github.com/google/wire"
@@ -71,16 +71,16 @@ func InitServerTest(ctx context.Context, m *mocks.Mocks) (server.Server, error) 
 	v2 := closers(telemetry)
 	v3 := middlewaresAny()
 	probesPingers := pingers()
-	probesHandler := probes.New(serverConfig, probesPingers)
-	mockContactRepository := m.ContactRepository
+	handler := probes.New(serverConfig, probesPingers)
+	mockRepository := m.ContactRepository
 	mockMailer := m.Mailer
 	contactCreatedEventHandler := event.NewContactCreatedEventHandler(mockMailer)
-	createContactCommandHandler := command.NewCreateContactCommandHandler(mockContactRepository, contactCreatedEventHandler)
+	createContactCommandHandler := command.NewCreateContactCommandHandler(mockRepository, contactCreatedEventHandler)
 	validatorAdapter := validation.New()
 	captchaConfig := configConfig.Recaptcha
 	recaptchaAdapter := captcha.NewRecaptchaAdapter(captchaConfig)
-	indexHandler := handler.NewIndexHandler(createContactCommandHandler, validatorAdapter, recaptchaAdapter, rootPath)
-	v4 := controllers(probesHandler, indexHandler)
+	indexHandler := index.NewIndexHandler(createContactCommandHandler, validatorAdapter, recaptchaAdapter, rootPath)
+	v4 := controllers(handler, indexHandler)
 	serverServer := newServer(ctx, loggerInterface, telemetry, serverConfig, engine, v2, v3, v4)
 	return serverServer, nil
 }
@@ -112,26 +112,26 @@ func InitServer(ctx context.Context) (server.Server, error) {
 	v2 := closers(telemetry)
 	v3 := middlewaresAny()
 	probesPingers := pingers()
-	probesHandler := probes.New(serverConfig, probesPingers)
+	handler := probes.New(serverConfig, probesPingers)
 	connectorConfig := configConfig.Database
 	dbSQLInstance := connector.NewDbSQLInstance(connectorConfig)
-	mysqlContactRepository := repository.NewMysqlContactRepository(dbSQLInstance)
+	repository := contact.NewRepository(dbSQLInstance)
 	notifierConfig := configConfig.Mailer
 	mailerSMTP := notifier.NewMailerSMTP(notifierConfig)
 	contactCreatedEventHandler := event.NewContactCreatedEventHandler(mailerSMTP)
-	createContactCommandHandler := command.NewCreateContactCommandHandler(mysqlContactRepository, contactCreatedEventHandler)
+	createContactCommandHandler := command.NewCreateContactCommandHandler(repository, contactCreatedEventHandler)
 	validatorAdapter := validation.New()
 	captchaConfig := configConfig.Recaptcha
 	recaptchaAdapter := captcha.NewRecaptchaAdapter(captchaConfig)
-	indexHandler := handler.NewIndexHandler(createContactCommandHandler, validatorAdapter, recaptchaAdapter, rootPath)
-	v4 := controllers(probesHandler, indexHandler)
+	indexHandler := index.NewIndexHandler(createContactCommandHandler, validatorAdapter, recaptchaAdapter, rootPath)
+	v4 := controllers(handler, indexHandler)
 	serverServer := newServer(ctx, loggerInterface, telemetry, serverConfig, engine, v2, v3, v4)
 	return serverServer, nil
 }
 
 // wire.go:
 
-func controllers(p *probes.Handler, a handler.IndexHandler) []http.Controller {
+func controllers(p *probes.Handler, a index.Handler) []http.Controller {
 	return []http.Controller{
 		p,
 		a,
@@ -207,23 +207,23 @@ var (
 		newServer,
 	)
 	ObsWiring     = wire.NewSet(logger.NewLogger, observability.NewTelemetry)
-	UsecaseWiring = wire.NewSet(event.NewContactCreatedEventHandler, command.NewCreateContactCommandHandler, wire.Bind(new(event.IEventHandler), new(*event.ContactCreatedEventHandler)))
-	HandlerWiring = wire.NewSet(handler.NewIndexHandler)
+	UsecaseWiring = wire.NewSet(event.NewContactCreatedEventHandler, command.NewCreateContactCommandHandler, wire.Bind(new(event.Handler), new(*event.ContactCreatedEventHandler)))
+	HandlerWiring = wire.NewSet(index.NewIndexHandler)
 
 	InfraWiring      = wire.NewSet(validation.New, captcha.NewRecaptchaAdapter, wire.Bind(new(validation.Validater), new(*validation.ValidatorAdapter)), wire.Bind(new(captcha.Captcher), new(*captcha.RecaptchaAdapter)))
 	DbWiring         = wire.NewSet(connector.NewDbSQLInstance, wire.Bind(new(connector.DbInstantiator), new(*connector.DbSQLInstance)))
-	MailerWiring     = wire.NewSet(notifier.NewMailerSMTP, wire.Bind(new(mailer.Mailer), new(*notifier.MailerSMTP)))
+	MailerWiring     = wire.NewSet(notifier.NewMailerSMTP, wire.Bind(new(event.Mailer), new(*notifier.MailerSMTP)))
 	MailerMockWiring = wire.NewSet(wire.FieldsOf(
 		new(*mocks.Mocks),
 		"Mailer",
-	), wire.Bind(new(mailer.Mailer), new(*mocks2.MockMailer)),
+	), wire.Bind(new(event.Mailer), new(*mocks2.MockMailer)),
 	)
-	RepositoryWiring     = wire.NewSet(repository.NewMysqlContactRepository, wire.Bind(new(repository.ContactRepository), new(*repository.MysqlContactRepository)))
+	RepositoryWiring     = wire.NewSet(contact.NewRepository, wire.Bind(new(contact2.Repository), new(*contact.Repository)))
 	RepositoryMockWiring = wire.NewSet(wire.FieldsOf(
 		new(*mocks.Mocks),
 		"ContactRepository",
-	), wire.Bind(new(repository.ContactRepository), new(*mocks2.MockContactRepository)),
+	), wire.Bind(new(contact2.Repository), new(*mocks2.MockRepository)),
 	)
-	AppWiring = wire.NewSet(event.NewContactCreatedEventHandler, command.NewCreateContactCommandHandler, wire.Bind(new(event.IEventHandler), new(*event.ContactCreatedEventHandler)))
-	UiWiring  = wire.NewSet(handler.NewIndexHandler)
+	AppWiring = wire.NewSet(event.NewContactCreatedEventHandler, command.NewCreateContactCommandHandler, wire.Bind(new(event.Handler), new(*event.ContactCreatedEventHandler)))
+	UiWiring  = wire.NewSet(index.NewIndexHandler)
 )

@@ -12,7 +12,7 @@ import (
 
 	"github.com/Medzoner/gomedz/pkg/logger"
 	"github.com/Medzoner/gomedz/pkg/observability"
-	"github.com/Medzoner/medzoner-go/internal/entity"
+	"github.com/Medzoner/medzoner-go/internal/domains"
 	"gopkg.in/guregu/null.v1"
 	"gotest.tools/assert"
 )
@@ -26,7 +26,7 @@ func init() {
 }
 
 func TestContactCreatedEventHandler(t *testing.T) {
-	contact := entity.Contact{
+	contact := domains.Contact{
 		Name:    "a name",
 		Email:   null.StringFrom("an email"),
 		Message: "the message",
@@ -78,7 +78,7 @@ func TestContactCreatedEventHandler(t *testing.T) {
 
 		handler := event2.NewContactCreatedEventHandler(mailer)
 		contactCreatedEvent := event2.ContactCreatedEvent{
-			Contact: entity.Contact{
+			Contact: domains.Contact{
 				Name:    "test",
 				Email:   null.StringFrom("test@test.com"),
 				Message: "msg",

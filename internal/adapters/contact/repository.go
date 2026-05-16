@@ -1,4 +1,4 @@
-package repository
+package contact
 
 import (
 	"context"
@@ -10,24 +10,24 @@ import (
 	"github.com/Medzoner/gomedz/pkg/connector"
 	"github.com/Medzoner/gomedz/pkg/logger"
 	"github.com/Medzoner/gomedz/pkg/observability"
-	"github.com/Medzoner/medzoner-go/internal/entity"
+	"github.com/Medzoner/medzoner-go/internal/domains"
 	otelTrace "go.opentelemetry.io/otel/trace"
 )
 
-// MysqlContactRepository MysqlContactRepository
-type MysqlContactRepository struct {
+// Repository Repository
+type Repository struct {
 	DbInstance connector.DbInstantiator
 }
 
-// NewMysqlContactRepository is a function that returns a new MysqlContactRepository
-func NewMysqlContactRepository(dbInstance connector.DbInstantiator) *MysqlContactRepository {
-	return &MysqlContactRepository{
+// NewRepository is a function that returns a new Repository
+func NewRepository(dbInstance connector.DbInstantiator) *Repository {
+	return &Repository{
 		DbInstance: dbInstance,
 	}
 }
 
 // Save is a function that saves a contact
-func (m *MysqlContactRepository) Save(ctx context.Context, contact entity.Contact) error {
+func (m *Repository) Save(ctx context.Context, contact domains.Contact) error {
 	_, iSpan := observability.StartSpan(ctx, "MysqlContactRepository.Save")
 	defer iSpan.End()
 

@@ -1,4 +1,4 @@
-package handler_test
+package index_test
 
 import (
 	"context"
@@ -16,7 +16,7 @@ import (
 	command2 "github.com/Medzoner/medzoner-go/internal/application/command"
 	"github.com/Medzoner/medzoner-go/internal/application/event"
 	"github.com/Medzoner/medzoner-go/internal/config"
-	"github.com/Medzoner/medzoner-go/internal/ui/http/handler"
+	"github.com/Medzoner/medzoner-go/internal/ui/http/index"
 	mocks "github.com/Medzoner/medzoner-go/test"
 	"go.uber.org/mock/gomock"
 	"gotest.tools/assert"
@@ -50,7 +50,7 @@ func TestIndexHandler_Index_GET(t *testing.T) {
 		mocked := mocks.New(t)
 		mocked.Captcher.EXPECT().GetSiteKey().Return("test-site-key").Times(1)
 
-		h := handler.NewIndexHandler(
+		h := index.NewIndexHandler(
 			command2.NewCreateContactCommandHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
 			mocked.Validater,
 			mocked.Captcher,
@@ -73,7 +73,7 @@ func TestIndexHandler_Index_GET_RenderError(t *testing.T) {
 		mocked := mocks.New(t)
 		mocked.Captcher.EXPECT().GetSiteKey().Return("test-site-key").Times(1)
 
-		h := handler.NewIndexHandler(
+		h := index.NewIndexHandler(
 			command2.NewCreateContactCommandHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
 			mocked.Validater,
 			mocked.Captcher,
@@ -96,7 +96,7 @@ func TestIndexHandler_Index_POST_ValidationError(t *testing.T) {
 		mocked.Captcher.EXPECT().GetSiteKey().Return("test-site-key").Times(1)
 		mocked.Validater.EXPECT().Struct(gomock.Any()).Return(errors.New("validation error")).Times(1)
 
-		h := handler.NewIndexHandler(
+		h := index.NewIndexHandler(
 			command2.NewCreateContactCommandHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
 			mocked.Validater,
 			mocked.Captcher,
@@ -126,7 +126,7 @@ func TestIndexHandler_Index_POST_Success(t *testing.T) {
 		mocked.ContactRepository.EXPECT().Save(gomock.Any(), gomock.Any()).Return(nil).Times(1)
 		mocked.Mailer.EXPECT().Send(gomock.Any(), gomock.Any()).Return(true, nil).Times(1)
 
-		h := handler.NewIndexHandler(
+		h := index.NewIndexHandler(
 			command2.NewCreateContactCommandHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
 			mocked.Validater,
 			mocked.Captcher,
@@ -155,7 +155,7 @@ func TestIndexHandler_Index_POST_CaptchaError(t *testing.T) {
 		mocked.Captcher.EXPECT().GetSiteKey().Return("test-site-key").Times(1)
 		mocked.Captcher.EXPECT().Confirm(gomock.Any(), gomock.Any()).Return(false, errors.New("captcha error")).Times(1)
 
-		h := handler.NewIndexHandler(
+		h := index.NewIndexHandler(
 			command2.NewCreateContactCommandHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
 			mocked.Validater,
 			mocked.Captcher,
@@ -180,13 +180,13 @@ func TestIndexHandler_Index_POST_CaptchaError(t *testing.T) {
 }
 
 func TestIndexHandler_Index_POST_CommandHandlerError(t *testing.T) {
-	t.Run("Unit: test IndexHandler POST command handler error", func(t *testing.T) {
+	t.Run("Unit: test IndexHandler POST command index error", func(t *testing.T) {
 		mocked := mocks.New(t)
 		mocked.Captcher.EXPECT().GetSiteKey().Return("test-site-key").Times(1)
 		mocked.Validater.EXPECT().Struct(gomock.Any()).Return(nil).Times(1)
 		mocked.ContactRepository.EXPECT().Save(gomock.Any(), gomock.Any()).Return(errors.New("save error")).Times(1)
 
-		h := handler.NewIndexHandler(
+		h := index.NewIndexHandler(
 			command2.NewCreateContactCommandHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
 			mocked.Validater,
 			mocked.Captcher,
@@ -210,7 +210,7 @@ func TestIndexHandler_Index_POST_CommandHandlerError(t *testing.T) {
 
 func TestIndexHandler_Prefix(t *testing.T) {
 	t.Run("Unit: test IndexHandler Prefix returns /", func(t *testing.T) {
-		h := handler.NewIndexHandler(command2.CreateContactCommandHandler{}, nil, nil, config.RootPath("./"))
+		h := index.NewIndexHandler(command2.CreateContactCommandHandler{}, nil, nil, config.RootPath("./"))
 		assert.Equal(t, h.Prefix(), "/")
 	})
 }
@@ -221,7 +221,7 @@ func TestIndexHandler_Index_POST_CaptchaConfirmFailed(t *testing.T) {
 		mocked.Captcher.EXPECT().GetSiteKey().Return("test-site-key").Times(1)
 		mocked.Captcher.EXPECT().Confirm(gomock.Any(), gomock.Any()).Return(false, nil).Times(1)
 
-		h := handler.NewIndexHandler(
+		h := index.NewIndexHandler(
 			command2.NewCreateContactCommandHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
 			mocked.Validater,
 			mocked.Captcher,
@@ -250,7 +250,7 @@ func TestIndexHandler_Index_POST_WithSubmit(t *testing.T) {
 		mocked := mocks.New(t)
 		mocked.Captcher.EXPECT().GetSiteKey().Return("test-site-key").Times(1)
 
-		h := handler.NewIndexHandler(
+		h := index.NewIndexHandler(
 			command2.NewCreateContactCommandHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
 			mocked.Validater,
 			mocked.Captcher,
@@ -274,7 +274,7 @@ func TestIndexHandler_Index_POST_WithSubmit(t *testing.T) {
 
 func TestIndexHandler_Register(t *testing.T) {
 	t.Run("Unit: test IndexHandler Register registers routes", func(t *testing.T) {
-		h := handler.NewIndexHandler(command2.CreateContactCommandHandler{}, nil, nil, config.RootPath("./"))
+		h := index.NewIndexHandler(command2.CreateContactCommandHandler{}, nil, nil, config.RootPath("./"))
 		r := &fakeRouter{}
 
 		h.Register(r)

@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/Medzoner/gomedz/pkg/notifier"
 	"github.com/Medzoner/gomedz/pkg/observability"
-	"github.com/Medzoner/medzoner-go/internal/application/service/mailer"
-	"github.com/Medzoner/medzoner-go/internal/entity"
+	"github.com/Medzoner/medzoner-go/internal/domains"
 )
 
 var (
@@ -16,13 +16,18 @@ var (
 	ErrInvalidEventType = fmt.Errorf("contact is not of type entity.Contact")
 )
 
+//go:generate mockgen -destination=./../../../test/mocks/mailer_smtp.go -package=mocks -source=./contact_created_event_handler.go Mailer
+type Mailer interface {
+	Send(ctx context.Context, view notifier.Message) (bool, error)
+}
+
 // ContactCreatedEventHandler handles ContactCreatedEvent and sends a notification mail.
 type ContactCreatedEventHandler struct {
-	Mailer mailer.Mailer
+	Mailer Mailer
 }
 
 // NewContactCreatedEventHandler creates a new ContactCreatedEventHandler.
-func NewContactCreatedEventHandler(mailer mailer.Mailer) *ContactCreatedEventHandler {
+func NewContactCreatedEventHandler(mailer Mailer) *ContactCreatedEventHandler {
 	return &ContactCreatedEventHandler{
 		Mailer: mailer,
 	}
@@ -37,7 +42,7 @@ func (c ContactCreatedEventHandler) Publish(ctx context.Context, event Event) er
 		return nil
 	}
 
-	contact, ok := event.GetModel().(entity.Contact)
+	contact, ok := event.GetModel().(domains.Contact)
 	if !ok {
 		return fmt.Errorf("error during get contact from event: %w", ErrInvalidEventType)
 	}
