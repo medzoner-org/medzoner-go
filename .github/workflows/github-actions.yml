@@ -105,12 +105,17 @@ jobs:
 
       - run: cp .env.github .env
       - run: make build
-      - run: .github/push.sh
+
+      - name: Docker build and push
+        uses: medzoner/gomedz/.github/actions/docker-push@main
+        with:
+          docker-username: ${{ secrets.DOCKER_USERNAME }}
+          docker-password: ${{ secrets.DOCKER_PASSWORD }}
+          docker-registry: docker.io
+          docker-image: medzoner/medzoner-go
+          docker-tag: ${{ github.ref_name }}-${{ github.sha }}
+          docker-file: ./infra/docker/prod/Dockerfile
     env:
-      DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
-      DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
-      GIT_BRANCH: ${{ github.ref_name }}
-      GIT_COMMIT: ${{ github.sha }}
       GOPATH: /home/runner/work/medzoner-go/go
 
   cd-deploy:
