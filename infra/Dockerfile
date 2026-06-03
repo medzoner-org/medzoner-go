@@ -1,7 +1,7 @@
 #############################################
 ### Base build
 #############################################
-FROM golang:1.26.2 AS base
+FROM golang:1.26.4 AS base
 
 RUN groupadd -g 1000 app && \
     useradd -g 1000 -u 1000 app
@@ -11,7 +11,7 @@ RUN go install github.com/go-delve/delve/cmd/dlv@master
 #############################################
 ### Run the Go Binary
 #############################################
-FROM golang:1.26.2 AS run
+FROM golang:1.26.4 AS run
 
 COPY --from=base /etc/passwd /etc/passwd
 COPY --from=base /go/bin/dlv /
