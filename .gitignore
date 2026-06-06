@@ -47,3 +47,4 @@ skaffold.env
 *.prof
 *.pprof
 *.test
+/rust-equivalent/target/
