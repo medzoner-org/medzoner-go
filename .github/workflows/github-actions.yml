@@ -26,7 +26,7 @@ concurrency:
 
 jobs:
   ci-lint:
-    runs-on: ubuntu-24.04
+    runs-on: medzoner-runner
     strategy:
       matrix:
         go-version: [ '1.26.x' ]
@@ -34,7 +34,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Go setup (cache + private)
-        uses: ./.github/actions/go-setup
+        uses: medzoner/gomedz/.github/actions/go-setup@main
         with:
           go-version: ${{ matrix.go-version }}
           gh-token: ${{ secrets.CI_JOB_TOKEN }}
@@ -45,19 +45,19 @@ jobs:
       - run: golangci-lint -v --config .golangci/.golangci.yml --issues-exit-code 1 run ./...
 
   ci-test:
-    runs-on: ubuntu-24.04
+    runs-on: medzoner-runner
     strategy:
       matrix:
         go-version: [ '1.26.x' ]
     steps:
       - uses: actions/checkout@v6
+
       - name: Go setup (cache + private)
-        uses: ./.github/actions/go-setup
+        uses: medzoner/gomedz/.github/actions/go-setup@main
         with:
           go-version: ${{ matrix.go-version }}
           gh-token: ${{ secrets.CI_JOB_TOKEN }}
-          cache-dependency-path: |
-            go.sum
+
       - run: cp .env.github .env
       - run: make test_all
       - name: Archive code coverage results
@@ -70,7 +70,7 @@ jobs:
       GOPATH: /home/runner/work/medzoner-go/go
 
   ci-security:
-    runs-on: ubuntu-24.04
+    runs-on: medzoner-runner
     strategy:
       matrix:
         go-version: [ '1.26.x' ]
@@ -78,7 +78,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Go setup (cache + private)
-        uses: ./.github/actions/go-setup
+        uses: medzoner/gomedz/.github/actions/go-setup@main
         with:
           go-version: ${{ matrix.go-version }}
           gh-token: ${{ secrets.CI_JOB_TOKEN }}
@@ -89,7 +89,7 @@ jobs:
 
   cd-release:
     if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-    runs-on: ubuntu-24.04
+    runs-on: medzoner-runner
     strategy:
       matrix:
         go-version: [ '1.26.x' ]
@@ -98,7 +98,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Go setup (cache + private)
-        uses: ./.github/actions/go-setup
+        uses: medzoner/gomedz/.github/actions/go-setup@main
         with:
           go-version: ${{ matrix.go-version }}
           gh-token: ${{ secrets.CI_JOB_TOKEN }}
@@ -120,37 +120,30 @@ jobs:
 
   cd-deploy:
     if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-    runs-on: ubuntu-latest
+    runs-on: medzoner-runner
     needs: [ cd-release ]
     steps:
-      - uses: actions/checkout@v6
-        name: GitOps - Checkout
+      - name: ArgoCD GitOps Deploy
+        uses: medzoner/gomedz/.github/actions/argo-deploy@main
         with:
-          repository: Medzoner/medzoner-gitops
-          ref: 'master'
-          token: ${{ secrets.CI_JOB_TOKEN }}
-          fetch-depth: 0
-          path: medzoner-gitops
-      - name: GitOps - Patch and push
-        run: |
-          git -C medzoner-gitops config user.name "medzoner"
-          git -C medzoner-gitops config user.email "medzoner@medzoner.com"
-          sed -i "s/  tag:.*/  tag: ${{ github.ref_name }}-${{ github.sha }}/" "medzoner-gitops/charts/medzoner/values.yaml"
-          git -C medzoner-gitops commit -am "medzoner ${{ github.ref_name }}-${{ github.sha }}"
-          git -C medzoner-gitops push origin master
-    env:
-      GIT_BRANCH: ${{ github.ref_name }}
-      GIT_COMMIT: ${{ github.sha }}
+          gitops-repository: Medzoner/medzoner-gitops
+          gitops-ref: master
+          gitops-token: ${{ secrets.CI_JOB_TOKEN }}
+          image-tag: ${{ github.ref_name }}-${{ github.sha }}
+          values-file: charts/medzoner/values.yaml
+          app-name: medzoner
+          git-user-name: medzoner
+          git-user-email: medzoner@medzoner.com
 
   cd-coverage-report:
     if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-    runs-on: ubuntu-24.04
+    runs-on: medzoner-runner
     needs: [ cd-release ]
     steps:
       - uses: actions/checkout@v6
 
       - name: Go setup (cache + private)
-        uses: ./.github/actions/go-setup
+        uses: medzoner/gomedz/.github/actions/go-setup@main
         with:
           go-version: '1.26.x'
           gh-token: ${{ secrets.CI_JOB_TOKEN }}
