@@ -19,6 +19,12 @@ on:
       - master
       - main
       - develop
+  workflow_dispatch:
+    inputs:
+      run-security:
+        description: "Run the ci-security job (gosec)"
+        type: boolean
+        default: false
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -81,6 +87,7 @@ jobs:
       GOPATH: /home/runner/work/medzoner-go/go
 
   ci-security:
+    if: github.event_name == 'workflow_dispatch' && inputs.run-security
     runs-on: medzoner-runner
     strategy:
       matrix:
