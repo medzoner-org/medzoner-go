@@ -1,6 +1,6 @@
-name: CI/CD medzoner-go
+name: medzoner-go
 
-run-name: ${{ github.actor }} run pipeline 🚀
+run-name: Action - ${{ github.sha }}
 
 on:
   push:
