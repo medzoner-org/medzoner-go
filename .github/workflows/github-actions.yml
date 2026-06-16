@@ -1,3 +1,5 @@
+# This workflow defines the CI/CD pipeline for the Medzoner Go application.
+# It includes jobs for linting, testing, security scanning, building, and deploying the application.
 name: medzoner-go
 
 run-name: Action - ${{ github.sha }}
