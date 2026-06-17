@@ -9,7 +9,7 @@ RUN addgroup --gid 1000 -S app \
     && mkdir -p /opt
 
 # Copie en tant qu'utilisateur app directement (évite un chown -R massif).
-COPY --chown=app:app ./bin /opt/bin
+COPY --chown=app:app --chmod=0755 ./bin /opt/bin
 COPY --chown=app:app ./tmpl /opt/tmpl
 COPY --chown=app:app ./.var /opt/.var
 COPY --chown=app:app ./public /opt/public

@@ -202,6 +202,9 @@ jobs:
           name: medzoner-bin
           path: bin/
 
+      - name: Restore executable bit (lost by zip artifact)
+        run: chmod +x bin/*
+
       - name: Docker build and push
         uses: ./.github/actions/gomedz/.github/actions/docker-push
         with:
