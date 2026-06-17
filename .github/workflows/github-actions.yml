@@ -118,7 +118,11 @@ jobs:
 
       - name: Update goreportcard
         if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-        uses: creekorful/goreportcard-action@v1.0
+        # Appel direct de l'API goreportcard pour éviter le pull Docker Hub
+        # de creekorful/goreportcard-action (rate limit anonyme 429).
+        run: |
+          curl -fsSL -X POST -d "repo=github.com/${{ github.repository }}" \
+            https://goreportcard.com/checks || echo "goreportcard refresh failed (non-bloquant)"
 
   ci-build:
     # Build des binaires en parallèle de lint/test. Le résultat est partagé avec
