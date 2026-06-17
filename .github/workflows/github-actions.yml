@@ -1,5 +1,5 @@
-# This workflow defines the CI/CD pipeline for the Medzoner Go application.
-# It includes jobs for linting, testing, security scanning, building, and deploying the application.
+# CI/CD pipeline for the Medzoner Go application.
+# Jobs: lint, test, build (parallèles) → release → (deploy).
 name: medzoner-go
 
 run-name: Action - ${{ github.sha }}
@@ -16,11 +16,23 @@ on:
       - 'release/**'
     paths-ignore:
       - '.vscode/**'
+      - '**/*.md'
+      - 'doc/**'
+      - 'public/images/**'
+      - 'LICENSE'
+      - 'CHANGELOG'
   pull_request:
     branches:
       - master
       - main
       - develop
+    paths-ignore:
+      - '.vscode/**'
+      - '**/*.md'
+      - 'doc/**'
+      - 'public/images/**'
+      - 'LICENSE'
+      - 'CHANGELOG'
   workflow_dispatch:
     inputs:
       run-security:
@@ -32,12 +44,14 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  GO_VERSION: '1.26.x'
+
 jobs:
+  # Évite l'exécution dupliquée push + pull_request pour la même branche du même repo.
   ci-lint:
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository }}
     runs-on: medzoner-runner
-    strategy:
-      matrix:
-        go-version: [ '1.26.x' ]
     steps:
       - uses: actions/checkout@v6
       - uses: actions/checkout@v6
@@ -49,20 +63,22 @@ jobs:
       - name: Go setup (cache + private)
         uses: ./.github/actions/gomedz/.github/actions/go-setup
         with:
-          go-version: ${{ matrix.go-version }}
+          go-version: ${{ env.GO_VERSION }}
           gh-token: ${{ secrets.CI_JOB_TOKEN }}
 
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v9
         with:
           version: v2.11.4
-          args: -c .golangci/.golangci.yml -v
+          args: -c .golangci/.golangci.yml --timeout=5m
+          skip-cache: false
 
   ci-test:
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository }}
     runs-on: medzoner-runner
-    strategy:
-      matrix:
-        go-version: [ '1.26.x' ]
+    env:
+      GOPATH: /home/runner/work/medzoner-go/go
+      COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
     steps:
       - uses: actions/checkout@v6
       - uses: actions/checkout@v6
@@ -74,26 +90,43 @@ jobs:
       - name: Go setup (cache + private)
         uses: ./.github/actions/gomedz/.github/actions/go-setup
         with:
-          go-version: ${{ matrix.go-version }}
+          go-version: ${{ env.GO_VERSION }}
           gh-token: ${{ secrets.CI_JOB_TOKEN }}
 
       - run: cp .env.github .env
-      - run: make test_all
+
+      - name: Run tests (parallel)
+        run: |
+          go test -count=1 -cover -coverpkg=./... -covermode=count \
+                  -coverprofile=cov.out -p="$(nproc)" ./...
+          go tool cover -func=cov.out | tail -n 1
+
       - name: Archive code coverage results
         uses: actions/upload-artifact@v7
         with:
           name: code-coverage-report
           path: cov.out
           retention-days: 7
+
+      # Fusion du job cd-coverage-report dans ci-test : économise un job complet
+      # (checkout + clone gomedz + setup Go) sur master.
+      - name: Upload coverage to Coveralls
+        if: github.ref == 'refs/heads/master' && github.event_name == 'push' && env.COVERALLS_TOKEN != ''
+        run: |
+          go install github.com/mattn/goveralls@latest
+          goveralls -coverprofile=cov.out -service=github -repotoken "${COVERALLS_TOKEN}"
+
+      - name: Update goreportcard
+        if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+        uses: creekorful/goreportcard-action@v1.0
+
+  ci-build:
+    # Build des binaires en parallèle de lint/test. Le résultat est partagé avec
+    # cd-release via un artefact → on évite de recompiler côté release.
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository }}
+    runs-on: medzoner-runner
     env:
       GOPATH: /home/runner/work/medzoner-go/go
-
-  ci-security:
-    if: github.event_name == 'workflow_dispatch' && inputs.run-security
-    runs-on: medzoner-runner
-    strategy:
-      matrix:
-        go-version: [ '1.26.x' ]
     steps:
       - uses: actions/checkout@v6
       - uses: actions/checkout@v6
@@ -105,36 +138,69 @@ jobs:
       - name: Go setup (cache + private)
         uses: ./.github/actions/gomedz/.github/actions/go-setup
         with:
-          go-version: ${{ matrix.go-version }}
-          gh-token: ${{ secrets.CI_JOB_TOKEN }}
-
-      - run: cp .env.github .env
-      - run: go install github.com/securego/gosec/v2/cmd/gosec@latest
-      - run: gosec ./...
-
-  cd-release:
-    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-    runs-on: medzoner-runner
-    strategy:
-      matrix:
-        go-version: [ '1.26.x' ]
-    needs: [ ci-lint, ci-test ]
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/checkout@v6
-        with:
-          repository: medzoner-org/gomedz
-          token: ${{ secrets.ORG_PAT }}
-          path: .github/actions/gomedz
-
-      - name: Go setup (cache + private)
-        uses: ./.github/actions/gomedz/.github/actions/go-setup
-        with:
-          go-version: ${{ matrix.go-version }}
+          go-version: ${{ env.GO_VERSION }}
           gh-token: ${{ secrets.CI_JOB_TOKEN }}
 
       - run: cp .env.github .env
       - run: make build
+
+      - name: Upload binaries artifact
+        if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+        uses: actions/upload-artifact@v7
+        with:
+          name: medzoner-bin
+          path: bin/
+          retention-days: 1
+
+  ci-security:
+    if: github.event_name == 'workflow_dispatch' && inputs.run-security
+    runs-on: medzoner-runner
+    steps:
+      - uses: actions/checkout@v6
+      - name: Run gosec
+        uses: securego/gosec@master
+        with:
+          args: ./...
+
+  ci-vuln:
+    # Scan rapide des CVEs Go (modules + stdlib). Tourne en parallèle, ne bloque pas le pipeline.
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository }}
+    runs-on: medzoner-runner
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6
+        with:
+          repository: medzoner-org/gomedz
+          token: ${{ secrets.ORG_PAT }}
+          path: .github/actions/gomedz
+      - name: Go setup (cache + private)
+        uses: ./.github/actions/gomedz/.github/actions/go-setup
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          gh-token: ${{ secrets.CI_JOB_TOKEN }}
+      - name: Run govulncheck
+        run: |
+          go install golang.org/x/vuln/cmd/govulncheck@latest
+          govulncheck ./...
+
+  cd-release:
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    runs-on: medzoner-runner
+    needs: [ ci-lint, ci-test, ci-build ]
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6
+        with:
+          repository: medzoner-org/gomedz
+          token: ${{ secrets.ORG_PAT }}
+          path: .github/actions/gomedz
+
+      - name: Download prebuilt binaries
+        uses: actions/download-artifact@v8
+        with:
+          name: medzoner-bin
+          path: bin/
 
       - name: Docker build and push
         uses: ./.github/actions/gomedz/.github/actions/docker-push
@@ -145,8 +211,6 @@ jobs:
           docker-image: medzoner/medzoner-go
           docker-tag: ${{ github.ref_name }}-${{ github.sha }}
           docker-file: ./infra/docker/prod/Dockerfile
-    env:
-      GOPATH: /home/runner/work/medzoner-go/go
 
 #  cd-deploy:
 #    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
@@ -172,33 +236,3 @@ jobs:
 #          git-user-name: medzoner
 #          git-user-email: medzoner@medzoner.com
 
-  cd-coverage-report:
-    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-    runs-on: medzoner-runner
-    needs: [ cd-release ]
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/checkout@v6
-        with:
-          repository: medzoner-org/gomedz
-          token: ${{ secrets.ORG_PAT }}
-          path: .github/actions/gomedz
-
-      - name: Go setup (cache + private)
-        uses: ./.github/actions/gomedz/.github/actions/go-setup
-        with:
-          go-version: '1.26.x'
-          gh-token: ${{ secrets.CI_JOB_TOKEN }}
-
-      - name: Download coverage artifact
-        uses: actions/download-artifact@v8
-        with:
-          name: code-coverage-report
-      - run: go install github.com/modocache/gover@latest
-      - run: go install github.com/mattn/goveralls@latest
-      - run: goveralls -coverprofile=cov.out -service=travis-ci -repotoken "${COVERALLS_TOKEN}";
-      - name: update goreportcard
-        uses: creekorful/goreportcard-action@v1.0
-    env:
-      COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
-      GOPATH: /home/runner/work/medzoner-go/go

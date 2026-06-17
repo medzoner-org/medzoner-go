@@ -1,35 +1,25 @@
 #############################################
-### Build the Go Binary
-#############################################
-FROM golang:1.26.2 as build
-
-RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
-
-RUN useradd -u 1000 medzoner
-#RUN addgroup --gid 1000 -S app && adduser --uid 1000 -S -G app app
-
-#############################################
-### Run the Go Binary
+### Runtime image (binaires prébuild via CI/Makefile)
 #############################################
 FROM alpine:3.23.3 AS runner
 
-COPY ./bin /opt/bin
-COPY ./tmpl /opt/tmpl
-COPY ./.var /opt/.var
-COPY ./public /opt/public
-COPY ./migrations /opt/migrations
-COPY ./internal/resources /opt/internal/resources
+# Un seul RUN = moins de layers, build et pull plus rapides.
+RUN addgroup --gid 1000 -S app \
+    && adduser --uid 1000 -S -G app app \
+    && mkdir -p /opt
 
-#COPY --from=build /etc/passwd /etc/passwd
-#COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-RUN addgroup --gid 1000 -S app && adduser --uid 1000 -S -G app app
-
-RUN chown -R app:app /opt
+# Copie en tant qu'utilisateur app directement (évite un chown -R massif).
+COPY --chown=app:app ./bin /opt/bin
+COPY --chown=app:app ./tmpl /opt/tmpl
+COPY --chown=app:app ./.var /opt/.var
+COPY --chown=app:app ./public /opt/public
+COPY --chown=app:app ./migrations /opt/migrations
+COPY --chown=app:app ./internal/resources /opt/internal/resources
 
 USER app
-
 WORKDIR /opt
 
 HEALTHCHECK --interval=5s --timeout=3s --retries=3 CMD ["lsof", "-i:8080", "||", "exit", "1"]
 
 CMD ["/opt/bin/app"]
+
