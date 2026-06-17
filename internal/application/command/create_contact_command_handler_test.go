@@ -90,20 +90,6 @@ func TestCreateContactCommandHandler(t *testing.T) {
 	})
 }
 
-type LoggerTest struct {
-	LogMessages []string
-}
-
-func (l *LoggerTest) Log(msg string) {
-	l.LogMessages = append(l.LogMessages, msg)
-	fmt.Println(msg)
-}
-
-func (l *LoggerTest) Error(msg string) {
-	l.LogMessages = append(l.LogMessages, msg)
-	fmt.Println(msg)
-}
-
 type ContactRepositoryTest struct{}
 
 func (r ContactRepositoryTest) Save(ctx context.Context, contact domains.Contact) error {

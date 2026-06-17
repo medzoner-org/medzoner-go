@@ -14,7 +14,6 @@ import (
 	otelTrace "go.opentelemetry.io/otel/trace"
 )
 
-// Repository Repository
 type Repository struct {
 	DbInstance connector.DbInstantiator
 }
