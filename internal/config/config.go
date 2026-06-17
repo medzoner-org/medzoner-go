@@ -31,6 +31,11 @@ type (
 		RootPath  RootPath             `env:"ROOT_PATH"`
 		Recaptcha captcha.Config       `envPrefix:"RECAPTCHA_"`
 	}
+
+	TestConfig struct {
+		Obs    observability.Config `envPrefix:"TELEMETRY_"`
+		Engine ginadapter.Config    `envPrefix:"ENGINE_"`
+	}
 )
 
 func NewConfig() (Config, error) {
