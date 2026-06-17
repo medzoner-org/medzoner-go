@@ -148,29 +148,29 @@ jobs:
     env:
       GOPATH: /home/runner/work/medzoner-go/go
 
-  cd-deploy:
-    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-    runs-on: medzoner-runner
-    needs: [ cd-release ]
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/checkout@v6
-        with:
-          repository: medzoner-org/gomedz
-          token: ${{ secrets.ORG_PAT }}
-          path: .github/actions/gomedz
-
-      - name: ArgoCD GitOps Deploy
-        uses: ./.github/actions/gomedz/.github/actions/argo-deploy
-        with:
-          gitops-repository: Medzoner/medzoner-gitops
-          gitops-ref: master
-          gitops-token: ${{ secrets.CI_JOB_TOKEN }}
-          image-tag: ${{ github.ref_name }}-${{ github.sha }}
-          values-file: charts/medzoner/values.yaml
-          app-name: medzoner
-          git-user-name: medzoner
-          git-user-email: medzoner@medzoner.com
+#  cd-deploy:
+#    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+#    runs-on: medzoner-runner
+#    needs: [ cd-release ]
+#    steps:
+#      - uses: actions/checkout@v6
+#      - uses: actions/checkout@v6
+#        with:
+#          repository: medzoner-org/gomedz
+#          token: ${{ secrets.ORG_PAT }}
+#          path: .github/actions/gomedz
+#
+#      - name: ArgoCD GitOps Deploy
+#        uses: ./.github/actions/gomedz/.github/actions/argo-deploy
+#        with:
+#          gitops-repository: Medzoner/medzoner-gitops
+#          gitops-ref: master
+#          gitops-token: ${{ secrets.CI_JOB_TOKEN }}
+#          image-tag: ${{ github.ref_name }}-${{ github.sha }}
+#          values-file: charts/medzoner/values.yaml
+#          app-name: medzoner
+#          git-user-name: medzoner
+#          git-user-email: medzoner@medzoner.com
 
   cd-coverage-report:
     if: github.ref == 'refs/heads/master' && github.event_name == 'push'
