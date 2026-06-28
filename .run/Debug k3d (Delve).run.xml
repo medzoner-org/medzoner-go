@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Debug k3d (Delve)" type="GoRemoteDebugConfigurationType" factoryName="Go Remote">
+    <option name="host" value="localhost" />
+    <option name="port" value="2346" />
+    <option name="disconnectOption" value="LEAVE" />
+    <disconnect value="LEAVE" />
+    <method v="2" />
+  </configuration>
+</component>
+
