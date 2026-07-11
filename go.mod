@@ -14,7 +14,7 @@ require (
 	github.com/golang/mock v1.6.0
 	github.com/google/wire v0.7.0
 	github.com/jmoiron/sqlx v1.4.0
-	go.opentelemetry.io/otel/trace v1.43.0
+	go.opentelemetry.io/otel/trace v1.44.0
 	go.uber.org/mock v0.6.0
 	gopkg.in/guregu/null.v1 v1.0.0-20140901052557-5cd2a757d890
 	gotest.tools v2.2.0+incompatible
