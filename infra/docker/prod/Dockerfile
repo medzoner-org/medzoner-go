@@ -1,7 +1,7 @@
 #############################################
 ### Runtime image (binaires prébuild via CI/Makefile)
 #############################################
-FROM alpine:3.23.3 AS runner
+FROM alpine:3.23.4 AS runner
 
 # Un seul RUN = moins de layers, build et pull plus rapides.
 RUN addgroup --gid 1000 -S app \
