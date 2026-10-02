@@ -4,7 +4,7 @@
 
 Hexagonal (DDD) Go portfolio site with CQRS. Request flow: `HTTP handler → Command/Query → Repository/Event → DB/Mail`.
 
-- **DI**: Google Wire (`internal/wire/wire.go`) — never edit `wire_gen.go`, run `make wire`
+- **DI**: whyor (`internal/wire/wire.go`, build tag `whyor`) — never edit `whyor_gen.go`, run `make wire`; local providers live in `internal/wire/providers.go` (no tag)
 - **HTTP framework**: `github.com/Medzoner/gomedz` (wraps Fiber), handlers implement `http.Controller` (see `Register()` method pattern in `internal/ui/http/handler/index_handler.go`)
 - **Config**: env vars parsed via `caarlos0/env/v11` into `internal/config/config.go`, prefixed (`TELEMETRY_`, `DATABASE_`, `MAILER_`, etc.)
 
@@ -49,7 +49,7 @@ BDD tests: `GODOG_INTEGRATION=1 go test -v ./...` (requires running DB).
 
 - Files: `snake_case.go`, tests: `snake_case_test.go`
 - Constructors: `New<Type>(deps) *<Type>` or value type
-- Wire sets grouped by layer in `internal/wire/wire.go`: `CommonWiring`, `DbWiring`, `RepositoryWiring`, `UsecaseWiring`, `HandlerWiring`, `ServerWiring`
+- whyor sets grouped by layer in `internal/wire/wire.go`: `CommonWiring`, `DbWiring`, `RepositoryWiring`, `UsecaseWiring`, `HandlerWiring`, `ServerWiring`
 
 ## Gotchas
 

@@ -106,8 +106,7 @@ func (h Handler) Index(c *http2.Context, _ struct{}) error {
 			Message: r.FormValue("message"),
 		}
 
-		validationError := h.Validation.Struct(createContactCommand)
-		if validationError == nil {
+		if validationError := h.Validation.Struct(createContactCommand); validationError == nil {
 			if err := h.CreateContactCommandHandler.Handle(ctx, createContactCommand); err != nil {
 				return fmt.Errorf("error during create contact command handling: %w", err)
 			}

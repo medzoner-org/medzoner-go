@@ -7,6 +7,7 @@ import (
 	"github.com/Medzoner/gomedz/pkg/notifier"
 	"github.com/Medzoner/gomedz/pkg/observability"
 	"github.com/Medzoner/medzoner-go/internal/domains"
+	"github.com/google/uuid"
 )
 
 var (
@@ -47,7 +48,7 @@ func (c ContactCreatedEventHandler) Publish(ctx context.Context, event Event) er
 		return fmt.Errorf("error during get contact from event: %w", ErrInvalidEventType)
 	}
 
-	if contact.UUID == "" {
+	if contact.UUID == uuid.Nil {
 		return fmt.Errorf("error during get contact from event: %w", ErrEmptyUUID)
 	}
 

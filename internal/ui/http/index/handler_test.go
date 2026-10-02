@@ -51,7 +51,7 @@ func TestIndexHandler_Index_GET(t *testing.T) {
 		mocked.Captcher.EXPECT().GetSiteKey().Return("test-site-key").Times(1)
 
 		h := index.NewIndexHandler(
-			command2.NewCreateContactCommandHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
+			command2.NewCreateContactHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
 			mocked.Validater,
 			mocked.Captcher,
 			config.RootPath("./"),
@@ -74,7 +74,7 @@ func TestIndexHandler_Index_GET_RenderError(t *testing.T) {
 		mocked.Captcher.EXPECT().GetSiteKey().Return("test-site-key").Times(1)
 
 		h := index.NewIndexHandler(
-			command2.NewCreateContactCommandHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
+			command2.NewCreateContactHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
 			mocked.Validater,
 			mocked.Captcher,
 			config.RootPath("./"),
@@ -97,7 +97,7 @@ func TestIndexHandler_Index_POST_ValidationError(t *testing.T) {
 		mocked.Validater.EXPECT().Struct(gomock.Any()).Return(errors.New("validation error")).Times(1)
 
 		h := index.NewIndexHandler(
-			command2.NewCreateContactCommandHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
+			command2.NewCreateContactHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
 			mocked.Validater,
 			mocked.Captcher,
 			config.RootPath("./"),
@@ -127,7 +127,7 @@ func TestIndexHandler_Index_POST_Success(t *testing.T) {
 		mocked.Mailer.EXPECT().Send(gomock.Any(), gomock.Any()).Return(true, nil).Times(1)
 
 		h := index.NewIndexHandler(
-			command2.NewCreateContactCommandHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
+			command2.NewCreateContactHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
 			mocked.Validater,
 			mocked.Captcher,
 			config.RootPath("./"),
@@ -156,7 +156,7 @@ func TestIndexHandler_Index_POST_CaptchaError(t *testing.T) {
 		mocked.Captcher.EXPECT().Confirm(gomock.Any(), gomock.Any()).Return(false, errors.New("captcha error")).Times(1)
 
 		h := index.NewIndexHandler(
-			command2.NewCreateContactCommandHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
+			command2.NewCreateContactHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
 			mocked.Validater,
 			mocked.Captcher,
 			config.RootPath("./"),
@@ -187,7 +187,7 @@ func TestIndexHandler_Index_POST_CommandHandlerError(t *testing.T) {
 		mocked.ContactRepository.EXPECT().Save(gomock.Any(), gomock.Any()).Return(errors.New("save error")).Times(1)
 
 		h := index.NewIndexHandler(
-			command2.NewCreateContactCommandHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
+			command2.NewCreateContactHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
 			mocked.Validater,
 			mocked.Captcher,
 			config.RootPath("./"),
@@ -222,7 +222,7 @@ func TestIndexHandler_Index_POST_CaptchaConfirmFailed(t *testing.T) {
 		mocked.Captcher.EXPECT().Confirm(gomock.Any(), gomock.Any()).Return(false, nil).Times(1)
 
 		h := index.NewIndexHandler(
-			command2.NewCreateContactCommandHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
+			command2.NewCreateContactHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
 			mocked.Validater,
 			mocked.Captcher,
 			config.RootPath("./"),
@@ -251,7 +251,7 @@ func TestIndexHandler_Index_POST_WithSubmit(t *testing.T) {
 		mocked.Captcher.EXPECT().GetSiteKey().Return("test-site-key").Times(1)
 
 		h := index.NewIndexHandler(
-			command2.NewCreateContactCommandHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
+			command2.NewCreateContactHandler(mocked.ContactRepository, event.ContactCreatedEventHandler{Mailer: mocked.Mailer}),
 			mocked.Validater,
 			mocked.Captcher,
 			config.RootPath("./"),

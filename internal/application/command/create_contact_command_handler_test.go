@@ -39,7 +39,7 @@ func TestCreateContactCommandHandler(t *testing.T) {
 		mocked := mocks.New(t)
 		mocked.Mailer.EXPECT().Send(gomock.Any(), gomock.Any()).Return(true, nil).AnyTimes()
 
-		handler := command2.NewCreateContactCommandHandler(
+		handler := command2.NewCreateContactHandler(
 			&ContactRepositoryTest{}, event.ContactCreatedEventHandler{Mailer: mocked.Mailer},
 		)
 
@@ -59,7 +59,7 @@ func TestCreateContactCommandHandler(t *testing.T) {
 		mocked := mocks.New(t)
 		mocked.ContactRepository.EXPECT().Save(gomock.Any(), gomock.Any()).Return(errors.New("error")).Times(1)
 
-		handler := command2.NewCreateContactCommandHandler(
+		handler := command2.NewCreateContactHandler(
 			mocked.ContactRepository, event.ContactCreatedEventHandler{
 				Mailer: mocked.Mailer,
 			},
@@ -80,7 +80,7 @@ func TestCreateContactCommandHandler(t *testing.T) {
 		mocked := mocks.New(t)
 		mocked.Mailer.EXPECT().Send(gomock.Any(), gomock.Any()).Return(false, errors.New("error")).Times(1)
 
-		handler := command2.NewCreateContactCommandHandler(
+		handler := command2.NewCreateContactHandler(
 			&ContactRepositoryTest{}, event.ContactCreatedEventHandler{Mailer: mocked.Mailer},
 		)
 
