@@ -33,7 +33,7 @@ Feature: Global behavior "Medzoner"
         And I add "Content-Type" header equal to "application/x-www-form-urlencoded"
         When    I send a POST request to "/" with body:
           """
-          {"name": "else", "email": "email@fake.com", "message": "else"}
+          {"name": "else", "email": "email@fake.com", "message": "hello world"}
           """
         Then    the response status code should be 303
         And     the response header "Location" should contain "/#contact"

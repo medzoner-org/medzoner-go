@@ -13,6 +13,7 @@ import (
 	"github.com/Medzoner/gomedz/pkg/logger"
 	"github.com/Medzoner/gomedz/pkg/observability"
 	"github.com/Medzoner/medzoner-go/internal/domains"
+	"github.com/google/uuid"
 	"gopkg.in/guregu/null.v1"
 	"gotest.tools/assert"
 )
@@ -32,7 +33,7 @@ func TestContactCreatedEventHandler(t *testing.T) {
 		Message: "the message",
 		DateAdd: time.Time{},
 		ID:      1,
-		UUID:    "a uuid",
+		UUID:    uuid.MustParse("123e4567-e89b-12d3-a456-426614174000"),
 	}
 
 	t.Run("Unit: test ContactCreatedEventHandler success", func(t *testing.T) {
@@ -83,7 +84,7 @@ func TestContactCreatedEventHandler(t *testing.T) {
 				Email:   null.StringFrom("test@test.com"),
 				Message: "msg",
 				DateAdd: time.Time{},
-				UUID:    "",
+				UUID:    uuid.Nil,
 			},
 		}
 		err := handler.Publish(context.Background(), contactCreatedEvent)

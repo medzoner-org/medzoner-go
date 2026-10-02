@@ -9,5 +9,5 @@ import (
 )
 
 type Repository interface {
-	Save(ctx context.Context, contact domains.Contact) error
+	Save(ctx context.Context, obj domains.Contact) error
 }

@@ -9,7 +9,7 @@ import (
 	event2 "github.com/Medzoner/medzoner-go/internal/application/event"
 	"github.com/Medzoner/medzoner-go/internal/domains"
 	"github.com/Medzoner/medzoner-go/internal/ports/contact"
-	"github.com/docker/distribution/uuid"
+	"github.com/google/uuid"
 	"gopkg.in/guregu/null.v1"
 )
 
@@ -19,8 +19,8 @@ type CreateContactCommandHandler struct {
 	ContactCreatedEventHandler event2.Handler
 }
 
-// NewCreateContactCommandHandler is a function that returns a new CreateContactCommandHandler
-func NewCreateContactCommandHandler(
+// NewCreateContactHandler is a function that returns a new CreateContactCommandHandler
+func NewCreateContactHandler(
 	contactRepository contact.Repository,
 	contactCreatedEventHandler event2.Handler,
 ) CreateContactCommandHandler {
@@ -31,16 +31,16 @@ func NewCreateContactCommandHandler(
 }
 
 // Handle handles command CreateContactCommand and create contact in database and send mail to admin with event ContactCreatedEvent
-func (c *CreateContactCommandHandler) Handle(ctx context.Context, command CreateContactCommand) error {
-	ctx, iSpan := observability.StartSpan(ctx, "CreateContactCommandHandler.Publish")
-	defer iSpan.End()
+func (c *CreateContactCommandHandler) Handle(ctx context.Context, cmd CreateContactCommand) error {
+	ctx, span := observability.StartSpan(ctx, "CreateContactCommandHandler.Publish")
+	defer span.End()
 
 	ct := domains.Contact{
-		Name:    command.Name,
-		Message: command.Message,
-		Email:   null.StringFrom(command.Email),
+		Name:    cmd.Name,
+		Message: cmd.Message,
+		Email:   null.StringFrom(cmd.Email),
 		DateAdd: time.Now(),
-		UUID:    uuid.UUID{}.String(),
+		UUID:    uuid.New(),
 	}
 	if err := c.ContactRepository.Save(ctx, ct); err != nil {
 		return fmt.Errorf("error during save contact: %w", err)

@@ -51,8 +51,8 @@ migrate: ## Lance les migrations DB (up)
 	go run ./cmd/migrate/migrate.go
 
 # ─── Code Generation ─────────────────────────────────────────────────────────
-wire: ## Régénère l'injection de dépendances (Wire)
-	wire gen ./internal/wire/
+wire: ## Régénère l'injection de dépendances (whyor)
+	whyor gen ./internal/wire/
 
 generate: ## Régénère les mocks (mockgen)
 	go generate ./...

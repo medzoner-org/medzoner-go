@@ -8,7 +8,7 @@ Site web personnel (portfolio/contact) en Go, architecture hexagonale (DDD), ave
 
 - **Go 1.26+** — binaires dans `cmd/app` (serveur HTTP) et `cmd/migrate` (migrations DB)
 - **Framework HTTP** : `github.com/Medzoner/gomedz` (wrapper Gin)
-- **DI** : Google Wire (`internal/wire/`)
+- **DI** : whyor (`internal/wire/`)
 - **DB** : MySQL/MariaDB via `jmoiron/sqlx` + `go-sql-driver/mysql`
 - **Query builder** : `github.com/Masterminds/squirrel` (construction SQL typée)
 - **Migrations** : `golang-migrate/migrate/v4` (source `file://`, driver `mysql`)
@@ -46,7 +46,7 @@ internal/
     handler/               → HTTP handlers (IndexHandler, NotFoundHandler)
     http_utils/            → utilitaires HTTP (ResponseError)
     templater/             → rendering HTML
-  wire/                    → injection de dépendances (Wire)
+  wire/                    → injection de dépendances (whyor)
   resources/data/          → données statiques (JSON technos)
 
 test/
@@ -101,7 +101,7 @@ make gocyclo
 # QA complète
 make run-qa
 
-# Wire (régénérer l'injection)
+# whyor (régénérer l'injection)
 make wire
 
 # Régénérer les mocks
@@ -146,7 +146,7 @@ make help
 - **Events** : `Event` interface → `Publish(ctx, Event) error`
 - **Repository** : interfaces dans `domain/repository/`, implémentations dans le même package
 - **SQL** : utiliser Squirrel (`sq.Insert`, `sq.Select`, `sq.Update`, `sq.Delete`) — pas de SQL brut
-- **Wire** : constructeurs sans logique, tous les wirings dans `internal/wire/wire.go`
+- **whyor** : constructeurs sans logique ; les sets et injecteurs sont dans `internal/wire/wire.go` (tag `whyor`), les providers locaux dans `internal/wire/providers.go` (sans tag)
 - **Observabilité** : `observability.StartSpan(ctx, "name")` dans chaque méthode publique, `defer span.End()`
 - **Erreurs** : `fmt.Errorf("description: %w", err)` — toujours wrapper avec contexte
 
@@ -203,7 +203,7 @@ make help
 ## Points d'attention
 
 - **Blank imports requis** dans `db_migration.go` : `_ "github.com/golang-migrate/migrate/v4/source/file"` et `_ "github.com/go-sql-driver/mysql"`
-- Wire génère `wire_gen.go` — ne **jamais** éditer manuellement, relancer `wire gen`
+- whyor génère `whyor_gen.go` — ne **jamais** éditer manuellement, relancer `make wire`
 - Les mocks sont auto-générés — relancer `go generate ./...` après modification d'interfaces
-- Le serveur de test Godog utilise des mocks Wire injectés (`InitServerTest`)
+- Le serveur de test Godog utilise des mocks injectés par whyor (`InitServerTest`)
 

@@ -27,7 +27,7 @@ func NewRepository(dbInstance connector.DbInstantiator) *Repository {
 
 // Save is a function that saves a contact
 func (m *Repository) Save(ctx context.Context, contact domains.Contact) error {
-	_, iSpan := observability.StartSpan(ctx, "MysqlContactRepository.Save")
+	ctx, iSpan := observability.StartSpan(ctx, "MysqlContactRepository.Save")
 	defer iSpan.End()
 
 	conn, err := m.DbInstance.GetConnection().Begin()
