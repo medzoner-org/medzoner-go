@@ -185,15 +185,20 @@ jobs:
 
       # govulncheck-action ne reprend pas la config des modules privés (gomedz, whyor).
       - name: Go setup (cache + private)
+        timeout-minutes: 4
         uses: ./.github/actions/gomedz/.github/actions/go-setup
         with:
           go-version: ${{ env.GO_VERSION }}
           gh-token: ${{ secrets.CI_JOB_TOKEN }}
 
+      # Version épinglée : le binaire compilé est réutilisé via le cache Go.
+      - name: Install govulncheck
+        timeout-minutes: 3
+        run: go install golang.org/x/vuln/cmd/govulncheck@v1.8.0
+
       - name: Run govulncheck
-        run: |
-          go install golang.org/x/vuln/cmd/govulncheck@latest
-          govulncheck ./...
+        timeout-minutes: 3
+        run: govulncheck ./...
 
   cd-release:
     if: github.ref == 'refs/heads/master' && github.event_name == 'push'
