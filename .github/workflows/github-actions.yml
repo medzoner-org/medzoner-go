@@ -45,7 +45,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  GO_VERSION: '1.26.x'
+  GO_VERSION: '1.27.x'
 
 jobs:
   # Évite l'exécution dupliquée push + pull_request pour la même branche du même repo.

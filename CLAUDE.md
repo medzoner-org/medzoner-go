@@ -6,7 +6,7 @@ Site web personnel (portfolio/contact) en Go, architecture hexagonale (DDD), ave
 
 ## Stack technique
 
-- **Go 1.26+** — binaires dans `cmd/app` (serveur HTTP) et `cmd/migrate` (migrations DB)
+- **Go 1.27+** — binaires dans `cmd/app` (serveur HTTP) et `cmd/migrate` (migrations DB)
 - **Framework HTTP** : `github.com/Medzoner/gomedz` (wrapper Gin)
 - **DI** : whyor (`internal/wire/`)
 - **DB** : MySQL/MariaDB via `jmoiron/sqlx` + `go-sql-driver/mysql`
