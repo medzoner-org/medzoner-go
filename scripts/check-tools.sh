@@ -36,7 +36,7 @@ echo ""
 echo "${BOLD}  Essentiels :${NC}"
 check "Go"              "go"              "https://go.dev/dl/"                          "required"
 check "golangci-lint"   "golangci-lint"   "go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest"  "required"
-check "whyor"           "whyor"           "go install github.com/Medzoner/whyor/cmd/whyor@latest  (GOPRIVATE=github.com/Medzoner/*)" "required"
+check "whyor"           "whyor"           "go install github.com/Medzoner/whyor/cmd/whyor@latest " "required"
 check "mockgen"         "mockgen"         "go install go.uber.org/mock/mockgen@latest"                            "required"
 check "Docker"          "docker"          "https://docs.docker.com/get-docker/"         "required"
 
