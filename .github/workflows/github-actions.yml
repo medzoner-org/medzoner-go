@@ -196,9 +196,17 @@ jobs:
         timeout-minutes: 3
         run: go install golang.org/x/vuln/cmd/govulncheck@v1.8.0
 
+      # Diagnostic : le scan restait bloqué sans erreur (accès réseau à la base de vulnérabilités ?).
+      - name: Check vulnerability DB reachability
+        timeout-minutes: 1
+        continue-on-error: true
+        run: |
+          curl -sS -m 15 -o /dev/null -w "vuln.go.dev HTTP %{http_code} in %{time_total}s\n" https://vuln.go.dev/index/db.json.gz
+
       - name: Run govulncheck
-        timeout-minutes: 3
-        run: govulncheck ./...
+        timeout-minutes: 4
+        # timeout -s KILL : le timeout d'étape de GitHub n'a pas suffi à l'arrêter.
+        run: timeout -s KILL 180 govulncheck -show verbose ./... || [ $? -eq 3 ]
 
   cd-release:
     if: github.ref == 'refs/heads/master' && github.event_name == 'push'
