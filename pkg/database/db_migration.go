@@ -4,11 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/Medzoner/gomedz/pkg/connector"
-	"github.com/Medzoner/gomedz/pkg/logger"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
+	"github.com/medzoner-org/gomedz/pkg/connector"
+	"github.com/medzoner-org/gomedz/pkg/logger"
 )
 
 // DbMigration handles database schema migrations.

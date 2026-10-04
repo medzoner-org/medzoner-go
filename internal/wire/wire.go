@@ -8,24 +8,24 @@ import (
 	handler2 "github.com/Medzoner/medzoner-go/internal/ui/http/index"
 	mockBase "github.com/Medzoner/medzoner-go/test"
 
-	"github.com/Medzoner/gomedz/pkg/http"
-	srv "github.com/Medzoner/gomedz/pkg/http/server"
+	"github.com/medzoner-org/gomedz/pkg/http"
+	srv "github.com/medzoner-org/gomedz/pkg/http/server"
 
 	"context"
-	"github.com/Medzoner/gomedz/pkg/captcha"
-	"github.com/Medzoner/gomedz/pkg/connector"
-	"github.com/Medzoner/gomedz/pkg/http/adapter/fiber"
-	"github.com/Medzoner/gomedz/pkg/http/probes"
-	"github.com/Medzoner/gomedz/pkg/logger"
-	"github.com/Medzoner/gomedz/pkg/notifier"
-	"github.com/Medzoner/gomedz/pkg/observability"
-	"github.com/Medzoner/gomedz/pkg/validation"
 	"github.com/Medzoner/medzoner-go/internal/adapters/contact"
 	"github.com/Medzoner/medzoner-go/internal/config"
 	repository2 "github.com/Medzoner/medzoner-go/internal/ports/contact"
 	database2 "github.com/Medzoner/medzoner-go/pkg/database"
 	"github.com/Medzoner/medzoner-go/test/mocks"
 	"github.com/Medzoner/whyor"
+	"github.com/medzoner-org/gomedz/pkg/captcha"
+	"github.com/medzoner-org/gomedz/pkg/connector"
+	"github.com/medzoner-org/gomedz/pkg/http/adapter/fiber"
+	"github.com/medzoner-org/gomedz/pkg/http/probes"
+	"github.com/medzoner-org/gomedz/pkg/logger"
+	"github.com/medzoner-org/gomedz/pkg/notifier"
+	"github.com/medzoner-org/gomedz/pkg/observability"
+	"github.com/medzoner-org/gomedz/pkg/validation"
 )
 
 var (
@@ -73,9 +73,9 @@ var (
 	)
 
 	InfraWiring = whyor.Set(
-		validation.New,
+		newValidator,
 		captcha.NewRecaptchaAdapter,
-		whyor.Bind[validation.Validater, *validation.ValidatorAdapter](),
+		whyor.Bind[validation.Validator, *validation.Adapter](),
 		whyor.Bind[captcha.Captcher, *captcha.RecaptchaAdapter](),
 	)
 	DbWiring = whyor.Set(

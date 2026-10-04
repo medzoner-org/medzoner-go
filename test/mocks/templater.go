@@ -45,4 +45,3 @@ func (mr *MockTemplaterMockRecorder) Render(name, view, response any) *gomock.Ca
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Render", reflect.TypeOf((*MockTemplater)(nil).Render), name, view, response)
 }
-

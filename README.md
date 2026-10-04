@@ -30,6 +30,19 @@ Configuration can be specified in .env or exported as environment variable:
 | MAILER_PASSWORD  | string  |
 
 ## Build
+
+Requires Go 1.27.1+. The shared library is now
+`github.com/medzoner-org/gomedz` (v1.0.14), not the old personal-account module.
+For private module access, use a GitHub credential with read access and configure:
+
+```sh
+go env -w GOPRIVATE='github.com/Medzoner/*,github.com/medzoner-org/*'
+```
+
+Merge this with any existing private-module patterns rather than removing them.
+The CI workflow configures both namespaces; installation of the public whyor
+generator does not itself require private-module access.
+
 ```
 go build -o bin/app ./cmd/app/main.go
 go build -o bin/migrate ./cmd/migrate.go

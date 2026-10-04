@@ -10,11 +10,11 @@ import (
 	command2 "github.com/Medzoner/medzoner-go/internal/application/command"
 	"github.com/Medzoner/medzoner-go/internal/application/event"
 
-	"github.com/Medzoner/gomedz/pkg/logger"
-	"github.com/Medzoner/gomedz/pkg/observability"
 	"github.com/Medzoner/medzoner-go/internal/domains"
 	mocks "github.com/Medzoner/medzoner-go/test"
 	"github.com/golang/mock/gomock"
+	"github.com/medzoner-org/gomedz/pkg/logger"
+	"github.com/medzoner-org/gomedz/pkg/observability"
 	"gotest.tools/assert"
 )
 

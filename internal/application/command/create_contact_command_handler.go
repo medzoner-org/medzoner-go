@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/Medzoner/gomedz/pkg/observability"
 	event2 "github.com/Medzoner/medzoner-go/internal/application/event"
 	"github.com/Medzoner/medzoner-go/internal/domains"
 	"github.com/Medzoner/medzoner-go/internal/ports/contact"
 	"github.com/google/uuid"
+	"github.com/medzoner-org/gomedz/pkg/observability"
 	"gopkg.in/guregu/null.v1"
 )
 

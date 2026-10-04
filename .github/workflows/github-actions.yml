@@ -46,6 +46,10 @@ concurrency:
 
 env:
   GO_VERSION: '1.27.x'
+  # Keep both namespaces private during and after the gomedz migration.
+  # Environment values take precedence over go-setup's persisted Go settings.
+  GOPRIVATE: 'github.com/Medzoner/*,github.com/medzoner-org/*'
+  GONOSUMDB: 'github.com/Medzoner/*,github.com/medzoner-org/*'
 
 jobs:
   # Évite l'exécution dupliquée push + pull_request pour la même branche du même repo.

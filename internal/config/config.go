@@ -5,16 +5,16 @@ import (
 
 	"github.com/caarlos0/env/v11"
 
-	ginadapter "github.com/Medzoner/gomedz/pkg/http/adapter/gin"
+	ginadapter "github.com/medzoner-org/gomedz/pkg/http/adapter/gin"
 
-	"github.com/Medzoner/gomedz/pkg/auth"
-	"github.com/Medzoner/gomedz/pkg/captcha"
-	"github.com/Medzoner/gomedz/pkg/config"
-	"github.com/Medzoner/gomedz/pkg/connector"
-	"github.com/Medzoner/gomedz/pkg/http/server"
-	"github.com/Medzoner/gomedz/pkg/logger"
-	"github.com/Medzoner/gomedz/pkg/notifier"
-	"github.com/Medzoner/gomedz/pkg/observability"
+	"github.com/medzoner-org/gomedz/pkg/auth"
+	"github.com/medzoner-org/gomedz/pkg/captcha"
+	"github.com/medzoner-org/gomedz/pkg/config"
+	"github.com/medzoner-org/gomedz/pkg/connector"
+	"github.com/medzoner-org/gomedz/pkg/http/server"
+	"github.com/medzoner-org/gomedz/pkg/logger"
+	"github.com/medzoner-org/gomedz/pkg/notifier"
+	"github.com/medzoner-org/gomedz/pkg/observability"
 )
 
 type (
