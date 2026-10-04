@@ -3,16 +3,20 @@ package wire
 import (
 	"context"
 
-	"github.com/Medzoner/gomedz/pkg/auth"
-	"github.com/Medzoner/gomedz/pkg/http"
-	"github.com/Medzoner/gomedz/pkg/http/adapter/fiber"
-	"github.com/Medzoner/gomedz/pkg/http/probes"
-	srv "github.com/Medzoner/gomedz/pkg/http/server"
-	"github.com/Medzoner/gomedz/pkg/logger"
-	"github.com/Medzoner/gomedz/pkg/observability"
 	"github.com/Medzoner/medzoner-go/internal/config"
 	handler2 "github.com/Medzoner/medzoner-go/internal/ui/http/index"
+	"github.com/medzoner-org/gomedz/pkg/auth"
+	"github.com/medzoner-org/gomedz/pkg/http"
+	"github.com/medzoner-org/gomedz/pkg/http/adapter/fiber"
+	"github.com/medzoner-org/gomedz/pkg/http/probes"
+	srv "github.com/medzoner-org/gomedz/pkg/http/server"
+	"github.com/medzoner-org/gomedz/pkg/logger"
+	"github.com/medzoner-org/gomedz/pkg/observability"
+	"github.com/medzoner-org/gomedz/pkg/validation"
 )
+
+// validation.New accepts options; keep the DI provider non-variadic.
+func newValidator() *validation.Adapter { return validation.New() }
 
 func controllers(p *probes.Handler, a handler2.Handler) []http.Controller {
 	return []http.Controller{

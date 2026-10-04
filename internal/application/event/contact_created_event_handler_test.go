@@ -10,10 +10,10 @@ import (
 	mocks "github.com/Medzoner/medzoner-go/test"
 	"github.com/golang/mock/gomock"
 
-	"github.com/Medzoner/gomedz/pkg/logger"
-	"github.com/Medzoner/gomedz/pkg/observability"
 	"github.com/Medzoner/medzoner-go/internal/domains"
 	"github.com/google/uuid"
+	"github.com/medzoner-org/gomedz/pkg/logger"
+	"github.com/medzoner-org/gomedz/pkg/observability"
 	"gopkg.in/guregu/null.v1"
 	"gotest.tools/assert"
 )

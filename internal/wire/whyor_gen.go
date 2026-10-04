@@ -6,14 +6,6 @@ package wire
 
 import (
 	context "context"
-	captcha "github.com/Medzoner/gomedz/pkg/captcha"
-	connector "github.com/Medzoner/gomedz/pkg/connector"
-	probes "github.com/Medzoner/gomedz/pkg/http/probes"
-	server "github.com/Medzoner/gomedz/pkg/http/server"
-	logger "github.com/Medzoner/gomedz/pkg/logger"
-	notifier "github.com/Medzoner/gomedz/pkg/notifier"
-	observability "github.com/Medzoner/gomedz/pkg/observability"
-	validation "github.com/Medzoner/gomedz/pkg/validation"
 	contact "github.com/Medzoner/medzoner-go/internal/adapters/contact"
 	command "github.com/Medzoner/medzoner-go/internal/application/command"
 	event "github.com/Medzoner/medzoner-go/internal/application/event"
@@ -21,6 +13,13 @@ import (
 	index "github.com/Medzoner/medzoner-go/internal/ui/http/index"
 	database "github.com/Medzoner/medzoner-go/pkg/database"
 	mocks "github.com/Medzoner/medzoner-go/test"
+	captcha "github.com/medzoner-org/gomedz/pkg/captcha"
+	connector "github.com/medzoner-org/gomedz/pkg/connector"
+	probes "github.com/medzoner-org/gomedz/pkg/http/probes"
+	server "github.com/medzoner-org/gomedz/pkg/http/server"
+	logger "github.com/medzoner-org/gomedz/pkg/logger"
+	notifier "github.com/medzoner-org/gomedz/pkg/notifier"
+	observability "github.com/medzoner-org/gomedz/pkg/observability"
 )
 
 func InitDbMigration() (database.DbMigration, error) {
@@ -66,7 +65,7 @@ func InitServerTest(ctx context.Context, m *mocks.Mocks) (server.Server, error) 
 	v17 := m.Mailer
 	v18 := event.NewContactCreatedEventHandler(v17)
 	v19 := command.NewCreateContactHandler(v16, v18)
-	v20 := validation.New()
+	v20 := newValidator()
 	v21 := v1.Recaptcha
 	v22 := captcha.NewRecaptchaAdapter(v21)
 	v23 := index.NewIndexHandler(v19, v20, v22, v9)
@@ -110,7 +109,7 @@ func InitServer(ctx context.Context) (server.Server, error) {
 	v20 := notifier.NewMailerSMTP(v19)
 	v21 := event.NewContactCreatedEventHandler(v20)
 	v22 := command.NewCreateContactHandler(v18, v21)
-	v23 := validation.New()
+	v23 := newValidator()
 	v24 := v1.Recaptcha
 	v25 := captcha.NewRecaptchaAdapter(v24)
 	v26 := index.NewIndexHandler(v22, v23, v25, v9)

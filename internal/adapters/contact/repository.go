@@ -7,10 +7,10 @@ import (
 	"reflect"
 
 	sq "github.com/Masterminds/squirrel"
-	"github.com/Medzoner/gomedz/pkg/connector"
-	"github.com/Medzoner/gomedz/pkg/logger"
-	"github.com/Medzoner/gomedz/pkg/observability"
 	"github.com/Medzoner/medzoner-go/internal/domains"
+	"github.com/medzoner-org/gomedz/pkg/connector"
+	"github.com/medzoner-org/gomedz/pkg/logger"
+	"github.com/medzoner-org/gomedz/pkg/observability"
 	otelTrace "go.opentelemetry.io/otel/trace"
 )
 

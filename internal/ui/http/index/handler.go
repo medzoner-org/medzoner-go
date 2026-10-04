@@ -6,12 +6,12 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/Medzoner/gomedz/pkg/captcha"
-	http2 "github.com/Medzoner/gomedz/pkg/http"
-	"github.com/Medzoner/gomedz/pkg/observability"
-	"github.com/Medzoner/gomedz/pkg/validation"
 	command2 "github.com/Medzoner/medzoner-go/internal/application/command"
 	"github.com/Medzoner/medzoner-go/internal/config"
+	"github.com/medzoner-org/gomedz/pkg/captcha"
+	http2 "github.com/medzoner-org/gomedz/pkg/http"
+	"github.com/medzoner-org/gomedz/pkg/observability"
+	"github.com/medzoner-org/gomedz/pkg/validation"
 )
 
 // View View
@@ -28,7 +28,7 @@ type View struct {
 // Handler Handler
 type Handler struct {
 	CreateContactCommandHandler command2.CreateContactCommandHandler
-	Validation                  validation.Validater
+	Validation                  validation.Validator
 	Recaptcha                   captcha.Captcher
 	RootPath                    config.RootPath
 }
@@ -36,7 +36,7 @@ type Handler struct {
 // NewIndexHandler NewIndexHandler
 func NewIndexHandler(
 	createContactCommandHandler command2.CreateContactCommandHandler,
-	validation validation.Validater,
+	validation validation.Validator,
 	recaptcha captcha.Captcher,
 	rootPath config.RootPath,
 ) Handler {

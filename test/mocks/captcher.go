@@ -73,4 +73,3 @@ func (mr *MockCaptcherMockRecorder) GetSecretKey() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSecretKey", reflect.TypeOf((*MockCaptcher)(nil).GetSecretKey))
 }
-

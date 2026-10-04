@@ -59,4 +59,3 @@ func (mr *MockValidaterMockRecorder) StructCtx(ctx, s any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "StructCtx", reflect.TypeOf((*MockValidater)(nil).StructCtx), ctx, s)
 }
-

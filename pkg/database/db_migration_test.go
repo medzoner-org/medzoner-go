@@ -7,11 +7,11 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/Medzoner/gomedz/pkg/connector"
+	"github.com/Medzoner/medzoner-go/pkg/database"
 	migratedb "github.com/golang-migrate/migrate/v4/database"
 	"github.com/jmoiron/sqlx"
+	"github.com/medzoner-org/gomedz/pkg/connector"
 	"gotest.tools/assert"
-	"github.com/Medzoner/medzoner-go/pkg/database"
 )
 
 // failingDbInstantiator returns errors on GetDatabaseDriver

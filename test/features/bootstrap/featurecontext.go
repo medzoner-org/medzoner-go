@@ -3,10 +3,10 @@ package bootstrap
 import (
 	"context"
 
-	"github.com/Medzoner/gomedz/pkg/http/bddtesting"
-	"github.com/Medzoner/gomedz/pkg/http/server"
 	mocks "github.com/Medzoner/medzoner-go/test"
 	"github.com/cucumber/godog"
+	"github.com/medzoner-org/gomedz/pkg/http/bddtesting"
+	"github.com/medzoner-org/gomedz/pkg/http/server"
 )
 
 // APIFeature embeds the generic bddtesting.APIFeature and adds project-specific mocks.

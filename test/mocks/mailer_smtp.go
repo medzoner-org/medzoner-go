@@ -13,7 +13,7 @@ import (
 	context "context"
 	reflect "reflect"
 
-	notifier "github.com/Medzoner/gomedz/pkg/notifier"
+	notifier "github.com/medzoner-org/gomedz/pkg/notifier"
 	gomock "go.uber.org/mock/gomock"
 )
 

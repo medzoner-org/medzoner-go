@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 
-	"github.com/Medzoner/gomedz/pkg/logger"
 	wire "github.com/Medzoner/medzoner-go/internal/wire"
+	"github.com/medzoner-org/gomedz/pkg/logger"
 )
 
 func main() {

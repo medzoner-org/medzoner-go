@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/Medzoner/gomedz/pkg/notifier"
-	"github.com/Medzoner/gomedz/pkg/observability"
 	"github.com/Medzoner/medzoner-go/internal/domains"
 	"github.com/google/uuid"
+	"github.com/medzoner-org/gomedz/pkg/notifier"
+	"github.com/medzoner-org/gomedz/pkg/observability"
 )
 
 var (
