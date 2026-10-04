@@ -70,7 +70,7 @@ jobs:
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v9
         with:
-          version: v2.11.4
+          version: v2.13.2
           args: -c .golangci/.golangci.yml --timeout=10m
           skip-cache: false
 
@@ -172,9 +172,10 @@ jobs:
   ci-vuln:
     # Scan rapide des CVEs Go (modules + stdlib). Tourne en parallèle, ne bloque pas le pipeline.
     if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository }}
-    runs-on: medzoner-runner
+    # Isolate the scan from the self-hosted runner where it repeatedly hangs.
+    runs-on: ubuntu-latest
     continue-on-error: true
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v6
       - uses: actions/checkout@v6
@@ -190,10 +191,14 @@ jobs:
           go-version: ${{ env.GO_VERSION }}
           gh-token: ${{ secrets.CI_JOB_TOKEN }}
 
+      - name: Install govulncheck
+        timeout-minutes: 3
+        run: go install golang.org/x/vuln/cmd/govulncheck@v1.8.0
+
       - name: Run govulncheck
+        timeout-minutes: 4
         run: |
-          go install golang.org/x/vuln/cmd/govulncheck@latest
-          govulncheck ./...
+          timeout --signal=TERM --kill-after=10s 180s govulncheck -show verbose ./...
 
   cd-release:
     if: github.ref == 'refs/heads/master' && github.event_name == 'push'
@@ -250,4 +255,3 @@ jobs:
 #          app-name: medzoner
 #          git-user-name: medzoner
 #          git-user-email: medzoner@medzoner.com
-
