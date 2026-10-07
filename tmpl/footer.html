@@ -59,6 +59,7 @@
 
         // Recaptcha lazy-load
         function initRecaptcha(){
+            if (!document.querySelector('.g-recaptcha')) return;
             var recaptchaScript = document.createElement('script');
             recaptchaScript.type = 'text/javascript';
             recaptchaScript.src = 'https://www.google.com/recaptcha/api.js';

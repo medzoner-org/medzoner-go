@@ -1,0 +1,47 @@
+/* Editorial styles are scoped so the portfolio and contact form keep their layout. */
+.article-eyebrow { font-size: .8rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+.article-teaser { display: flex; align-items: center; justify-content: space-between; gap: 2rem; padding: 3rem 2rem; }
+.article-teaser h2 { font-size: 1.8rem; font-weight: 700; margin: .5rem 0; }
+.article-teaser p { margin: .5rem 0; }
+.article-page { background: #eef2f7; color: #25334a; }
+.article-page .page-header { height: 240px; min-height: 240px; }
+.article-page .article-main { position: relative; z-index: 2; max-width: 1140px; margin: -130px auto 3rem; border-radius: 18px; background: #fff; overflow: visible; box-shadow: 0 18px 55px rgba(15, 23, 42, .14); }
+.article-page .article-hero { padding: 3.5rem 3rem; border-radius: 18px 18px 0 0; background: linear-gradient(135deg, #101827, #243657); color: #f8fafc; }
+.article-page .article-hero a { color: #99f6e4; }
+.article-page .article-hero h1 { color: #f8fafc; max-width: 920px; font-size: clamp(2rem, 4.5vw, 3.4rem); font-weight: 700; line-height: 1.14; letter-spacing: -.035em; margin: 1.2rem 0; }
+.article-page .article-deck { max-width: 790px; font-size: 1.15rem; line-height: 1.75; color: #cbd5e1; }
+.article-page .article-meta { color: #b9c9df; font-size: .9rem; margin-top: 1.5rem; }
+.article-page .article-grid { display: grid; grid-template-columns: minmax(0, 1fr) 220px; gap: 3rem; padding: 3rem; }
+.article-page .article-copy { min-width: 0; font-size: 1.04rem; line-height: 1.85; }
+.article-page .article-copy p, .article-page .article-copy li { color: #475569; }
+.article-page .article-copy section { scroll-margin-top: 100px; margin-bottom: 2.7rem; }
+.article-page .article-copy h2 { color: #17243a; font-size: 1.75rem; font-weight: 700; letter-spacing: -.02em; margin-bottom: 1.1rem; }
+.article-page .article-copy h3 { font-size: 1.2rem; font-weight: 700; margin: 1.8rem 0 .7rem; }
+.article-page .article-copy a { color: #5b21b6; text-decoration: underline; text-underline-offset: 3px; }
+.article-page .article-copy a:hover { color: #312e81; }
+.article-page .article-copy pre { max-width: 100%; overflow-x: auto; padding: 1.3rem; border-radius: 12px; background: #101827; color: #d5e7f5; line-height: 1.65; font-size: .85rem; }
+.article-page .article-copy code { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+.article-page .article-copy p code, .article-page .article-copy li code { color: #4c1d95; background: #f1ecff; border-radius: 4px; padding: .12rem .3rem; overflow-wrap: anywhere; }
+.article-page .article-note { padding: 1.1rem 1.3rem; border-left: 4px solid #7c3aed; border-radius: 0 10px 10px 0; background: #f5f3ff; }
+.article-page .article-figure { margin: 2rem 0; }
+.article-page .article-figure img { display: block; width: 100%; height: auto; border-radius: 12px; }
+.article-page .article-figure figcaption { color: #64748b; font-size: .85rem; margin-top: .7rem; }
+.article-page .article-toc { position: sticky; top: 100px; align-self: start; padding: 1rem 0; font-size: .9rem; }
+.article-page .article-toc ol { list-style: none; padding: 0; }
+.article-page .article-toc li { margin: .7rem 0; }
+.article-page .article-toc a { color: #475569; }
+.article-page .article-toc a:hover { color: #5b21b6; }
+.article-page .article-cta { margin: 2rem 0; padding: 1.5rem; border-radius: 12px; background: #ecfdf5; border: 1px solid #a7f3d0; }
+.article-page .article-cta .btn { text-decoration: none; color: #fff; }
+.article-page a:focus-visible, .article-teaser a:focus-visible { outline: 3px solid #14b8a6; outline-offset: 4px; }
+@media (max-width: 900px) {
+  .article-page .article-main { margin-left: 1rem; margin-right: 1rem; }
+  .article-page .article-grid { grid-template-columns: minmax(0, 1fr); gap: 0; padding: 2rem; }
+  .article-page .article-toc { position: static; order: -1; border-bottom: 1px solid #e2e8f0; margin-bottom: 2rem; }
+}
+@media (max-width: 600px) {
+  .article-teaser { flex-direction: column; align-items: flex-start; padding: 2rem 1.5rem; }
+  .article-page .article-hero { padding: 2rem 1.3rem; }
+  .article-page .article-grid { padding: 1.5rem 1.3rem; }
+  .article-page .article-copy { font-size: 1rem; }
+}

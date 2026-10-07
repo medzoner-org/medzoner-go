@@ -5,6 +5,7 @@ package wire
 import (
 	"github.com/Medzoner/medzoner-go/internal/application/command"
 	event2 "github.com/Medzoner/medzoner-go/internal/application/event"
+	"github.com/Medzoner/medzoner-go/internal/ui/http/articles"
 	handler2 "github.com/Medzoner/medzoner-go/internal/ui/http/index"
 	mockBase "github.com/Medzoner/medzoner-go/test"
 
@@ -70,6 +71,7 @@ var (
 	)
 	HandlerWiring = whyor.Set(
 		handler2.NewIndexHandler,
+		articles.NewHandler,
 	)
 
 	InfraWiring = whyor.Set(

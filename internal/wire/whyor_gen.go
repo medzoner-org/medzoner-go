@@ -10,6 +10,7 @@ import (
 	command "github.com/Medzoner/medzoner-go/internal/application/command"
 	event "github.com/Medzoner/medzoner-go/internal/application/event"
 	config "github.com/Medzoner/medzoner-go/internal/config"
+	articles "github.com/Medzoner/medzoner-go/internal/ui/http/articles"
 	index "github.com/Medzoner/medzoner-go/internal/ui/http/index"
 	database "github.com/Medzoner/medzoner-go/pkg/database"
 	mocks "github.com/Medzoner/medzoner-go/test"
@@ -69,9 +70,10 @@ func InitServerTest(ctx context.Context, m *mocks.Mocks) (server.Server, error) 
 	v21 := v1.Recaptcha
 	v22 := captcha.NewRecaptchaAdapter(v21)
 	v23 := index.NewIndexHandler(v19, v20, v22, v9)
-	v24 := controllers(v15, v23)
-	v25 := newServer(ctx, v3, v5, v6, v11, v12, v13, v24)
-	return v25, nil
+	v24 := articles.NewHandler()
+	v25 := controllers(v15, v23, v24)
+	v26 := newServer(ctx, v3, v5, v6, v11, v12, v13, v25)
+	return v26, nil
 }
 
 func InitServer(ctx context.Context) (server.Server, error) {
@@ -113,7 +115,8 @@ func InitServer(ctx context.Context) (server.Server, error) {
 	v24 := v1.Recaptcha
 	v25 := captcha.NewRecaptchaAdapter(v24)
 	v26 := index.NewIndexHandler(v22, v23, v25, v9)
-	v27 := controllers(v15, v26)
-	v28 := newServer(ctx, v3, v5, v6, v11, v12, v13, v27)
-	return v28, nil
+	v27 := articles.NewHandler()
+	v28 := controllers(v15, v26, v27)
+	v29 := newServer(ctx, v3, v5, v6, v11, v12, v13, v28)
+	return v29, nil
 }

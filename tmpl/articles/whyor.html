@@ -1,0 +1,214 @@
+{{define "article_whyor"}}
+<!DOCTYPE html>
+<html lang="{{.Locale}}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{.PageTitle}}</title>
+    <meta name="description" content="{{.PageDescription}}">
+    <meta name="theme-color" content="#101827">
+    <link rel="canonical" href="{{.CanonicalURL}}">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="{{.PageTitle}}">
+    <meta property="og:description" content="{{.PageDescription}}">
+    <meta property="og:url" content="{{.CanonicalURL}}">
+    <meta property="og:image" content="{{.SocialImage}}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="whyor turns explicit constructors and an injector declaration into ordinary Go.">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{.PageTitle}}">
+    <meta name="twitter:description" content="{{.PageDescription}}">
+    <meta name="twitter:image" content="{{.SocialImage}}">
+    <meta name="twitter:image:alt" content="whyor turns explicit constructors and an injector declaration into ordinary Go.">
+    <link rel="icon" href="/public/images/logo-single-small.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Material+Icons&amp;display=swap">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/public/css/app.css">
+    <link rel="stylesheet" href="/public/css/article.css">
+    <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"TechArticle","headline":"After Wire: compile-time dependency injection with whyor","description":"A practical introduction to whyor, its generated Go, Wire migration and current limitations.","author":{"@type":"Person","name":"Mehdi Youb","url":"https://www.medzoner.com"},"mainEntityOfPage":"https://www.medzoner.com/articles/after-wire-whyor","image":"https://www.medzoner.com/public/images/whyor-social.png","inLanguage":"en"}
+    </script>
+</head>
+<body class="article-page sidebar-collapse">
+{{template "header" .}}
+<main class="article-main" id="article">
+    <article>
+        <header class="article-hero">
+            <a href="/">← Back to Medzoner</a>
+            <p class="article-eyebrow" style="margin-top: 1.5rem; color: #5eead4;">Go · Open source · Dependency injection</p>
+            <h1>After Wire: compile-time dependency injection with whyor</h1>
+            <p class="article-deck">Declare the graph. Generate the wiring. Ship ordinary Go. Why I built a DI generator that keeps application startup explicit—and where it still needs work.</p>
+            <p class="article-meta">By Mehdi Youb · An author's perspective · Approx. 7 min read</p>
+        </header>
+        <div class="article-grid">
+            <div class="article-copy">
+                <section id="why">
+                    <h2>Why keep compile-time DI?</h2>
+                    <p>I like constructors that tell me what a component needs. A repository takes a database connection. A handler takes its use case. The application entry point connects them. Dependency injection does not have to mean a runtime container or a service locator.</p>
+                    <p>That is the part of <a href="https://github.com/google/wire">Google Wire</a> I wanted to preserve. Wire generates initialization code from provider declarations; the result is Go that can be reviewed and debugged normally. The repository was archived in August 2025. That left room to explore an alternative, not a reason to hide the wiring behind another framework.</p>
+                    <p><a href="https://github.com/Medzoner/whyor">whyor</a> is my take on that approach: generic declarations, explicit constructors and generated Go. It is not an official continuation of Wire, and it is not a drop-in replacement.</p>
+                    <aside class="article-note"><strong>Current status:</strong> whyor is pre-1.0. The examples below target v0.11.0 and require Go 1.27.1+. Treat the API as evolving and test a migration on a branch before adopting it.</aside>
+                </section>
+                <section id="example">
+                    <h2>Start with ordinary constructors</h2>
+                    <p>Here is a small, complete application. Its store is in memory: this example needs no database, credentials or external service. These files live in an existing Go module.</p>
+                    <h3>app.go</h3>
+                    <pre><code>package main
+
+type Config struct{ Name string }
+type Store interface{ Message() string }
+type MemoryStore struct{ cfg *Config }
+type App struct{ Store Store }
+
+func NewConfig(name string) *Config {
+    return &amp;Config{Name: name}
+}
+func NewStore(cfg *Config) *MemoryStore {
+    return &amp;MemoryStore{cfg: cfg}
+}
+func (s *MemoryStore) Message() string {
+    return "Hello, " + s.cfg.Name
+}
+func NewApp(store Store) *App {
+    return &amp;App{Store: store}
+}</code></pre>
+                    <p>Nothing here imports whyor. The constructor parameters describe the dependencies; the return types describe what the constructors provide. You could still wire these functions together by hand.</p>
+                    <h3>wire.go: declare the composition</h3>
+                    <pre><code>//go:build whyor
+
+package main
+
+import "github.com/Medzoner/whyor"
+
+var Providers = whyor.Set(
+    NewConfig,
+    NewStore,
+    whyor.Bind[Store, *MemoryStore](),
+)
+
+func InitApp(name string) *App {
+    panic(whyor.Build(Providers, NewApp))
+}</code></pre>
+                    <p>The build tag keeps this declaration out of a normal build. The <code>panic</code> is a marker consumed by the generator, not a runtime initialization strategy. <code>Bind</code> makes the interface choice explicit; the generator verifies that the concrete type implements it.</p>
+                    <h3>main.go: keep the caller simple</h3>
+                    <pre><code>package main
+
+import "fmt"
+
+func main() {
+    fmt.Println(InitApp("Go").Store.Message())
+}</code></pre>
+                    <pre><code>go install github.com/Medzoner/whyor/cmd/whyor@v0.11.0
+go get github.com/Medzoner/whyor@v0.11.0
+whyor gen .
+go run .
+# Hello, Go</code></pre>
+                </section>
+                <section id="generated">
+                    <h2>The output is the point</h2>
+                    <p>The generated <code>whyor_gen.go</code> is small enough to read:</p>
+                    <pre><code>// Code generated by whyor. DO NOT EDIT.
+
+//go:build !whyor
+
+package main
+
+func InitApp(name string) *App {
+    v1 := NewConfig(name)
+    v2 := NewStore(v1)
+    v3 := NewApp(v2)
+    return v3
+}</code></pre>
+                    <p>There is no container lookup at runtime. No reflection is needed for the DI wiring. Commit this file: ordinary application builds do not need to execute the generator. Generated variable names are an implementation detail, not an API to depend on.</p>
+                    <figure class="article-figure">
+                        <img src="/public/images/whyor-flow.svg" width="1000" height="440" loading="lazy" alt="Constructors and an injector declaration go through whyor gen to become plain Go constructor calls.">
+                        <figcaption>The graph is declared at development time; the application runs ordinary constructor calls.</figcaption>
+                    </figure>
+                </section>
+                <section id="migration">
+                    <h2>Moving from Wire without rewriting constructors</h2>
+                    <p>The model is familiar, but the declaration API differs. A typical set-and-binding migration looks like this:</p>
+                    <pre><code>- //go:build wireinject
++ //go:build whyor
+
+- import "github.com/google/wire"
++ import "github.com/Medzoner/whyor"
+
+- wire.NewSet(NewConfig, NewStore)
++ whyor.Set(NewConfig, NewStore)
+
+- wire.Bind(new(Store), new(*MemoryStore))
++ whyor.Bind[Store, *MemoryStore]()
+
+- panic(wire.Build(Providers, NewApp))
++ panic(whyor.Build(Providers, NewApp))</code></pre>
+                    <p>Remove the obsolete Wire-generated file, regenerate, then run the same tests as before. Keep constructor implementations in untagged files: unlike Wire, whyor does not copy local helpers out of a tagged declaration file.</p>
+                    <p>I used this approach in my own Go application, medzoner-go, with composition roots for the server, its mock-backed test server and database migrations. The migration included compilation, freshness checks, unit tests and HTTP scenarios. Initially failing scenarios also failed with the old Wire output: comparing that baseline helped separate application validation bugs from DI changes.</p>
+                    <p>That is useful evidence, but it is an author's own application—not independent adoption, a benchmark or a production certification. The <a href="https://github.com/Medzoner/whyor/blob/main/docs/migrating-from-wire.md">migration guide</a> and <a href="https://github.com/Medzoner/whyor/blob/main/docs/case-study-medzoner-go.md">case-study notes</a> explain the boundaries.</p>
+                </section>
+                <section id="extras">
+                    <h2>What I wanted beyond basic wiring</h2>
+                    <ul>
+                        <li><strong>Explicit generic providers:</strong> declare <code>NewRepository[User]</code> and <code>NewRepository[Order]</code>. Type constraints are checked by Go; dependencies come from the instantiated signatures.</li>
+                        <li><strong>Slice providers:</strong> <code>whyor.Many[Handler](NewUsers, NewOrders)</code> provides a slice in declaration order.</li>
+                        <li><strong>Interface choices:</strong> use explicit <code>Bind</code>, or opt into <code>AutoBind</code> when exactly one registered candidate implements the requested interface.</li>
+                        <li><strong>Visible graphs:</strong> <code>whyor show</code> prints a tree; <code>-f json</code>, <code>-f dot</code> and <code>-f mermaid</code> make the graph available to other tools.</li>
+                        <li><strong>Freshness checks:</strong> <code>whyor check ./...</code> fails when versioned output needs regeneration. It complements compilation and tests; it does not replace them.</li>
+                    </ul>
+                    <pre><code>$ whyor show .
+InitApp
+└── *App [NewApp]
+    └── Store [Bind]
+        └── *MemoryStore [NewStore]
+            └── *Config [NewConfig]
+                └── string [parameter name]</code></pre>
+                    <p>These features should help explain the application, not make its composition mysterious. Automatic binding remains opt-in, and ambiguous choices are errors.</p>
+                </section>
+                <section id="cleanup">
+                    <h2>Cleanup should not erase errors</h2>
+                    <p>Resource-owning providers may return a cleanup. Legacy <code>func()</code> callbacks remain supported; modern injectors can return <code>whyor.Cleanup</code>, a <code>func(context.Context) error</code>.</p>
+                    <p>Cleanups run in reverse acquisition order. In modern mode, every acquired cleanup is attempted and errors are combined with <code>errors.Join</code>. The caller supplies the shutdown context. If initialization fails, errors from previously acquired cleanups are joined with the initialization error.</p>
+                    <aside class="article-note"><strong>A deliberate limit:</strong> rollback removes acquisition cancellation and deadlines, and no timeout is added automatically. Cleanup implementations must bound blocking operations themselves. Callbacks are synchronous, cooperative and not automatically idempotent.</aside>
+                    <p>That keeps lifecycle ownership with the application instead of introducing a framework that controls serving and shutdown. The <a href="https://github.com/Medzoner/whyor/tree/main/examples/lifecycle">lifecycle example</a> covers both modes and the failure path.</p>
+                </section>
+                <section id="limits">
+                    <h2>What is not finished</h2>
+                    <p>whyor is still pre-1.0. Generic provider arguments must be explicit, method and variadic providers are unsupported, and platform-specific wiring needs more validation. It is not intended to discover every constructor or provide implicit request/singleton scopes.</p>
+                    <p>Recent stabilization work fixed typed values, generated-name collisions and output ownership checks. More work remains before promising a frozen API. I keep <a href="https://github.com/Medzoner/whyor/blob/main/docs/guarantees.md">verified contracts</a> separate from <a href="https://github.com/Medzoner/whyor/blob/main/ROADMAP.md">roadmap items</a>.</p>
+                    <p>I am not presenting faster startup, lower memory use or broad production reliability without measurements. The current value is explicit composition, readable output and actionable migration feedback.</p>
+                </section>
+                <section id="try">
+                    <h2>Try one composition package</h2>
+                    <p>If you use Wire, start with one injector on a branch. Capture the baseline test results, migrate the declaration, inspect the output and run the same checks again. You do not have to migrate the whole application to evaluate the idea.</p>
+                    <div class="article-cta">
+                        <strong>Interested in trying it?</strong>
+                        <p>Run the public demo, read the generated code and tell me what made adoption easy—or what blocked it.</p>
+                        <a class="btn btn-primary" href="https://github.com/Medzoner/whyor">Explore whyor on GitHub →</a>
+                        <p><a href="https://github.com/Medzoner/whyor/blob/main/docs/demo/README.md">Run the demo</a> · <a href="https://github.com/Medzoner/whyor/issues">Report a small reproduction</a> · <a href="https://github.com/Medzoner/whyor/blob/main/CONTRIBUTING.md">Contribute</a></p>
+                    </div>
+                    <p>I maintain whyor. Independent feedback is welcome, particularly from existing Wire users. Please remove credentials and private application data from any reproduction.</p>
+                </section>
+            </div>
+            <nav class="article-toc" aria-label="On this page">
+                <strong>On this page</strong>
+                <ol>
+                    <li><a href="#why">Why compile-time DI?</a></li>
+                    <li><a href="#example">The complete example</a></li>
+                    <li><a href="#generated">Generated Go</a></li>
+                    <li><a href="#migration">Migrating from Wire</a></li>
+                    <li><a href="#extras">Beyond basic wiring</a></li>
+                    <li><a href="#cleanup">Cleanup and errors</a></li>
+                    <li><a href="#limits">Current limitations</a></li>
+                    <li><a href="#try">Try it</a></li>
+                </ol>
+            </nav>
+        </div>
+    </article>
+</main>
+{{template "footer" .}}
+</body>
+</html>
+{{end}}
