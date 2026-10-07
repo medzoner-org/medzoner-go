@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="440" viewBox="0 0 1000 440" role="img" aria-labelledby="title desc">
+  <title id="title">Declare the graph, generate the wiring</title>
+  <desc id="desc">Constructors and an injector declaration are analyzed by whyor gen, producing plain Go that calls NewConfig, NewStore and NewApp without a runtime DI container.</desc>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 10 5 0 10Z" fill="#5eead4"/></marker></defs>
+  <rect width="1000" height="440" rx="20" fill="#101827"/>
+  <g font-family="system-ui, sans-serif">
+    <text x="40" y="58" fill="#f8fafc" font-size="28" font-weight="700">Dependencies you can read.</text>
+    <text x="40" y="90" fill="#a9bad0" font-size="17">Declare the graph. Generate the wiring. Ship ordinary Go.</text>
+    <g fill="#1e3046" stroke="#38516b"><rect x="40" y="128" width="270" height="125" rx="12"/><rect x="365" y="128" width="270" height="125" rx="12"/><rect x="690" y="128" width="270" height="125" rx="12"/></g>
+    <g fill="#5eead4" font-size="13" font-weight="700"><text x="60" y="157">DECLARE</text><text x="385" y="157">GENERATE</text><text x="710" y="157">BUILD</text></g>
+    <g fill="#f8fafc" font-size="21" font-weight="600"><text x="60" y="193">Constructors + injector</text><text x="385" y="193">whyor gen</text><text x="710" y="193">whyor_gen.go</text></g>
+    <g fill="#a9bad0" font-size="16"><text x="60" y="227">Explicit function parameters</text><text x="385" y="227">Resolve the dependency graph</text><text x="710" y="227">Inspect it. Commit it.</text></g>
+    <g stroke="#5eead4" stroke-width="2" marker-end="url(#arrow)"><path d="M318 191H354"/><path d="M643 191H679"/></g>
+    <text x="40" y="297" fill="#a9bad0" font-size="13" font-weight="700">AT RUNTIME</text>
+    <g fill="#142f35" stroke="#38796e"><rect x="40" y="319" width="270" height="65" rx="12"/><rect x="365" y="319" width="270" height="65" rx="12"/><rect x="690" y="319" width="270" height="65" rx="12"/></g>
+    <g fill="#ccfbf1" font-size="19" text-anchor="middle"><text x="175" y="359">NewConfig(name)</text><text x="500" y="359">NewStore(config)</text><text x="825" y="359">NewApp(store)</text></g>
+    <g stroke="#5eead4" stroke-width="2" marker-end="url(#arrow)"><path d="M318 351H354"/><path d="M643 351H679"/></g>
+    <text x="40" y="419" fill="#a9bad0" font-size="14">No reflection for the DI wiring. No runtime DI container.</text>
+  </g>
+</svg>

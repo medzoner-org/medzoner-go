@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/Medzoner/medzoner-go/internal/config"
+	"github.com/Medzoner/medzoner-go/internal/ui/http/articles"
 	handler2 "github.com/Medzoner/medzoner-go/internal/ui/http/index"
 	"github.com/medzoner-org/gomedz/pkg/auth"
 	"github.com/medzoner-org/gomedz/pkg/http"
@@ -18,10 +19,11 @@ import (
 // validation.New accepts options; keep the DI provider non-variadic.
 func newValidator() *validation.Adapter { return validation.New() }
 
-func controllers(p *probes.Handler, a handler2.Handler) []http.Controller {
+func controllers(p *probes.Handler, a handler2.Handler, article articles.Handler) []http.Controller {
 	return []http.Controller{
 		p,
 		a,
+		article,
 	}
 }
 
