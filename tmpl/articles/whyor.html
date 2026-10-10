@@ -50,7 +50,7 @@
                     <p>I like constructors that tell me what a component needs. A repository takes a database connection. A handler takes its use case. The application entry point connects them. Dependency injection does not have to mean a runtime container or a service locator.</p>
                     <p>That is the part of <a href="https://github.com/google/wire">Google Wire</a> I wanted to preserve. Wire generates initialization code from provider declarations; the result is Go that can be reviewed and debugged normally. The repository was archived in August 2025. That left room to explore an alternative, not a reason to hide the wiring behind another framework.</p>
                     <p><a href="https://github.com/Medzoner/whyor">whyor</a> is my take on that approach: generic declarations, explicit constructors and generated Go. It is not an official continuation of Wire, and it is not a drop-in replacement.</p>
-                    <aside class="article-note"><strong>Current status:</strong> whyor is pre-1.0. The examples below target v0.11.0 and require Go 1.27.1+. Treat the API as evolving and test a migration on a branch before adopting it.</aside>
+                    <aside class="article-note"><strong>Current status:</strong> whyor is pre-1.0. The examples below target v0.12.0 and require Go 1.27.1+. Treat the API as evolving and test a migration on a branch before adopting it.</aside>
                 </section>
                 <section id="example">
                     <h2>Start with ordinary constructors</h2>
@@ -101,8 +101,8 @@ import "fmt"
 func main() {
     fmt.Println(InitApp("Go").Store.Message())
 }</code></pre>
-                    <pre><code>go install github.com/Medzoner/whyor/cmd/whyor@v0.11.0
-go get github.com/Medzoner/whyor@v0.11.0
+                    <pre><code>go install github.com/Medzoner/whyor/cmd/whyor@v0.12.0
+go get github.com/Medzoner/whyor@v0.12.0
 whyor gen .
 go run .
 # Hello, Go</code></pre>
