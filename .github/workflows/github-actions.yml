@@ -74,7 +74,9 @@ jobs:
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v9
         with:
-          version: v2.13.2
+          # v2.14.0+ embarque x/tools >= v0.50.0, qui décode le format
+          # d'export pkgbits V5 émis par Go 1.27.3 sur le runner.
+          version: v2.15.0
           args: -c .golangci/.golangci.yml --timeout=10m
           skip-cache: false
 
