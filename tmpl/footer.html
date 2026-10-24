@@ -57,6 +57,30 @@
             onScroll();
         })();
 
+        // Burger menu toggle (mobile)
+        (function() {
+            var toggler = document.getElementById('navbarToggler');
+            var menu = document.getElementById('navbarCollapse');
+            if (!toggler || !menu) return;
+            function setMenuOpen(open) {
+                menu.classList.toggle('show', open);
+                toggler.setAttribute('aria-expanded', open ? 'true' : 'false');
+            }
+            toggler.addEventListener('click', function(e) {
+                e.stopPropagation();
+                setMenuOpen(!menu.classList.contains('show'));
+            });
+            menu.addEventListener('click', function(e) {
+                if (e.target.closest('a')) setMenuOpen(false);
+            });
+            document.addEventListener('click', function(e) {
+                if (!menu.contains(e.target)) setMenuOpen(false);
+            });
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') setMenuOpen(false);
+            });
+        })();
+
         // Recaptcha lazy-load
         function initRecaptcha(){
             if (!document.querySelector('.g-recaptcha')) return;

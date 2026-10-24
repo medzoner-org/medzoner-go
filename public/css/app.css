@@ -516,6 +516,10 @@ ul {
         border-left: 1px solid var(--color-border-light);
     }
 
+    .navbar-collapse.show {
+        transform: translate3d(0, 0, 0);
+    }
+
     .navbar-collapse::after {
         display: none;
     }
