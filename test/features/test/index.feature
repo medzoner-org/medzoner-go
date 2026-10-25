@@ -13,7 +13,7 @@ Feature: Global behavior "Medzoner"
     Scenario: [Medzoner - GET_ALL] "Home page"
         When    I send a GET request to "/"
         Then    the response status code should be 200
-        And     the response body should contain "MedZoner.com"
+        And     the response body should contain "Mehdi Youb"
 
 #------------------------------------------------------------------------------------------
 # GET "Home" - With TOR-HOST header
@@ -23,7 +23,7 @@ Feature: Global behavior "Medzoner"
         And I add "TOR-HOST" header equal to "test-onion-host"
         When    I send a GET request to "/"
         Then    the response status code should be 200
-        And     the response body should contain "MedZoner.com"
+        And     the response body should contain "Mehdi Youb"
 
 #------------------------------------------------------------------------------------------
 # POST "CONTACT" - Test success
@@ -49,7 +49,7 @@ Feature: Global behavior "Medzoner"
           {"name": "", "email": "", "message": ""}
           """
         Then    the response status code should be 400
-        And     the response body should contain "Contact me"
+        And     the response body should contain "Me contacter"
 
 #------------------------------------------------------------------------------------------
 # POST "CONTACT" - With submit button (renders form, no processing)
@@ -62,5 +62,4 @@ Feature: Global behavior "Medzoner"
           {"name": "test", "email": "test@test.com", "message": "msg", "submit": "Send"}
           """
         Then    the response status code should be 200
-        And     the response body should contain "MedZoner.com"
-
+        And     the response body should contain "Mehdi Youb"

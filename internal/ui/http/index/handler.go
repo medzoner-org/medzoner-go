@@ -126,10 +126,10 @@ func (h Handler) Index(c *http2.Context, _ struct{}) error {
 func (h Handler) initView(request *http.Request) View {
 	return View{
 		Locale:           "fr",
-		PageTitle:        "MedZoner.com",
+		PageTitle:        "Mehdi Youb — Développeur Go & DevOps | Medzoner",
 		TorHost:          request.Header.Get("TOR-HOST"),
 		RecaptchaSiteKey: h.Recaptcha.GetSiteKey(),
-		PageDescription:  "Mehdi YOUB - Développeur Web Full Stack - NestJS Symfony Golang VueJS",
+		PageDescription:  "Mehdi Youb, développeur Go et DevOps. Découvrez mes projets open source, mes articles sur Go, l’injection de dépendances et les caméras ESP32-CAM.",
 		FormMessage:      "",
 	}
 }

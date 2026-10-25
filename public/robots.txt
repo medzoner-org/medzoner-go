@@ -1,3 +1,5 @@
 User-Agent: *
 
 Allow: /
+
+Sitemap: https://www.medzoner.com/sitemap.xml

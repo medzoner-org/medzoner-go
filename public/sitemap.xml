@@ -1,16 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc>https://www.medzoner.com</loc>
-        <lastmod>2021-04-11</lastmod>
-    </url>
-    <url>
-        <loc>https://www.medzoner.com/technos</loc>
-        <lastmod>2021-04-11</lastmod>
-    </url>
-    <url>
-        <loc>https://www.medzoner.com/contact</loc>
-        <lastmod>2021-04-11</lastmod>
+        <loc>https://www.medzoner.com/</loc>
     </url>
     <url>
         <loc>https://www.medzoner.com/articles/after-wire-whyor</loc>

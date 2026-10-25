@@ -15,7 +15,7 @@ Feature: whyor launch article
     When I send a GET request to "/"
     Then the response status code should be 200
     And the response body should contain "/articles/after-wire-whyor"
-    And the response body should contain "After Wire, meet whyor."
+    And the response body should contain "whyor : injection de dépendances en Go après Wire"
 
   Scenario: Unknown article remains a 404
     When I send a GET request to "/articles/not-an-article"

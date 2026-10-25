@@ -15,7 +15,7 @@ Feature: ESP32-CAM project article
     When I send a GET request to "/"
     Then the response status code should be 200
     And the response body should contain "/articles/resilient-multi-client-esp32-camera"
-    And the response body should contain "One camera, multiple clients."
+    And the response body should contain "ESP32-CAM : streaming vidéo multi-clients"
 
   Scenario: Discover the article from the sitemap
     When I send a GET request to "/public/sitemap.xml"

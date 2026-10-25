@@ -1,5 +1,5 @@
-<!DOCTYPE html>
 {{define "index"}}
+    <!DOCTYPE html>
     <html class="no-js" lang="{{ .Locale }}">
     {{template "head" .}}
     <body class="profile-page sidebar-collapse">
@@ -10,7 +10,7 @@
     </html>
 {{end}}
 {{define "index_body"}}
-    <div class="main main-raised">
+    <main class="main main-raised">
         <div class="profile-content">
             <div class="container">
                 <div class="row">
@@ -20,8 +20,8 @@
                                 <img src="/public/images/profile.jpg" alt="Mehdi Youb" class="img-raised rounded-circle img-fluid" loading="lazy">
                             </div>
                             <div class="name">
-                                <h3 class="title">Mehdi Y...</h3>
-                                <h6>Developer / Devops</h6>
+                                <h1 class="title">Mehdi Youb</h1>
+                                <p>Développeur Go &amp; DevOps · Projets open source</p>
                                 <div style="display: flex; justify-content: center; gap: 0.25rem; margin-top: 0.75rem;">
                                     <a href="https://github.com/Medzoner" class="btn btn-just-icon btn-link btn-github" target="_blank" rel="noopener" aria-label="Github"><i class="fa fa-github"></i></a>
                                     <a href="https://hub.docker.com/r/medzoner" class="btn btn-just-icon btn-link btn-dockerhub" target="_blank" rel="noopener" aria-label="Docker Hub"><i class="tf-docker tf-32"></i></a>
@@ -36,18 +36,23 @@
         <section class="article-teaser container" aria-labelledby="esp32cam-teaser-title">
             <div>
                 <p class="article-eyebrow">Open source · Embedded · ESP32</p>
-                <h2 id="esp32cam-teaser-title">One camera, multiple clients.</h2>
-                <p>How I built a resilient ESP32 camera streamer with adaptive load control, recording and an honest security boundary.</p>
+                <h2 id="esp32cam-teaser-title">ESP32-CAM : streaming vidéo multi-clients</h2>
+                <p>Un firmware open source pour partager un flux MJPEG, adapter la charge et enregistrer sur carte SD. Article en anglais.</p>
             </div>
-            <a class="btn btn-primary" href="/articles/resilient-multi-client-esp32-camera">Read the article <span aria-hidden="true">→</span></a>
+            <a class="btn btn-primary" href="/articles/resilient-multi-client-esp32-camera" hreflang="en">Découvrir ESP32-CAM <span aria-hidden="true">→</span></a>
         </section>
         <section class="article-teaser container" aria-labelledby="whyor-teaser-title">
             <div>
                 <p class="article-eyebrow">Open source · Go</p>
-                <h2 id="whyor-teaser-title">After Wire, meet whyor.</h2>
-                <p>Why I built a compile-time dependency injection tool that generates ordinary Go.</p>
+                <h2 id="whyor-teaser-title">whyor : injection de dépendances en Go après Wire</h2>
+                <p>Pourquoi j’ai créé whyor, un outil d’injection de dépendances à la compilation qui génère du Go ordinaire. Article en anglais.</p>
             </div>
-            <a class="btn btn-primary" href="/articles/after-wire-whyor">Read the article <span aria-hidden="true">→</span></a>
+            <a class="btn btn-primary" href="/articles/after-wire-whyor" hreflang="en">Découvrir whyor pour Go <span aria-hidden="true">→</span></a>
+        </section>
+        <section class="container" id="technos" aria-labelledby="technos-title">
+            <h2 id="technos-title">Développement Go et DevOps</h2>
+            <p>Je partage ici mes projets open source et leurs choix techniques : développement backend en Go, architecture hexagonale, CQRS, tests et déploiement conteneurisé.</p>
+            <p>Ce portfolio est lui-même un <a href="https://github.com/medzoner-org/medzoner-go">projet open source écrit en Go</a>. Mes articles présentent le code, les contraintes et les limites des solutions que je construis.</p>
         </section>
         <section class="section-image" id="contact" data-parallax="true" style="background-image: url('/public/images/background.jpg'); background-size: cover;">
             <div class="container">
@@ -56,7 +61,7 @@
                         <div class="card card-login">
                             <div class="row hestia-about-content"></div>
                             <form class="form" method="post" action="/">
-                                <p class="description text-center" style="padding-top: 1.5rem; font-size: 1.125rem; font-weight: 600; color: #111827;">Contact me</p>
+                                <h2 class="description text-center" style="padding-top: 1.5rem; font-size: 1.125rem; font-weight: 600; color: #111827;">Me contacter</h2>
                                 {{ if .FormMessage }}
                                 <p class="form-message text-center">
                                     {{ .FormMessage }}
@@ -82,7 +87,8 @@
                                                name="name"
                                                required="required"
                                                class="form-control"
-                                               placeholder="First Name..."
+                                               placeholder="Prénom…"
+                                               aria-label="Prénom"
                                                autocomplete="name"
                                         >
                                     </div>
@@ -97,7 +103,8 @@
                                                      name="email"
                                                      required="required"
                                                class="form-control"
-                                               placeholder="Email..."
+                                               placeholder="Adresse e-mail…"
+                                               aria-label="Adresse e-mail"
                                                autocomplete="email"
                                         >
                                     </div>
@@ -107,7 +114,8 @@
                                                 <i class="material-icons">edit</i>
                                             </span>
                                         </div>
-                                        <textarea placeholder="Message..." id="registration_message"
+                                        <textarea placeholder="Votre message…" id="registration_message"
+                                                  aria-label="Votre message"
                                                   class="form-control"
                                                   name="message"
                                                   required="required"
@@ -119,7 +127,7 @@
                                 </div>
                                 <div class="footer text-center" style="padding: 0.75rem 0 1.5rem;">
                                     <button class="btn btn-primary btn-lg" type="submit" id="registration_Envoyer" name="submit">
-                                        <i class="material-icons" style="font-size: 1.125rem;">send</i> Send
+                                        <i class="material-icons" style="font-size: 1.125rem;" aria-hidden="true">send</i> Envoyer
                                     </button>
                                 </div>
                             </form>
@@ -135,5 +143,5 @@
                 </div>
             </div>
         </section>
-    </div>
+    </main>
 {{end}}
