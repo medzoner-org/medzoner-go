@@ -64,6 +64,9 @@ func TestPublicCatalogue(t *testing.T) {
 			assert.Assert(t, strings.Contains(w.Body.String(), route.want))
 			assert.Assert(t, !strings.Contains(w.Body.String(), "private-draft"))
 			assert.Assert(t, !strings.Contains(w.Body.String(), "scheduled-secret"))
+			if route.path == "/articles/third-article" {
+				assert.Assert(t, !strings.Contains(w.Body.String(), "Updated <time"))
+			}
 			if strings.HasSuffix(route.path, ".xml") {
 				var doc any
 				assert.NilError(t, xml.Unmarshal(w.Body.Bytes(), &doc))

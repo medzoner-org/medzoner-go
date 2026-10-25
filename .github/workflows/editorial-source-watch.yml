@@ -1,0 +1,61 @@
+name: Editorial source watch
+
+on:
+  schedule:
+    - cron: '0 7 * * 1'
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths:
+      - scripts/editorial_source_watch.py
+      - scripts/tests/test_editorial_source_watch.py
+      - doc/editorial_sources.json
+      - internal/resources/editorial/**
+      - .github/workflows/editorial-source-watch.yml
+  pull_request:
+    paths:
+      - scripts/editorial_source_watch.py
+      - scripts/tests/test_editorial_source_watch.py
+      - doc/editorial_sources.json
+      - internal/resources/editorial/**
+      - .github/workflows/editorial-source-watch.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: editorial-source-watch-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - name: Test source monitoring without network or issue writes
+        run: python3 -m unittest discover -s scripts/tests -p 'test_editorial_source_watch.py' -v
+
+  watch:
+    needs: validate
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      issues: write
+    # Scheduled and manual executions share a lock to avoid duplicate issues.
+    concurrency:
+      group: editorial-source-publisher
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - name: Open or refresh one review issue per changed article source
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_REPOSITORY: ${{ github.repository }}
+        run: python3 scripts/editorial_source_watch.py --publish --issue-repo "$ISSUE_REPOSITORY"

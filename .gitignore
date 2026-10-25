@@ -48,3 +48,4 @@ skaffold.env
 *.pprof
 *.test
 /rust-equivalent/target/
+__pycache__/

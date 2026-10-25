@@ -42,7 +42,7 @@
             <p class="article-eyebrow"><a href="/articles?category={{.Article.Category}}">{{.Article.Category}}</a></p>
             <h1>{{.Article.Title}}</h1>
             <p class="article-deck">{{.Article.Deck}}</p>
-            <p class="article-meta">By <a href="{{.Article.Author.URL}}">{{.Article.Author.Name}}</a> · <time datetime="{{.Article.PublishedAt.Format "2006-01-02T15:04:05Z07:00"}}">{{.Article.PublishedAt.Format "2 Jan 2006"}}</time></p>
+            <p class="article-meta">By <a href="{{.Article.Author.URL}}">{{.Article.Author.Name}}</a> · <time datetime="{{.Article.PublishedAt.Format "2006-01-02T15:04:05Z07:00"}}">{{.Article.PublishedAt.Format "2 Jan 2006"}}</time>{{if not .Article.UpdatedAt.IsZero}} · Updated <time datetime="{{.Article.UpdatedAt.Format "2006-01-02T15:04:05Z07:00"}}">{{.Article.UpdatedAt.Format "2 Jan 2006"}}</time>{{end}}</p>
         </header>
         <div class="article-grid">
             <div class="article-copy">{{.Body}}</div>
