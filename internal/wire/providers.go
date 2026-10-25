@@ -2,8 +2,14 @@ package wire
 
 import (
 	"context"
+	"fmt"
+	"time"
 
+	markdown "github.com/Medzoner/medzoner-go/internal/adapters/editorial"
+	"github.com/Medzoner/medzoner-go/internal/application/query"
 	"github.com/Medzoner/medzoner-go/internal/config"
+	port "github.com/Medzoner/medzoner-go/internal/ports/editorial"
+	"github.com/Medzoner/medzoner-go/internal/resources"
 	"github.com/Medzoner/medzoner-go/internal/ui/http/articles"
 	handler2 "github.com/Medzoner/medzoner-go/internal/ui/http/index"
 	"github.com/medzoner-org/gomedz/pkg/auth"
@@ -15,6 +21,18 @@ import (
 	"github.com/medzoner-org/gomedz/pkg/observability"
 	"github.com/medzoner-org/gomedz/pkg/validation"
 )
+
+func newEditorialRepository(ctx context.Context) (*markdown.Repository, error) {
+	source, err := resources.EditorialFiles()
+	if err != nil {
+		return nil, fmt.Errorf("open embedded editorial content: %w", err)
+	}
+	return markdown.NewRepository(ctx, source)
+}
+
+func newEditorialQueries(repo port.Repository) *query.Editorial {
+	return query.NewEditorial(repo, time.Now)
+}
 
 // validation.New accepts options; keep the DI provider non-variadic.
 func newValidator() *validation.Adapter { return validation.New() }

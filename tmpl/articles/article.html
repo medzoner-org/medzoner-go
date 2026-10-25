@@ -1,0 +1,64 @@
+{{define "article"}}
+<!DOCTYPE html>
+<html lang="{{.Locale}}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{.PageTitle}}</title>
+    <meta name="description" content="{{.PageDescription}}">
+    <meta name="theme-color" content="#101827">
+    <link rel="canonical" href="{{.CanonicalURL}}">
+    <link rel="alternate" type="application/rss+xml" title="Medzoner" href="/feed.xml">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="{{.PageTitle}}">
+    <meta property="og:description" content="{{.PageDescription}}">
+    <meta property="og:url" content="{{.CanonicalURL}}">
+    <meta property="og:image" content="{{.SocialImage}}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="{{.Article.ImageAlt}}">
+    <meta property="article:published_time" content="{{.Article.PublishedAt.Format "2006-01-02T15:04:05Z07:00"}}">
+    {{if not .Article.UpdatedAt.IsZero}}<meta property="article:modified_time" content="{{.Article.UpdatedAt.Format "2006-01-02T15:04:05Z07:00"}}">{{end}}
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{.PageTitle}}">
+    <meta name="twitter:description" content="{{.PageDescription}}">
+    <meta name="twitter:image" content="{{.SocialImage}}">
+    <meta name="twitter:image:alt" content="{{.Article.ImageAlt}}">
+    <link rel="icon" href="/public/images/logo-single-small.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Material+Icons&amp;display=swap">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/public/css/app.css">
+    <link rel="stylesheet" href="/public/css/article.css">
+    <script type="application/ld+json">{{.StructuredData}}</script>
+</head>
+<body class="article-page sidebar-collapse">
+{{template "header" .}}
+<main class="article-main" id="article">
+    <article>
+        <header class="article-hero">
+            <a href="/articles">← All articles</a>
+            <p class="article-eyebrow"><a href="/articles?category={{.Article.Category}}">{{.Article.Category}}</a></p>
+            <h1>{{.Article.Title}}</h1>
+            <p class="article-deck">{{.Article.Deck}}</p>
+            <p class="article-meta">By <a href="{{.Article.Author.URL}}">{{.Article.Author.Name}}</a> · <time datetime="{{.Article.PublishedAt.Format "2006-01-02T15:04:05Z07:00"}}">{{.Article.PublishedAt.Format "2 Jan 2006"}}</time></p>
+        </header>
+        <div class="article-grid">
+            <div class="article-copy">{{.Body}}</div>
+            <nav class="article-toc" aria-label="On this page">
+                <strong>On this page</strong>
+                <ol>
+                    {{range .Headings}}<li><a href="#{{.ID}}">{{.Title}}</a></li>{{end}}
+                    <li><a href="/articles">All articles</a></li>
+                    <li><a href="/feed.xml">RSS feed</a></li>
+                    {{range .Article.Tags}}<li><a href="/articles?tag={{.}}">#{{.}}</a></li>{{end}}
+                </ol>
+            </nav>
+        </div>
+    </article>
+</main>
+{{template "footer" .}}
+</body>
+</html>
+{{end}}

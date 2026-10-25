@@ -21,6 +21,11 @@
 .article-page .article-copy a:hover { color: #312e81; }
 .article-page .article-copy pre { max-width: 100%; overflow-x: auto; padding: 1.3rem; border-radius: 12px; background: #101827; color: #d5e7f5; line-height: 1.65; font-size: .85rem; }
 .article-page .article-copy code { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+.article-page .article-copy img { max-width: 100%; height: auto; border-radius: 12px; }
+.article-page .article-copy h2 { scroll-margin-top: 100px; margin-top: 2.7rem; }
+.article-page .article-copy form { display: flex; flex-wrap: wrap; gap: .75rem; }
+.article-page .article-copy form input { max-width: 100%; }
+.article-page .article-copy form label { min-width: 0; }
 .article-page .article-copy p code, .article-page .article-copy li code { color: #4c1d95; background: #f1ecff; border-radius: 4px; padding: .12rem .3rem; overflow-wrap: anywhere; }
 .article-page .article-note { padding: 1.1rem 1.3rem; border-left: 4px solid #7c3aed; border-radius: 0 10px 10px 0; background: #f5f3ff; }
 .article-page .article-figure { margin: 2rem 0; }

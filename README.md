@@ -77,6 +77,16 @@ go test godog_test.go
 ```
 ![run](doc/behavior-test.png)
 
+## Editorial content
+
+Articles are authored in Markdown with YAML front matter, versioned in Git and
+embedded in the Go binary. See the [publication guide](doc/editorial.md) and
+[architecture decision](doc/adr/001-markdown-editorial.md).
+
+The public catalogue is available at `/articles`, the RSS feed at `/feed.xml`,
+and the generated sitemap at `/sitemap.xml`. Adding an article needs no new Go
+handler or article-specific template.
+
 ## Developed & Maintained by
 [Mehdi Youb](https://github.com/Medzoner) 
 

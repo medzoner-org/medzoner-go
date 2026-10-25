@@ -58,7 +58,6 @@ func (h Handler) Register(r http2.Router[any]) {
 
 	publicDir := filepath.Join(string(h.RootPath), "public")
 	r.Get("/robots.txt", h.serveStaticFile(filepath.Join(publicDir, "robots.txt")), http2.Options{})
-	r.Get("/sitemap.xml", h.serveStaticFile(filepath.Join(publicDir, "sitemap.xml")), http2.Options{})
 
 	r.StaticFS("/public", http.Dir(publicDir), http2.Options{})
 }

@@ -3,8 +3,10 @@
 package wire
 
 import (
+	markdown "github.com/Medzoner/medzoner-go/internal/adapters/editorial"
 	"github.com/Medzoner/medzoner-go/internal/application/command"
 	event2 "github.com/Medzoner/medzoner-go/internal/application/event"
+	port "github.com/Medzoner/medzoner-go/internal/ports/editorial"
 	"github.com/Medzoner/medzoner-go/internal/ui/http/articles"
 	handler2 "github.com/Medzoner/medzoner-go/internal/ui/http/index"
 	mockBase "github.com/Medzoner/medzoner-go/test"
@@ -64,12 +66,15 @@ var (
 		observability.NewTelemetry,
 	)
 	UsecaseWiring = whyor.Set(
+		newEditorialQueries,
 		event2.NewContactCreatedEventHandler,
 		command.NewCreateContactHandler,
 
 		whyor.Bind[event2.Handler, *event2.ContactCreatedEventHandler](),
 	)
 	HandlerWiring = whyor.Set(
+		markdown.NewRenderer,
+		whyor.Bind[port.Renderer, *markdown.Renderer](),
 		handler2.NewIndexHandler,
 		articles.NewHandler,
 	)
@@ -95,12 +100,18 @@ var (
 		),
 		whyor.Bind[event2.Mailer, *mocks.MockMailer](),
 	)
+	EditorialRepositoryWiring = whyor.Set(
+		newEditorialRepository,
+		whyor.Bind[port.Repository, *markdown.Repository](),
+	)
 	RepositoryWiring = whyor.Set(
+		EditorialRepositoryWiring,
 		contact.NewRepository,
 
 		whyor.Bind[repository2.Repository, *contact.Repository](),
 	)
 	RepositoryMockWiring = whyor.Set(
+		EditorialRepositoryWiring,
 		whyor.FieldsOf[*mockBase.Mocks](
 			"ContactRepository",
 		),

@@ -7,6 +7,7 @@ package wire
 import (
 	context "context"
 	contact "github.com/Medzoner/medzoner-go/internal/adapters/contact"
+	editorial "github.com/Medzoner/medzoner-go/internal/adapters/editorial"
 	command "github.com/Medzoner/medzoner-go/internal/application/command"
 	event "github.com/Medzoner/medzoner-go/internal/application/event"
 	config "github.com/Medzoner/medzoner-go/internal/config"
@@ -70,10 +71,16 @@ func InitServerTest(ctx context.Context, m *mocks.Mocks) (server.Server, error) 
 	v21 := v1.Recaptcha
 	v22 := captcha.NewRecaptchaAdapter(v21)
 	v23 := index.NewIndexHandler(v19, v20, v22, v9)
-	v24 := articles.NewHandler()
-	v25 := controllers(v15, v23, v24)
-	v26 := newServer(ctx, v3, v5, v6, v11, v12, v13, v25)
-	return v26, nil
+	v24, err := newEditorialRepository(ctx)
+	if err != nil {
+		return *new(server.Server), err
+	}
+	v25 := newEditorialQueries(v24)
+	v26 := editorial.NewRenderer()
+	v27 := articles.NewHandler(v25, v26)
+	v28 := controllers(v15, v23, v27)
+	v29 := newServer(ctx, v3, v5, v6, v11, v12, v13, v28)
+	return v29, nil
 }
 
 func InitServer(ctx context.Context) (server.Server, error) {
@@ -115,8 +122,14 @@ func InitServer(ctx context.Context) (server.Server, error) {
 	v24 := v1.Recaptcha
 	v25 := captcha.NewRecaptchaAdapter(v24)
 	v26 := index.NewIndexHandler(v22, v23, v25, v9)
-	v27 := articles.NewHandler()
-	v28 := controllers(v15, v26, v27)
-	v29 := newServer(ctx, v3, v5, v6, v11, v12, v13, v28)
-	return v29, nil
+	v27, err := newEditorialRepository(ctx)
+	if err != nil {
+		return *new(server.Server), err
+	}
+	v28 := newEditorialQueries(v27)
+	v29 := editorial.NewRenderer()
+	v30 := articles.NewHandler(v28, v29)
+	v31 := controllers(v15, v26, v30)
+	v32 := newServer(ctx, v3, v5, v6, v11, v12, v13, v31)
+	return v32, nil
 }

@@ -1,20 +1,22 @@
 package articles
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
+	"html/template"
 	"net/http"
+	"net/url"
+	"strconv"
 
+	"github.com/Medzoner/medzoner-go/internal/application/query"
+	"github.com/Medzoner/medzoner-go/internal/domains/editorial"
+	port "github.com/Medzoner/medzoner-go/internal/ports/editorial"
 	gohttp "github.com/medzoner-org/gomedz/pkg/http"
 	"github.com/medzoner-org/gomedz/pkg/observability"
 )
 
-const (
-	Path  = "/articles/after-wire-whyor"
-	Title = "After Wire: compile-time dependency injection with whyor"
-
-	ESP32CamPath  = "/articles/resilient-multi-client-esp32-camera"
-	ESP32CamTitle = "Building a resilient multi-client ESP32 camera"
-)
+const baseURL = "https://www.medzoner.com"
 
 type View struct {
 	Locale          string
@@ -23,49 +25,135 @@ type View struct {
 	TorHost         string
 	CanonicalURL    string
 	SocialImage     string
+	Article         editorial.Article
+	Body            template.HTML
+	StructuredData  template.JS
+	Headings        []port.Heading
 }
 
-// Handler serves the editorial article without database or contact-form dependencies.
-type Handler struct{}
+type Handler struct {
+	queries  *query.Editorial
+	renderer port.Renderer
+}
 
-func NewHandler() Handler      { return Handler{} }
-func (Handler) Prefix() string { return "/articles" }
+func NewHandler(queries *query.Editorial, renderer port.Renderer) Handler {
+	return Handler{queries: queries, renderer: renderer}
+}
+
+func (Handler) Prefix() string { return "/" }
 
 func (h Handler) Register(r gohttp.Router[any]) {
-	r.Get("/after-wire-whyor", h.Whyor, gohttp.Options{})
-	r.Get("/resilient-multi-client-esp32-camera", h.ESP32Cam, gohttp.Options{})
+	r.Get("/articles", h.List, gohttp.Options{})
+	r.Get("/articles/:slug", h.Show, gohttp.Options{})
+	r.Get("/feed.xml", h.Feed, gohttp.Options{})
+	r.Get("/sitemap.xml", h.Sitemap, gohttp.Options{})
 }
 
-func (Handler) Whyor(c *gohttp.Context, _ struct{}) error {
-	_, span := observability.StartSpan(c.Context(), "Articles.Whyor")
+func (h Handler) Show(c *gohttp.Context, _ struct{}) error {
+	ctx, span := observability.StartSpan(c.Context(), "Articles.Show")
 	defer span.End()
-	view := View{
-		Locale:          "en",
-		PageTitle:       Title + " | Medzoner",
-		PageDescription: "Why I built whyor, a compile-time dependency injection tool for Go: plain generated code, a Wire migration example, and honest limits.",
-		CanonicalURL:    "https://www.medzoner.com" + Path,
-		SocialImage:     "https://www.medzoner.com/public/images/whyor-social.png",
+	a, err := h.queries.Get(ctx, c.Param("slug"))
+	if errors.Is(err, editorial.ErrNotFound) {
+		return c.HTML(http.StatusNotFound, "404", nil)
 	}
-	if err := c.HTML(http.StatusOK, "article_whyor", view); err != nil {
+	if err != nil {
 		span.RecordError(err)
-		return fmt.Errorf("render whyor article: %w", err)
+		return fmt.Errorf("query article: %w", err)
+	}
+	body, err := h.renderer.Render(ctx, a.Markdown)
+	if err != nil {
+		span.RecordError(err)
+		return fmt.Errorf("render markdown article: %w", err)
+	}
+	canonical := fmt.Sprintf("%s/articles/%s", baseURL, a.Slug)
+	socialImage := fmt.Sprintf("%s%s", baseURL, a.Image)
+	schema := map[string]any{
+		"@context": "https://schema.org", "@type": "TechArticle",
+		"headline": a.Title, "description": a.Description,
+		"author":           map[string]string{"@type": "Person", "name": a.Author.Name, "url": a.Author.URL},
+		"mainEntityOfPage": canonical, "image": socialImage, "inLanguage": a.Language,
+		"datePublished": a.PublishedAt.Format("2006-01-02T15:04:05Z07:00"),
+	}
+	if !a.UpdatedAt.IsZero() {
+		schema["dateModified"] = a.UpdatedAt.Format("2006-01-02T15:04:05Z07:00")
+	}
+	data, err := json.Marshal(schema)
+	if err != nil {
+		return fmt.Errorf("encode article schema: %w", err)
+	}
+	view := View{
+		Locale: a.Language, PageTitle: fmt.Sprintf("%s | Medzoner", a.Title), PageDescription: a.Description,
+		CanonicalURL: canonical, SocialImage: socialImage, Article: a,
+		// Only the safe Markdown renderer output crosses this trust boundary.
+		Body:     template.HTML(body.HTML), //nolint:gosec // Goldmark has raw HTML and unsafe links disabled.
+		Headings: body.Headings,
+		// json.Marshal escapes HTML characters, including closing script sequences.
+		StructuredData: template.JS(data), //nolint:gosec // JSON generated from typed editorial metadata, not request input.
+	}
+	if err := c.HTML(http.StatusOK, "article", view); err != nil {
+		span.RecordError(err)
+		return fmt.Errorf("render article: %w", err)
 	}
 	return nil
 }
 
-func (Handler) ESP32Cam(c *gohttp.Context, _ struct{}) error {
-	_, span := observability.StartSpan(c.Context(), "Articles.ESP32Cam")
-	defer span.End()
-	view := View{
-		Locale:          "en",
-		PageTitle:       ESP32CamTitle + " | Medzoner",
-		PageDescription: "How I designed an open-source ESP32 camera firmware for shared MJPEG streaming, adaptive load control, SD recording, and honest LAN security.",
-		CanonicalURL:    "https://www.medzoner.com" + ESP32CamPath,
-		SocialImage:     "https://www.medzoner.com/public/images/esp32cam-social.png",
+type ListView struct {
+	Locale       string
+	TorHost      string
+	CanonicalURL string
+	Category     string
+	Tag          string
+	Result       query.ArticlePage
+	PreviousURL  string
+	NextURL      string
+}
+
+func listURL(page int, category, tag string) string {
+	values := url.Values{}
+	if page > 1 {
+		values.Set("page", strconv.Itoa(page))
 	}
-	if err := c.HTML(http.StatusOK, "article_esp32cam", view); err != nil {
+	if category != "" {
+		values.Set("category", category)
+	}
+	if tag != "" {
+		values.Set("tag", tag)
+	}
+	if len(values) == 0 {
+		return "/articles"
+	}
+	return fmt.Sprintf("/articles?%s", values.Encode())
+}
+
+func (h Handler) List(c *gohttp.Context, _ struct{}) error {
+	ctx, span := observability.StartSpan(c.Context(), "Articles.List")
+	defer span.End()
+	values := c.Request().URL.Query()
+	page := 1
+	if values.Has("page") {
+		var err error
+		page, err = strconv.Atoi(values.Get("page"))
+		if err != nil || page < 1 {
+			http.Error(c.Writer(), "Invalid page", http.StatusBadRequest)
+			return nil
+		}
+	}
+	filter := query.ListArticles{Page: page, PageSize: 10, Category: values.Get("category"), Tag: values.Get("tag")}
+	result, err := h.queries.List(ctx, filter)
+	if err != nil {
 		span.RecordError(err)
-		return fmt.Errorf("render ESP32-CAM article: %w", err)
+		return fmt.Errorf("list articles: %w", err)
+	}
+	view := ListView{Locale: "fr", Result: result, Category: filter.Category, Tag: filter.Tag, CanonicalURL: fmt.Sprintf("%s%s", baseURL, listURL(page, filter.Category, filter.Tag))}
+	if page > 1 {
+		view.PreviousURL = listURL(page-1, filter.Category, filter.Tag)
+	}
+	if page <= result.Total/result.PageSize && page*result.PageSize < result.Total {
+		view.NextURL = listURL(page+1, filter.Category, filter.Tag)
+	}
+	if err := c.HTML(http.StatusOK, "article_list", view); err != nil {
+		span.RecordError(err)
+		return fmt.Errorf("render article list: %w", err)
 	}
 	return nil
 }

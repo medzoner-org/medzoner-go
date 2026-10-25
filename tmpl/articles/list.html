@@ -1,0 +1,53 @@
+{{define "article_list"}}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Articles tech{{if .Category}} · {{.Category}}{{end}}{{if .Tag}} · {{.Tag}}{{end}} · Page {{.Result.Page}} | Medzoner</title>
+    <meta name="description" content="Articles techniques sur Go, les projets open source et l’IoT par Mehdi Youb.">
+    <link rel="canonical" href="{{.CanonicalURL}}">
+    {{if or .Category .Tag (gt .Result.Page 1)}}<meta name="robots" content="noindex,follow">{{end}}
+    <link rel="alternate" type="application/rss+xml" title="Medzoner" href="/feed.xml">
+    <link rel="icon" href="/public/images/logo-single-small.png">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Material+Icons&amp;display=swap">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/public/css/app.css">
+    <link rel="stylesheet" href="/public/css/article.css">
+</head>
+<body class="article-page sidebar-collapse">
+{{template "header" .}}
+<main class="article-main">
+    <header class="article-hero">
+        <a href="/">← Medzoner</a>
+        <h1>Articles tech</h1>
+        <p class="article-deck">Go, open source et IoT : le code, les choix et leurs limites.</p>
+        <a href="/feed.xml">S’abonner au flux RSS</a>
+    </header>
+    <div class="article-grid">
+        <div class="article-copy">
+            <form method="get" action="/articles" aria-label="Filtrer les articles">
+                <label>Rubrique <input name="category" value="{{.Category}}" placeholder="go, iot…"></label>
+                <label>Tag <input name="tag" value="{{.Tag}}" placeholder="open-source…"></label>
+                <button type="submit">Filtrer</button>
+            </form>
+            <p>{{.Result.Total}} article(s)</p>
+            {{range .Result.Articles}}
+            <article>
+                <h2><a href="/articles/{{.Slug}}" hreflang="{{.Language}}" lang="{{.Language}}">{{.Title}}</a></h2>
+                <p lang="{{.Language}}">{{.Description}}</p>
+                <p>{{.Author.Name}} · {{.PublishedAt.Format "02/01/2006"}} · <a href="/articles?category={{.Category}}">{{.Category}}</a></p>
+            </article>
+            {{else}}<p>Aucun article publié pour ces critères.</p>{{end}}
+            <nav aria-label="Pagination">
+                {{if .PreviousURL}}<a href="{{.PreviousURL}}" rel="prev">Page précédente</a>{{end}}
+                {{if .NextURL}}<a href="{{.NextURL}}" rel="next">Page suivante</a>{{end}}
+            </nav>
+        </div>
+        <aside class="article-toc"><a href="/articles">Toutes les publications</a></aside>
+    </div>
+</main>
+{{template "footer" .}}
+</body>
+</html>
+{{end}}

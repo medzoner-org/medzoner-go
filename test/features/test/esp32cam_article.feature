@@ -18,6 +18,6 @@ Feature: ESP32-CAM project article
     And the response body should contain "ESP32-CAM : streaming vidéo multi-clients"
 
   Scenario: Discover the article from the sitemap
-    When I send a GET request to "/public/sitemap.xml"
+    When I send a GET request to "/sitemap.xml"
     Then the response status code should be 200
     And the response body should contain "https://www.medzoner.com/articles/resilient-multi-client-esp32-camera"

@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"encoding/xml"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -60,24 +59,8 @@ func TestHomepageSEO(t *testing.T) {
 }
 
 func TestCrawlDiscovery(t *testing.T) {
-	t.Run("Unit: test sitemap only lists canonical pages and robots advertises it", func(t *testing.T) {
+	t.Run("Unit: test robots advertises the editorial sitemap", func(t *testing.T) {
 		root := filepath.Join("..", "..", "..", "..", "public")
-		data, err := os.ReadFile(filepath.Join(root, "sitemap.xml"))
-		assert.NilError(t, err)
-		var sitemap struct {
-			URLs []struct {
-				Location string `xml:"loc"`
-			} `xml:"url"`
-		}
-		assert.NilError(t, xml.Unmarshal(data, &sitemap))
-		assert.Equal(t, len(sitemap.URLs), 3)
-		for i, want := range []string{
-			"https://www.medzoner.com/",
-			"https://www.medzoner.com/articles/after-wire-whyor",
-			"https://www.medzoner.com/articles/resilient-multi-client-esp32-camera",
-		} {
-			assert.Equal(t, sitemap.URLs[i].Location, want)
-		}
 		robots, err := os.ReadFile(filepath.Join(root, "robots.txt"))
 		assert.NilError(t, err)
 		assert.Assert(t, strings.Contains(string(robots), "Sitemap: https://www.medzoner.com/sitemap.xml"))

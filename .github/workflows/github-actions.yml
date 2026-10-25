@@ -16,9 +16,10 @@ on:
       - 'release/**'
     paths-ignore:
       - '.vscode/**'
-      - '**/*.md'
+      # Editorial Markdown and images must trigger a rebuild/publication.
+      - 'README.md'
+      - 'AGENTS.md'
       - 'doc/**'
-      - 'public/images/**'
       - 'LICENSE'
       - 'CHANGELOG'
   pull_request:
@@ -28,9 +29,9 @@ on:
       - develop
     paths-ignore:
       - '.vscode/**'
-      - '**/*.md'
+      - 'README.md'
+      - 'AGENTS.md'
       - 'doc/**'
-      - 'public/images/**'
       - 'LICENSE'
       - 'CHANGELOG'
   workflow_dispatch:
