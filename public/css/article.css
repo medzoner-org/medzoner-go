@@ -32,7 +32,7 @@
 .article-page .article-toc a { color: #475569; }
 .article-page .article-toc a:hover { color: #5b21b6; }
 .article-page .article-cta { margin: 2rem 0; padding: 1.5rem; border-radius: 12px; background: #ecfdf5; border: 1px solid #a7f3d0; }
-.article-page .article-cta .btn { text-decoration: none; color: #fff; }
+.article-page .article-cta .btn { max-width: 100%; white-space: normal; overflow-wrap: anywhere; text-decoration: none; color: #fff; }
 .article-page a:focus-visible, .article-teaser a:focus-visible { outline: 3px solid #14b8a6; outline-offset: 4px; }
 @media (max-width: 900px) {
   .article-page .article-main { margin-left: 1rem; margin-right: 1rem; }
