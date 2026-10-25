@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1100" height="500" viewBox="0 0 1100 500" role="img" aria-labelledby="title description">
   <title id="title">ESP32-CAM shared streaming architecture</title>
-  <desc id="description">A camera captures a JPEG into PSRAM. An adaptive controller selects a stream profile. The same frame is sent to bounded MJPEG clients and optional SD recording, with health telemetry visible in the dashboard.</desc>
+  <desc id="description">A camera captures a JPEG, copies it into a reusable 512 KiB PSRAM buffer and returns the driver frame before sequential MJPEG and SD delivery. Health telemetry exposes memory, delivery pressure and recording state.</desc>
   <defs>
     <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#101827"/>
@@ -10,12 +10,12 @@
       <path d="M0 0l10 5-10 5z" fill="#5eead4"/>
     </marker>
     <style>
-      .title{font:700 30px Inter,Arial,sans-serif;fill:#f8fafc}.subtitle{font:400 17px Inter,Arial,sans-serif;fill:#a9bad1}.label{font:700 13px Inter,Arial,sans-serif;letter-spacing:1.2px;fill:#5eead4}.main{font:600 21px Inter,Arial,sans-serif;fill:#f8fafc}.small{font:400 15px Inter,Arial,sans-serif;fill:#b9c9df}.box{fill:#20344d;stroke:#365370;stroke-width:2}.output{fill:#12383b;stroke:#2a7771;stroke-width:2}.line{fill:none;stroke:#5eead4;stroke-width:3;marker-end:url(#arrow)}
+      .title{font:700 30px Inter,Arial,sans-serif;fill:#f8fafc}.subtitle{font:400 17px Inter,Arial,sans-serif;fill:#a9bad1}.label{font:700 13px Inter,Arial,sans-serif;letter-spacing:1.2px;fill:#5eead4}.main{font:600 21px Inter,Arial,sans-serif;fill:#f8fafc}.small{font:400 15px Inter,Arial,sans-serif;fill:#b9c9df}.box{fill:#20344d;stroke:#365370;stroke-width:2}.output{fill:#12383b;stroke:#2a7771;stroke-width:2}.line{fill:none;stroke:#5eead4;stroke-width:3;marker-end:url(#arrow)}.telemetry{fill:none;stroke:#94a3b8;stroke-width:2;stroke-dasharray:6 6;marker-end:url(#arrow)}
     </style>
   </defs>
   <rect width="1100" height="500" rx="26" fill="url(#background)"/>
   <text x="42" y="58" class="title">One captured frame, bounded delivery</text>
-  <text x="42" y="88" class="subtitle">Keep capture shared, bound slow writes, expose pressure.</text>
+  <text x="42" y="88" class="subtitle">Share one bounded copy; release the camera before network and SD writes.</text>
 
   <rect x="42" y="145" width="220" height="135" rx="16" class="box"/>
   <text x="66" y="177" class="label">CAPTURE</text>
@@ -26,12 +26,14 @@
   <path d="M262 212h64" class="line"/>
 
   <rect x="328" y="145" width="244" height="135" rx="16" class="box"/>
-  <text x="352" y="177" class="label">ADAPT</text>
-  <text x="352" y="213" class="main">Pressure controller</text>
-  <text x="352" y="242" class="small">FPS + JPEG quality offset</text>
-  <text x="352" y="266" class="small">Fast degrade, slow recovery</text>
+   <text x="352" y="177" class="label">COPY + RELEASE</text>
+   <text x="352" y="213" class="main">512 KiB PSRAM</text>
+   <text x="352" y="242" class="small">Return driver frame first</text>
+   <text x="352" y="266" class="small">Then sequential delivery</text>
 
-  <path d="M572 212h64" class="line"/>
+  <path d="M572 212h32v-46h34" class="line"/>
+  <path d="M604 212v66h34" class="line"/>
+  <circle cx="604" cy="212" r="4" fill="#5eead4"/>
 
   <rect x="638" y="120" width="202" height="92" rx="16" class="output"/>
   <text x="662" y="152" class="label">STREAM</text>
@@ -46,17 +48,18 @@
   <path d="M840 166h64" class="line"/>
   <path d="M840 278h64" class="line"/>
 
-  <rect x="906" y="120" width="152" height="204" rx="16" class="box"/>
-  <text x="930" y="152" class="label">CONSUME</text>
-  <text x="930" y="184" class="main">Browser</text>
-  <text x="930" y="214" class="main">Domoticz</text>
-  <text x="930" y="244" class="main">MotionEye</text>
-  <text x="930" y="274" class="small">Home Assistant</text>
-  <text x="930" y="304" class="main">OctoPrint</text>
+  <rect x="906" y="120" width="152" height="92" rx="16" class="box"/>
+  <text x="920" y="152" class="label">UP TO 4 CLIENTS</text>
+  <text x="930" y="181" class="small">Browser / NVR</text>
+  <text x="930" y="204" class="small">Automation</text>
+  <rect x="906" y="232" width="152" height="92" rx="16" class="box"/>
+  <text x="930" y="264" class="label">STORAGE</text>
+  <text x="930" y="296" class="main">microSD</text>
 
-  <path d="M450 280v81h288" class="line"/>
+  <path d="M450 280v115h188" class="telemetry"/>
+  <text x="462" y="371" class="small">Telemetry</text>
   <rect x="638" y="345" width="420" height="100" rx="16" class="box"/>
   <text x="662" y="377" class="label">OBSERVE</text>
-  <text x="662" y="409" class="main">Health endpoint + responsive dashboard</text>
+  <text x="662" y="409" class="main">Health + responsive dashboard</text>
   <text x="662" y="433" class="small">Wi-Fi · heap · delivery time · pressure · recording</text>
 </svg>

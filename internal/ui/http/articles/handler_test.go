@@ -99,6 +99,11 @@ func TestESP32CamArticle(t *testing.T) {
 			`/public/images/esp32cam-social.png`, `/public/images/esp32cam-flow.svg`,
 			`/public/images/esp32cam-dashboard.png`, `http://camera.local:81/stream`,
 			`/public/images/esp32cam-clients.svg`,
+			`512 KiB`, `300 ms`, `2-second absolute budget`, `recording_stats_valid`,
+			`MJR1`, `mjr_recover.py`, `generation-bound callbacks`,
+			`id="browser-recovery"`, `id="evolution"`,
+			`Updated <time datetime=`,
+			`https://github.com/Medzoner/domoticz-esp32cam/tree/`,
 			`https://github.com/Medzoner/domoticz-esp32cam`, `no TLS`,
 			`class="article-note"`, `class="article-figure"`, `<figcaption>`, `class="article-cta"`, `href="#shared-stream"`,
 		} {
@@ -111,6 +116,11 @@ func TestESP32CamArticle(t *testing.T) {
 		assert.NilError(t, json.Unmarshal([]byte(data[1]), &schema))
 		assert.Equal(t, schema["@type"], "TechArticle")
 		assert.Equal(t, schema["inLanguage"], "en")
+		modified, ok := schema["dateModified"].(string)
+		assert.Assert(t, ok, "updated article must expose dateModified")
+		modifiedAt, err := time.Parse(time.RFC3339, modified)
+		assert.NilError(t, err)
+		assert.Assert(t, modifiedAt.After(time.Date(2026, 10, 24, 14, 14, 59, 0, time.UTC)))
 	})
 	t.Run("Unit: test ESP32-CAM article render error is wrapped", func(t *testing.T) {
 		cause := errors.New("template unavailable")

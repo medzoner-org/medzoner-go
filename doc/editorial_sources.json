@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "sources": [
+    {
+      "slug": "resilient-multi-client-esp32-camera",
+      "article": "internal/resources/editorial/resilient-multi-client-esp32-camera.md",
+      "repository": "Medzoner/domoticz-esp32cam",
+      "branch": "main",
+      "reviewed_commit": "96cb9ae32c83d5875782a9384346b22f426aa497",
+      "watch_paths": [
+        "src/**",
+        "web/**",
+        "test/**",
+        "scripts/**",
+        "platformio.ini",
+        "README.md",
+        "docs/**",
+        "include/secrets.example.h",
+        ".github/workflows/**",
+        "version.txt",
+        "CHANGELOG.md"
+      ]
+    }
+  ]
+}
