@@ -29,12 +29,9 @@ The camera uses two PSRAM frame buffers and latest-frame capture. A dedicated st
 
 The MJPEG response combines the multipart boundary and JPEG header into one write, then sends image bytes in 16 KiB blocks. Writes have a bounded deadline: a slow consumer can delay clients later in that broadcast cycle, but it cannot keep the camera mutex or stream task blocked indefinitely.
 
-```text
-Browser ───────────────┐
-MotionEye ─────────────┼── http://camera.local:81/stream
-Home Assistant ────────┤          ↑
-OctoPrint ─────────────┘     shared JPEG frame
-```
+![Browser, MotionEye, Home Assistant and OctoPrint connect to the same ESP32-CAM MJPEG stream.](/public/images/esp32cam-clients.svg "Four clients connect to the same endpoint; capture remains shared.")
+
+All four clients request `http://camera.local:81/stream`, backed by the shared JPEG frame.
 
 ![The ESP32 camera captures one JPEG frame, applies an adaptive stream profile, then shares it with MJPEG clients and the SD recorder while exposing telemetry.](/public/images/esp32cam-flow.svg "Capture is shared. Sequential delivery is bounded by socket deadlines, and telemetry closes the feedback loop.")
 

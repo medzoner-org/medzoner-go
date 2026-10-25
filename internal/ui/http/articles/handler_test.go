@@ -98,6 +98,7 @@ func TestESP32CamArticle(t *testing.T) {
 			`property="og:type" content="article"`, `name="twitter:card" content="summary_large_image"`,
 			`/public/images/esp32cam-social.png`, `/public/images/esp32cam-flow.svg`,
 			`/public/images/esp32cam-dashboard.png`, `http://camera.local:81/stream`,
+			`/public/images/esp32cam-clients.svg`,
 			`https://github.com/Medzoner/domoticz-esp32cam`, `no TLS`,
 			`class="article-note"`, `class="article-figure"`, `<figcaption>`, `class="article-cta"`, `href="#shared-stream"`,
 		} {

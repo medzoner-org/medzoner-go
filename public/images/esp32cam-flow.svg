@@ -51,7 +51,7 @@
   <text x="930" y="184" class="main">Browser</text>
   <text x="930" y="214" class="main">Domoticz</text>
   <text x="930" y="244" class="main">MotionEye</text>
-  <text x="930" y="274" class="main">Home Assistant</text>
+  <text x="930" y="274" class="small">Home Assistant</text>
   <text x="930" y="304" class="main">OctoPrint</text>
 
   <path d="M450 280v81h288" class="line"/>
