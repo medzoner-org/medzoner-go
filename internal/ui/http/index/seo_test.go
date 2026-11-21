@@ -39,6 +39,7 @@ func TestHomepageSEO(t *testing.T) {
 			`<h1 class="title">Mehdi Youb</h1>`,
 			`id="technos"`, `id="contact"`, `<main`, `</main>`,
 			`hreflang="en"`, `Développeur Go`,
+			`href="https://gitlab.com/myoub"`, `aria-label="GitLab"`,
 		} {
 			assert.Assert(t, strings.Contains(body, want), "missing SEO content: %s", want)
 		}
@@ -54,6 +55,15 @@ func TestHomepageSEO(t *testing.T) {
 		assert.Equal(t, schema.Context, "https://schema.org")
 		assert.Equal(t, len(schema.Graph), 2)
 		assert.Equal(t, schema.Graph[0]["@type"], "Person")
+		profiles, ok := schema.Graph[0]["sameAs"].([]any)
+		assert.Assert(t, ok)
+		foundGitLab := false
+		for _, profile := range profiles {
+			if profile == "https://gitlab.com/myoub" {
+				foundGitLab = true
+			}
+		}
+		assert.Assert(t, foundGitLab)
 		assert.Equal(t, schema.Graph[1]["@type"], "WebSite")
 	})
 }
