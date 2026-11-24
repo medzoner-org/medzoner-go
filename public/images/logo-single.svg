@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80" role="img" aria-labelledby="icon-title">
+  <title id="icon-title">Medzoner</title>
+  <circle cx="40" cy="40" r="36" fill="#FF293E"/>
+  <path d="M20 58V22h9l11 18 11-18h9v36H50V40L40 56 30 40v18Z" fill="#FFF"/>
+</svg>

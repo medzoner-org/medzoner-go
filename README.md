@@ -1,5 +1,5 @@
 <p align="center">
-  <img alt="golangci-lint logo" src="public/images/logo-single.png" height="150" />
+  <img alt="Logo Medzoner" src="public/images/logo-single.svg" width="150" height="150" />
   <h3 align="center">medzoner.com</h3>
   <p align="center">Source</p>
 </p>

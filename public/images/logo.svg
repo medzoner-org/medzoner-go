@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="380" height="80" viewBox="0 0 380 80" role="img" aria-labelledby="logo-title">
+  <title id="logo-title">medzoner.com</title>
+  <circle cx="40" cy="40" r="36" fill="#FF293E"/>
+  <path d="M20 58V22h9l11 18 11-18h9v36H50V40L40 56 30 40v18Z" fill="#FFF"/>
+  <text x="90" y="51" fill="#FFF" font-family="Inter, system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="36" font-weight="750" letter-spacing="-1.3">medzoner.com</text>
+</svg>
