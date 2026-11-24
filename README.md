@@ -6,8 +6,8 @@
 
 ---
 # Badges
-[![Build Status](https://github.com/medzoner/medzoner-go/actions/workflows/github-actions.yml/badge.svg?branch=master)](https://github.com/medzoner/medzoner-go/actions/workflows/github-actions.yml/badge.svg?branch=master)
-[![Coverage Status](https://coveralls.io/repos/github/Medzoner/medzoner-go/badge.svg?branch=master&service=github)](https://coveralls.io/github/Medzoner/medzoner-go?branch=master)
+[![Build Status](https://github.com/medzoner-org/medzoner-go/actions/workflows/github-actions.yml/badge.svg?branch=main)](https://github.com/medzoner-org/medzoner-go/actions/workflows/github-actions.yml?query=branch%3Amain)
+[![Coverage Status](https://coveralls.io/repos/github/Medzoner/medzoner-go/badge.svg?branch=main&service=github)](https://coveralls.io/github/Medzoner/medzoner-go?branch=main)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Go report](https://goreportcard.com/badge/github.com/Medzoner/medzoner-go?service=github)](https://goreportcard.com/report/github.com/Medzoner/medzoner-go?service=github)
 

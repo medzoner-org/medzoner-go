@@ -7,7 +7,6 @@ run-name: Action - ${{ github.sha }}
 on:
   push:
     branches:
-      - master
       - main
       - develop
       - 'feat/**'
@@ -24,7 +23,6 @@ on:
       - 'CHANGELOG'
   pull_request:
     branches:
-      - master
       - main
       - develop
     paths-ignore:
@@ -118,15 +116,15 @@ jobs:
           retention-days: 7
 
       # Fusion du job cd-coverage-report dans ci-test : économise un job complet
-      # (checkout + clone gomedz + setup Go) sur master.
+      # (checkout + clone gomedz + setup Go) sur main.
       - name: Upload coverage to Coveralls
-        if: github.ref == 'refs/heads/master' && github.event_name == 'push' && env.COVERALLS_TOKEN != ''
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push' && env.COVERALLS_TOKEN != ''
         run: |
           go install github.com/mattn/goveralls@latest
           goveralls -coverprofile=cov.out -service=github -repotoken "${COVERALLS_TOKEN}"
 
       - name: Update goreportcard
-        if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         # Appel direct de l'API goreportcard pour éviter le pull Docker Hub
         # de creekorful/goreportcard-action (rate limit anonyme 429).
         run: |
@@ -159,7 +157,7 @@ jobs:
       - run: make build
 
       - name: Upload binaries artifact
-        if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         uses: actions/upload-artifact@v7
         with:
           name: medzoner-bin
@@ -208,7 +206,7 @@ jobs:
           timeout --signal=TERM --kill-after=10s 180s govulncheck -show verbose ./...
 
   cd-release:
-    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: medzoner-runner
     timeout-minutes: 15
     needs: [ ci-lint, ci-test, ci-build ]
@@ -240,7 +238,7 @@ jobs:
           docker-file: ./infra/docker/prod/Dockerfile
 
 #  cd-deploy:
-#    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+#    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 #    runs-on: medzoner-runner
 #    needs: [ cd-release ]
 #    steps:
