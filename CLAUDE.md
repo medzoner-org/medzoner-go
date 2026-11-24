@@ -184,7 +184,7 @@ make help
 ## CI / Qualité
 
 ### GitHub Actions (`.github/workflows/ci.yml`)
-- **Déclenchement** : push sur `master`, `main`, `develop`, `feat/**`, `fix/**`, `refactor/**`, `release/**` + PRs
+- **Déclenchement** : push sur `main`, `develop`, `feat/**`, `fix/**`, `refactor/**`, `release/**` + PRs
 - **Jobs** :
   - `lint` — golangci-lint avec config `.golangci/.golangci.yml`
   - `test` — tests unitaires avec couverture (MariaDB en service container)
@@ -206,4 +206,3 @@ make help
 - whyor génère `whyor_gen.go` — ne **jamais** éditer manuellement, relancer `make wire`
 - Les mocks sont auto-générés — relancer `go generate ./...` après modification d'interfaces
 - Le serveur de test Godog utilise des mocks injectés par whyor (`InitServerTest`)
-
